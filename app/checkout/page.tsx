@@ -28,7 +28,7 @@ export default function CheckoutPage() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center p-8">
         <h1 className="mb-4 text-2xl font-bold">Giỏ hàng của bạn đang trống</h1>
-        <Link href="/" className="rounded-full bg-blue-600 px-6 py-2 text-white hover:bg-blue-700">
+        <Link href="/" className="rounded-full bg-orange-600 px-6 py-2 text-white hover:bg-orange-700">
           Quay lại mua sắm
         </Link>
       </div>
@@ -89,8 +89,8 @@ export default function CheckoutPage() {
         </div>
 
         {/* Payment QR */}
-        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-blue-200 bg-blue-50/30 p-8 dark:border-blue-900/30 dark:bg-blue-900/10">
-          <h2 className="mb-2 text-xl font-bold text-blue-900 dark:text-blue-400">Quét mã VietQR</h2>
+        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-orange-200 bg-orange-50/30 p-8 dark:border-orange-900/30 dark:bg-orange-900/10">
+          <h2 className="mb-2 text-xl font-bold text-orange-900 dark:text-orange-400">Quét mã VietQR</h2>
           <p className="mb-6 text-center text-sm text-neutral-600 dark:text-neutral-400">
             Sử dụng ứng dụng Ngân hàng hoặc Ví điện tử để quét mã thanh toán.
           </p>
@@ -110,7 +110,7 @@ export default function CheckoutPage() {
             </div>
             <div className="rounded-lg bg-white p-4 text-sm shadow-sm dark:bg-neutral-800">
               <p className="mb-1 text-neutral-500">Nội dung chuyển khoản:</p>
-              <p className="font-bold text-blue-600">{orderId}</p>
+              <p className="font-bold text-orange-600">{orderId}</p>
             </div>
           </div>
 
@@ -119,7 +119,7 @@ export default function CheckoutPage() {
               clearCart();
               window.location.href = '/';
             }}
-            className="mt-8 w-full rounded-full bg-blue-600 py-4 text-sm font-bold text-white shadow-lg transition-all hover:bg-blue-700 active:scale-95"
+            className="mt-8 w-full rounded-full bg-orange-600 py-4 text-sm font-bold text-white shadow-lg transition-all hover:bg-orange-700 active:scale-95"
           >
             Tôi đã thanh toán xong
           </button>

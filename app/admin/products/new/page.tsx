@@ -80,7 +80,7 @@ export default function NewProductPage() {
   return (
     <div className="mx-auto max-w-3xl p-8">
       <div className="mb-8">
-        <Link href="/admin" className="text-blue-600 hover:underline mb-2 block">
+        <Link href="/admin" className="text-orange-600 hover:underline mb-2 block">
           ← Quay lại danh sách
         </Link>
         <h1 className="text-3xl font-bold">Thêm sản phẩm mới</h1>
@@ -161,7 +161,7 @@ export default function NewProductPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white p-3 rounded-md font-bold hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          className="w-full bg-orange-600 text-white p-3 rounded-md font-bold hover:bg-orange-700 disabled:opacity-50 transition-colors"
         >
           {loading ? "Đang xử lý..." : "Lưu sản phẩm"}
         </button>

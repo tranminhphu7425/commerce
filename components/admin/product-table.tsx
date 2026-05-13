@@ -53,7 +53,7 @@ export function ProductTable({ products }: { products: (Product & { collections?
                 <div className="flex gap-3">
                   <Link
                     href={`/admin/products/${product.handle}/edit`}
-                    className="text-blue-600 hover:underline"
+                    className="text-orange-600 hover:underline"
                   >
                     Sửa
                   </Link>

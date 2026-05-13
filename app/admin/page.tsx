@@ -11,7 +11,7 @@ export default function AdminPage() {
         <h1 className="text-3xl font-bold">Quản lý sản phẩm</h1>
         <Link
           href="/admin/products/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+          className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors"
         >
           + Thêm sản phẩm mới
         </Link>

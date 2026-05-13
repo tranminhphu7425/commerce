@@ -37,7 +37,7 @@ const ContactButtons = () => {
         href={`https://zalo.me/${zaloNumber}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-blue-500 text-white shadow-lg transition-all hover:scale-110 hover:bg-blue-600 active:scale-95"
+        className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-white shadow-lg transition-all hover:scale-110 hover:bg-orange-600 active:scale-95"
         title="Chat Zalo"
       >
         <span className="text-xl font-bold italic">Z</span>
@@ -51,7 +51,7 @@ const ContactButtons = () => {
         href={`https://m.me/${messengerId}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 text-white shadow-lg transition-all hover:scale-110 active:scale-95"
+        className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-orange-500 via-purple-500 to-pink-500 text-white shadow-lg transition-all hover:scale-110 active:scale-95"
         title="Chat Facebook"
       >
         <svg

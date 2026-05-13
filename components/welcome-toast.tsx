@@ -19,7 +19,7 @@ export function WelcomeToast() {
             Chúng tôi cung cấp đầy đủ các loại cần câu, máy câu, mồi lure và phụ kiện chính hãng Megabarra, CTF...{" "}
             <a
               href="/search"
-              className="text-blue-600 hover:underline"
+              className="text-orange-600 hover:underline"
             >
               Khám phá ngay
             </a>

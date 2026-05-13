@@ -10,8 +10,8 @@ const features = [
     name: 'Hàng Chính Hãng',
     description: 'Cam kết 100% sản phẩm từ Megabarra, BKK, Mekong Pride...',
     icon: CheckBadgeIcon,
-    color: 'text-blue-500',
-    bg: 'bg-blue-500/10'
+    color: 'text-orange-500',
+    bg: 'bg-orange-500/10'
   },
   {
     name: 'Tư Vấn Chuyên Sâu',
