@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fproduct\u002F[handle]","\u002Fsearch\u002F[collection]","\u002Fsearch\u002F[collection]\u002Fopengraph-image"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
