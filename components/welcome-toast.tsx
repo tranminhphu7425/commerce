@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
@@ -17,12 +18,12 @@ export function WelcomeToast() {
         description: (
           <>
             Chúng tôi cung cấp đầy đủ các loại cần câu, máy câu, mồi lure và phụ kiện chính hãng Megabarra, CTF...{" "}
-            <a
+            <Link
               href="/search"
               className="text-orange-600 hover:underline"
             >
               Khám phá ngay
-            </a>
+            </Link>
             .
           </>
         ),
