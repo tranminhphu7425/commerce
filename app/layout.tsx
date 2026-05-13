@@ -21,6 +21,9 @@ export const metadata = {
     follow: true,
     index: true,
   },
+  icons: {
+    icon: "https://down-bs-vn.img.susercontent.com/vn-11134216-81ztc-mnh0zou8j09466_tn.webp",
+  },
 };
 
 export default async function RootLayout({
