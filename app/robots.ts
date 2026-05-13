@@ -1,5 +1,7 @@
 import { baseUrl } from "lib/utils";
 
+export const dynamic = "force-static";
+
 export default function robots() {
   return {
     rules: [

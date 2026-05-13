@@ -2,10 +2,8 @@
 
 import { PlusIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { addItem } from "components/cart/actions";
 import { Product, ProductVariant } from "lib/local/types";
 import { useSearchParams } from "next/navigation";
-import { useActionState } from "react";
 import { useCart } from "./cart-context";
 
 function SubmitButton({
@@ -84,4 +82,3 @@ export function AddToCart({ product }: { product: Product }) {
     />
   );
 }
-

@@ -2,10 +2,7 @@
 
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { updateItemQuantity } from "components/cart/actions";
 import type { CartItem } from "lib/local/types";
-import { useActionState } from "react";
-
 
 export function EditItemQuantityButton({
   item,
@@ -16,16 +13,11 @@ export function EditItemQuantityButton({
   type: "plus" | "minus";
   optimisticUpdate: any;
 }) {
-  const [message, formAction] = useActionState(updateItemQuantity, null);
-  const payload = {
-    merchandiseId: item.merchandise.id,
-    quantity: type === "plus" ? item.quantity + 1 : item.quantity - 1,
-  };
-  const updateItemQuantityAction = formAction.bind(null, payload);
+  const merchandiseId = item.merchandise.id;
 
   return (
     <button
-      onClick={() => optimisticUpdate(payload.merchandiseId, type)}
+      onClick={() => optimisticUpdate(merchandiseId, type)}
       aria-label={
         type === "plus" ? "Increase item quantity" : "Reduce item quantity"
       }

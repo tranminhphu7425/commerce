@@ -1,6 +1,6 @@
 import Grid from "components/grid";
 import ProductGridItems from "components/layout/product-grid-items";
-import { defaultSort, sorting } from "lib/constants";
+import { defaultSort } from "lib/constants";
 import { getProducts } from "lib/local";
 
 export const metadata = {
@@ -8,32 +8,22 @@ export const metadata = {
   description: "Tìm kiếm sản phẩm trong cửa hàng.",
 };
 
-export default async function SearchPage(props: {
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
-  const searchParams = await props.searchParams;
-  const { sort, q: searchValue } = searchParams as { [key: string]: string };
-  const { sortKey, reverse } =
-    sorting.find((item) => item.slug === sort) || defaultSort;
+export const dynamic = "force-static";
 
-  const products = await getProducts({ sortKey, reverse, query: searchValue });
-  const resultsText = products.length > 1 ? "results" : "result";
+export default async function SearchPage() {
+  const { sortKey, reverse } = defaultSort;
+
+  const products = await getProducts({ sortKey, reverse });
 
   return (
     <>
-      {searchValue ? (
-        <p className="mb-4">
-          {products.length === 0
-            ? "Không tìm thấy sản phẩm nào khớp với "
-            : `Hiển thị ${products.length} kết quả cho `}
-          <span className="font-bold">&quot;{searchValue}&quot;</span>
-        </p>
-      ) : null}
       {products.length > 0 ? (
         <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           <ProductGridItems products={products} />
         </Grid>
-      ) : null}
+      ) : (
+        <p className="py-3 text-lg">Không tìm thấy sản phẩm nào.</p>
+      )}
     </>
   );
 }

@@ -3,12 +3,19 @@ import Footer from "components/layout/footer";
 import { Gallery } from "components/product/gallery";
 import { ProductDescription } from "components/product/product-description";
 import { HIDDEN_PRODUCT_TAG } from "lib/constants";
-import { getProduct, getProductRecommendations } from "lib/local";
+import { getProduct, getProductRecommendations, getAllProductsSync } from "lib/local";
 import type { Image } from "lib/local/types";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+
+export async function generateStaticParams() {
+  const products = getAllProductsSync();
+  return products.map((product) => ({
+    handle: product.handle,
+  }));
+}
 
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>;

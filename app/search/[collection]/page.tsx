@@ -1,10 +1,19 @@
-import { getCollection, getCollectionProducts } from "lib/local";
+import { getCollection, getCollectionProducts, getCollections } from "lib/local";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-static";
+
+export async function generateStaticParams() {
+  const collections = await getCollections();
+  return collections.map((collection) => ({
+    collection: collection.handle,
+  }));
+}
+
 import Grid from "components/grid";
 import ProductGridItems from "components/layout/product-grid-items";
-import { defaultSort, sorting } from "lib/constants";
+import { defaultSort } from "lib/constants";
 
 export async function generateMetadata(props: {
   params: Promise<{ collection: string }>;
@@ -25,13 +34,9 @@ export async function generateMetadata(props: {
 
 export default async function CategoryPage(props: {
   params: Promise<{ collection: string }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const searchParams = await props.searchParams;
   const params = await props.params;
-  const { sort } = searchParams as { [key: string]: string };
-  const { sortKey, reverse } =
-    sorting.find((item) => item.slug === sort) || defaultSort;
+  const { sortKey, reverse } = defaultSort;
   const products = await getCollectionProducts({
     collection: params.collection,
     sortKey,

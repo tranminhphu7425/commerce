@@ -215,9 +215,9 @@ export default function CartModal() {
                       />
                     </div>
                   </div>
-                  <form action={redirectToCheckout}>
+                  <div onClick={() => window.location.href = "/checkout"}>
                     <CheckoutButton />
-                  </form>
+                  </div>
                 </div>
               )}
             </Dialog.Panel>

@@ -1,10 +1,10 @@
-export default {
-  experimental: {
-    ppr: true,
-    inlineCss: true,
-    useCache: true,
-  },
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  output: "export",
+  distDir: "docs",
   images: {
+    unoptimized: true,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
@@ -22,3 +22,5 @@ export default {
     ],
   },
 };
+
+export default nextConfig;
