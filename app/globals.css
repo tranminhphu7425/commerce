@@ -3,6 +3,22 @@
 @plugin "@tailwindcss/container-queries";
 @plugin "@tailwindcss/typography";
 
+@theme {
+  --font-size-xs: 1rem;          /* base cũ */
+  --font-size-sm: 1.125rem;      /* lg cũ */
+  --font-size-base: 1.25rem;     /* xl cũ */
+  --font-size-lg: 1.5rem;        /* 2xl cũ */
+  --font-size-xl: 1.875rem;      /* 3xl cũ */
+  --font-size-2xl: 2.25rem;      /* 4xl cũ */
+  --font-size-3xl: 3rem;         /* 5xl cũ */
+  --font-size-4xl: 3.75rem;      /* 6xl cũ */
+  --font-size-5xl: 4.5rem;       /* 7xl cũ */
+  --font-size-6xl: 6rem;         /* 8xl cũ */
+  --font-size-7xl: 8rem;         /* 9xl cũ */
+  --font-size-8xl: 10rem;
+  --font-size-9xl: 12rem;
+}
+
 @layer base {
   *,
   ::after,
@@ -10,6 +26,16 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+@layer utilities {
+  @keyframes slow-zoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+  }
+  .animate-slow-zoom {
+    animation: slow-zoom 20s ease-in-out infinite alternate;
   }
 }
 

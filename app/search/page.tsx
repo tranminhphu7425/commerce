@@ -1,11 +1,11 @@
 import Grid from "components/grid";
 import ProductGridItems from "components/layout/product-grid-items";
 import { defaultSort, sorting } from "lib/constants";
-import { getProducts } from "lib/shopify";
+import { getProducts } from "lib/local";
 
 export const metadata = {
-  title: "Search",
-  description: "Search for products in the store.",
+  title: "Tìm kiếm",
+  description: "Tìm kiếm sản phẩm trong cửa hàng.",
 };
 
 export default async function SearchPage(props: {
@@ -24,8 +24,8 @@ export default async function SearchPage(props: {
       {searchValue ? (
         <p className="mb-4">
           {products.length === 0
-            ? "There are no products that match "
-            : `Showing ${products.length} ${resultsText} for `}
+            ? "Không tìm thấy sản phẩm nào khớp với "
+            : `Hiển thị ${products.length} kết quả cho `}
           <span className="font-bold">&quot;{searchValue}&quot;</span>
         </p>
       ) : null}

@@ -9,8 +9,15 @@ export default {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "cdn.shopify.com",
-        pathname: "/s/files/**",
+        hostname: "down-bs-vn.img.susercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "deo.shopeemobile.com",
+      },
+      {
+        protocol: "https",
+        hostname: "down-vn.img.susercontent.com",
       },
     ],
   },

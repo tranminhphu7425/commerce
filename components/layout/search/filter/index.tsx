@@ -38,7 +38,7 @@ export default function FilterList({
         </ul>
         <ul className="md:hidden">
           <Suspense fallback={null}>
-            <FilterItemDropdown list={list} />
+            <FilterItemDropdown list={list} title={title} />
           </Suspense>
         </ul>
       </nav>

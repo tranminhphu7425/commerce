@@ -1,11 +1,11 @@
-import { getCollectionProducts } from "lib/shopify";
+import { getCollectionProducts } from "lib/local";
 import Link from "next/link";
 import { GridTileImage } from "./grid/tile";
 
 export async function Carousel() {
-  // Collections that start with `hidden-*` are hidden from the search page.
+  // Show featured products in the carousel
   const products = await getCollectionProducts({
-    collection: "hidden-homepage-carousel",
+    collection: "featured",
   });
 
   if (!products?.length) return null;

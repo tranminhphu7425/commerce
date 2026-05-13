@@ -12,23 +12,23 @@ function PathFilterItem({ item }: { item: PathFilterItem }) {
   const searchParams = useSearchParams();
   const active = pathname === item.path;
   const newParams = new URLSearchParams(searchParams.toString());
-  const DynamicTag = active ? "p" : Link;
 
   newParams.delete("q");
 
   return (
-    <li className="mt-2 flex text-black dark:text-white" key={item.title}>
-      <DynamicTag
-        href={createUrl(item.path, newParams)}
-        className={clsx(
-          "w-full text-sm underline-offset-4 hover:underline dark:hover:text-neutral-100",
-          {
-            "underline underline-offset-4": active,
-          },
-        )}
-      >
-        {item.title}
-      </DynamicTag>
+    <li className="flex text-black dark:text-white" key={item.title}>
+      {active ? (
+        <p className="w-full px-4 py-2 text-sm bg-neutral-100 font-bold dark:bg-neutral-800 rounded-lg">
+          {item.title}
+        </p>
+      ) : (
+        <Link
+          href={createUrl(item.path, newParams)}
+          className="w-full px-4 py-2 text-sm transition-colors rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+        >
+          {item.title}
+        </Link>
+      )}
     </li>
   );
 }
@@ -45,22 +45,25 @@ function SortFilterItem({ item }: { item: SortFilterItem }) {
       ...(item.slug && item.slug.length && { sort: item.slug }),
     }),
   );
-  const DynamicTag = active ? "p" : Link;
 
   return (
     <li
-      className="mt-2 flex text-sm text-black dark:text-white"
+      className="flex text-sm text-black dark:text-white"
       key={item.title}
     >
-      <DynamicTag
-        prefetch={!active ? false : undefined}
-        href={href}
-        className={clsx("w-full hover:underline hover:underline-offset-4", {
-          "underline underline-offset-4": active,
-        })}
-      >
-        {item.title}
-      </DynamicTag>
+      {active ? (
+        <p className="w-full px-4 py-2 text-sm bg-neutral-100 font-bold dark:bg-neutral-800 rounded-lg">
+          {item.title}
+        </p>
+      ) : (
+        <Link
+          prefetch={false}
+          href={href}
+          className="w-full px-4 py-2 transition-colors rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-800/50"
+        >
+          {item.title}
+        </Link>
+      )}
     </li>
   );
 }

@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import type { ListItem } from ".";
+import clsx from "clsx";
 import { FilterItem } from "./item";
 
-export default function FilterItemDropdown({ list }: { list: ListItem[] }) {
+export default function FilterItemDropdown({ list, title }: { list: ListItem[]; title?: string }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [active, setActive] = useState("");
@@ -42,21 +43,25 @@ export default function FilterItemDropdown({ list }: { list: ListItem[] }) {
         onClick={() => {
           setOpenSelect(!openSelect);
         }}
-        className="flex w-full items-center justify-between rounded-sm border border-black/30 px-4 py-2 text-sm dark:border-white/30"
+        className="flex w-full items-center justify-between rounded-full border border-neutral-200 bg-neutral-50/50 px-4 py-2.5 text-xs font-medium transition-all hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-800/50 dark:hover:bg-neutral-800"
       >
-        <div>{active}</div>
-        <ChevronDownIcon className="h-4" />
+        <div className="truncate pr-2">
+          <span className="text-neutral-400 mr-1 font-normal">{title}:</span> {active || "Tất cả"}
+        </div>
+        <ChevronDownIcon className={clsx("h-4 w-4 transition-transform duration-200", { "rotate-180": openSelect })} />
       </div>
       {openSelect && (
         <div
           onClick={() => {
             setOpenSelect(false);
           }}
-          className="absolute z-40 w-full rounded-b-md bg-white p-4 shadow-md dark:bg-black"
+          className="absolute z-40 mt-2 w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-2xl dark:border-neutral-800 dark:bg-neutral-900"
         >
-          {list.map((item: ListItem, i) => (
-            <FilterItem key={i} item={item} />
-          ))}
+          <div className="flex flex-col p-1">
+            {list.map((item: ListItem, i) => (
+              <FilterItem key={i} item={item} />
+            ))}
+          </div>
         </div>
       )}
     </div>

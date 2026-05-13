@@ -7,7 +7,7 @@ import {
   getCart,
   removeFromCart,
   updateCart,
-} from "lib/shopify";
+} from "lib/local";
 import { updateTag } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -96,8 +96,7 @@ export async function updateItemQuantity(
 }
 
 export async function redirectToCheckout() {
-  let cart = await getCart();
-  redirect(cart!.checkoutUrl);
+  redirect("/checkout");
 }
 
 export async function createCartAndSetCookie() {

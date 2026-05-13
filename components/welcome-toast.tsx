@@ -8,7 +8,7 @@ export function WelcomeToast() {
     // ignore if screen height is too small
     if (window.innerHeight < 650) return;
     if (!document.cookie.includes("welcome-toast=2")) {
-      toast("🛍️ Welcome to Next.js Commerce!", {
+      toast("🎣 Chào mừng bạn đến với Shop Đồ Câu!", {
         id: "welcome-toast",
         duration: Infinity,
         onDismiss: () => {
@@ -16,14 +16,12 @@ export function WelcomeToast() {
         },
         description: (
           <>
-            This is a high-performance, SSR storefront powered by Shopify,
-            Next.js, and Vercel.{" "}
+            Chúng tôi cung cấp đầy đủ các loại cần câu, máy câu, mồi lure và phụ kiện chính hãng Megabarra, CTF...{" "}
             <a
-              href="https://vercel.com/templates/next.js/nextjs-commerce"
+              href="/search"
               className="text-blue-600 hover:underline"
-              target="_blank"
             >
-              Deploy your own
+              Khám phá ngay
             </a>
             .
           </>
