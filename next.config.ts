@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: "export",
   distDir: "docs",
+  basePath: "/commerce",
   images: {
     unoptimized: true,
     formats: ["image/avif", "image/webp"],
