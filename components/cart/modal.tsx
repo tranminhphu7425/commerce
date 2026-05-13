@@ -215,7 +215,7 @@ export default function CartModal() {
                       />
                     </div>
                   </div>
-                  <div onClick={() => window.location.href = "/checkout"}>
+                  <div onClick={() => window.location.href = "/commerce/checkout"}>
                     <CheckoutButton />
                   </div>
                 </div>

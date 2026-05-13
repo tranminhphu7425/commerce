@@ -1,5 +1,0 @@
-1:"$Sreact.fragment"
-2:I[45698,["/commerce/_next/static/chunks/8c726a51732a8291.js","/commerce/_next/static/chunks/ffbad761d25dd595.js"],"OutletBoundary"]
-3:"$Sreact.suspense"
-0:{"buildId":"BnP2rJUD0p9oRdDxddYIa","rsc":["$","$1","c",{"children":[["$","section",null,{"children":["$","p",null,{"className":"py-3 text-lg","children":"No products found in this collection"}]}],null,["$","$L2",null,{"children":["$","$3",null,{"name":"Next.MetadataOutlet","children":"$@4"}]}]]}],"loading":null,"isPartial":false}
-4:null

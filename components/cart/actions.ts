@@ -5,6 +5,6 @@ export async function addItem() {}
 export async function removeItem() {}
 export async function updateItemQuantity() {}
 export async function redirectToCheckout() {
-  window.location.href = "/checkout";
+  window.location.href = "/commerce/checkout";
 }
 export async function createCartAndSetCookie() {}
