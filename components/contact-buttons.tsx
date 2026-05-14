@@ -1,9 +1,8 @@
 import React from 'react';
+import { CONTACT_INFO } from 'lib/constants';
 
 const ContactButtons = () => {
-  const phoneNumber = "0123456789"; // Thay bằng số điện thoại của bạn
-  const zaloNumber = "0123456789"; // Thay bằng số Zalo của bạn
-  const messengerId = "vinh.le.315"; // Thay bằng ID Facebook Messenger của bạn
+  const { phone: phoneNumber, zalo: zaloNumber, messenger: messengerId } = CONTACT_INFO;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-4 animate-fadeIn">
