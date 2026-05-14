@@ -21,6 +21,10 @@ export default function CheckoutPage() {
     address: '',
     note: ''
   });
+  const [isCountingDown, setIsCountingDown] = useState(false);
+  const [countdown, setCountdown] = useState(4);
+  const [redirectUrl, setRedirectUrl] = useState("");
+
 
   const { bankId: BANK_ID, accountNo: ACCOUNT_NO, accountName: ACCOUNT_NAME } = CONTACT_INFO;
   const TEMPLATE = "compact";
@@ -28,6 +32,17 @@ export default function CheckoutPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isCountingDown && countdown > 0) {
+      const timer = setTimeout(() => setCountdown(prev => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (isCountingDown && countdown === 0) {
+      window.open(redirectUrl, '_blank');
+      setIsCountingDown(false);
+    }
+  }, [isCountingDown, countdown, redirectUrl]);
+
 
   if (!mounted) return null;
 
@@ -42,7 +57,7 @@ export default function CheckoutPage() {
     );
   }
 
-  const orderId = `CTF${Math.floor(Date.now() / 1000)}`;
+  const orderId = `CTF${Date.now()}${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
   const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-${TEMPLATE}.png?amount=${cart.cost.totalAmount.amount}&addInfo=Thanh toan don hang ${orderId}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
 
   const formatCurrency = (amount: string) => {
@@ -63,65 +78,36 @@ export default function CheckoutPage() {
     return `📦 ĐƠN HÀNG MỚI: ${orderId}\n---------------------------\n👤 Khách hàng: ${formData.name}\n📞 Điện thoại: ${formData.phone}\n🏠 Địa chỉ: ${formData.address}\n📝 Ghi chú: ${formData.note || 'Không có'}\n---------------------------\n🛒 Chi tiết mặt hàng:\n${itemsText}\n---------------------------\n💰 Tổng cộng: ${formatCurrency(cart.cost.totalAmount.amount)}\n---------------------------\nVui lòng xác nhận đơn hàng giúp em nhé!`;
   };
 
-  const handleSendViaZalo = async () => {
+  const handleSendViaZalo = () => {
     if (!formData.name || !formData.phone || !formData.address) {
       toast.error('Vui lòng điền đầy đủ thông tin khách hàng');
       return;
     }
 
     const message = generateOrderMessage();
-    
-    // Ưu tiên dùng Web Share API trên di động
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Đơn hàng ${orderId}`,
-          text: message,
-        });
-        toast.success('Đang mở bảng chia sẻ...');
-        return;
-      } catch (err) {
-        console.log('User cancelled or share failed', err);
-      }
-    }
-
-    // Fallback cho PC hoặc trình duyệt không hỗ trợ Share API
     navigator.clipboard.writeText(message);
-    toast.success('Đã sao chép đơn hàng! Bạn hãy Dán (Paste) vào Zalo để gửi nhé.');
+    toast.success('Đã sao chép thông tin đơn hàng!');
     
-    setTimeout(() => {
-      window.open(`https://zalo.me/${CONTACT_INFO.zalo}`, '_blank');
-    }, 1200);
+    setRedirectUrl(`https://zalo.me/${CONTACT_INFO.zalo}`);
+    setCountdown(4);
+    setIsCountingDown(true);
   };
 
-  const handleSendViaMessenger = async () => {
+  const handleSendViaMessenger = () => {
     if (!formData.name || !formData.phone || !formData.address) {
       toast.error('Vui lòng điền đầy đủ thông tin khách hàng');
       return;
     }
 
     const message = generateOrderMessage();
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Đơn hàng ${orderId}`,
-          text: message,
-        });
-        toast.success('Đang mở bảng chia sẻ...');
-        return;
-      } catch (err) {
-        console.log('Share failed', err);
-      }
-    }
-
     navigator.clipboard.writeText(message);
-    toast.success('Đã sao chép đơn hàng! Bạn hãy Dán (Paste) vào Messenger để gửi nhé.');
+    toast.success('Đã sao chép thông tin đơn hàng!');
     
-    setTimeout(() => {
-      window.open(`https://m.me/${CONTACT_INFO.messenger}`, '_blank');
-    }, 1200);
+    setRedirectUrl(`https://m.me/${CONTACT_INFO.messenger}`);
+    setCountdown(4);
+    setIsCountingDown(true);
   };
+
 
   const handleFinish = () => {
     clearCart();
@@ -192,7 +178,7 @@ export default function CheckoutPage() {
               Thanh toán chuyển khoản
             </h2>
             <div className="flex flex-col md:flex-row gap-8 items-center">
-              <div className="relative aspect-square w-full max-w-[240px] overflow-hidden rounded-xl border border-neutral-100 bg-white p-4 shadow-md dark:border-neutral-800">
+              <div className="relative aspect-square w-full max-w-full md:max-w-[450px] overflow-hidden rounded-xl border border-neutral-100 bg-white p-2 shadow-md dark:border-neutral-800">
                 <img
                   src={qrUrl}
                   alt="VietQR Payment"
@@ -289,6 +275,42 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Countdown Overlay */}
+      {isCountingDown && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="max-w-md rounded-2xl bg-white p-8 text-center shadow-2xl dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 animate-in fade-in zoom-in duration-300">
+            <div className="relative mb-6 flex justify-center">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-orange-500 border-t-transparent animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center text-3xl font-black text-orange-600">
+                {countdown}
+              </div>
+            </div>
+            <h3 className="mb-4 text-xl font-bold text-neutral-900 dark:text-white">Thông tin đơn hàng đã sẵn sàng!</h3>
+            <p className="mb-6 text-neutral-600 dark:text-neutral-400">
+              Hãy dán đoạn thông tin về đơn hàng này về các trang trò chuyện của chúng mình để hoàn tất nhé.
+            </p>
+            <div className="flex flex-col gap-2">
+              <button 
+                onClick={() => {
+                  window.open(redirectUrl, '_blank');
+                  setIsCountingDown(false);
+                }}
+                className="w-full rounded-full bg-orange-600 py-3 text-sm font-bold text-white hover:bg-orange-700 transition-colors"
+              >
+                Chuyển tiếp ngay
+              </button>
+              <button 
+                onClick={() => setIsCountingDown(false)}
+                className="w-full py-2 text-sm text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                Hủy bỏ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

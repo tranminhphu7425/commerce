@@ -577,6 +577,21 @@
             "amount": "670000",
             "currencyCode": "VND"
           }
+        },
+        {
+          "id": "var-8-1",
+          "title": "3000",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Size",
+              "value": "3000"
+            }
+          ],
+          "price": {
+            "amount": "697000",
+            "currencyCode": "VND"
+          }
         }
       ],
       "featuredImage": {

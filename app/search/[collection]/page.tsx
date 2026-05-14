@@ -1,8 +1,8 @@
 import { getCollection, getCollectionProducts, getCollections } from "lib/local";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-
-export const dynamic = "force-static";
+import Grid from "components/grid";
+import SortableProductList from "components/layout/sortable-product-list";
 
 export async function generateStaticParams() {
   const collections = await getCollections();
@@ -10,10 +10,6 @@ export async function generateStaticParams() {
     collection: collection.handle,
   }));
 }
-
-import Grid from "components/grid";
-import ProductGridItems from "components/layout/product-grid-items";
-import { defaultSort } from "lib/constants";
 
 export async function generateMetadata(props: {
   params: Promise<{ collection: string }>;
@@ -32,26 +28,22 @@ export async function generateMetadata(props: {
   };
 }
 
+export const dynamic = "force-static";
+
 export default async function CategoryPage(props: {
   params: Promise<{ collection: string }>;
 }) {
   const params = await props.params;
-  const { sortKey, reverse } = defaultSort;
+
   const products = await getCollectionProducts({
     collection: params.collection,
-    sortKey,
-    reverse,
   });
 
   return (
     <section>
-      {products.length === 0 ? (
-        <p className="py-3 text-lg">{`No products found in this collection`}</p>
-      ) : (
-        <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          <ProductGridItems products={products} />
-        </Grid>
-      )}
+      <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <SortableProductList products={products} />
+      </Grid>
     </section>
   );
 }
