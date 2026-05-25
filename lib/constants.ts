@@ -56,5 +56,6 @@ export const CONTACT_INFO = {
   messenger: "minhtran.phu.984",
   bankId: "VCB",
   accountNo: "9911550054",
-  accountName: "TRẦN MINH PHÚ"
+  accountName: "TRẦN MINH PHÚ",
+  name: "CHÍ TOÀN FISHING SHOP",
 };

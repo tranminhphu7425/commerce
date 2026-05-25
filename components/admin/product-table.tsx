@@ -6,14 +6,12 @@ import { Product } from "lib/local";
 export function ProductTable({ products }: { products: (Product & { collections?: string[] })[] }) {
   const handleDelete = async (handle: string) => {
     if (confirm("Bạn có chắc muốn xóa?")) {
-      const res = await fetch("/api/products", {
-        method: "DELETE",
-        body: JSON.stringify({ handle }),
-      });
-      if (res.ok) {
+      const { deleteProductAction } = await import("app/admin/actions");
+      const res = await deleteProductAction(handle);
+      if (res.success) {
         window.location.reload();
       } else {
-        alert("Lỗi khi xóa sản phẩm");
+        alert(res.error || "Lỗi khi xóa sản phẩm");
       }
     }
   };

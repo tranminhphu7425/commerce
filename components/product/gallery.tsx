@@ -4,17 +4,34 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { GridTileImage } from "components/grid/tile";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ProductVariant } from "lib/local/types";
 
 export function Gallery({
   images,
+  variants,
 }: {
   images: { src: string; altText: string }[];
+  variants?: ProductVariant[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const imageIndex = searchParams.has("image")
-    ? parseInt(searchParams.get("image")!)
-    : 0;
+  
+  let imageIndex = 0;
+  if (searchParams.has("image")) {
+    imageIndex = parseInt(searchParams.get("image")!);
+  } else if (variants && variants.length > 0) {
+    const variant = variants.find((variant: ProductVariant) =>
+      variant.selectedOptions.every(
+        (option) => option.value === searchParams.get(option.name.toLowerCase()),
+      ),
+    );
+    if (variant?.image) {
+      const variantImageIndex = images.findIndex((img) => img.src === variant.image?.url);
+      if (variantImageIndex !== -1) {
+        imageIndex = variantImageIndex;
+      }
+    }
+  }
 
   const updateImage = (index: string) => {
     const params = new URLSearchParams(searchParams.toString());

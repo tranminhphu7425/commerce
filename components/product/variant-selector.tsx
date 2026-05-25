@@ -42,6 +42,7 @@ export function VariantSelector({
   const updateOption = (name: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set(name, value);
+    params.delete("image");
     router.replace(`?${params.toString()}`, { scroll: false });
   };
 
