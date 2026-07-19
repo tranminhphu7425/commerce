@@ -33,19 +33,19 @@ const ShopInfo = () => {
           
           <div className="flex flex-col gap-4 border-t border-neutral-100 pt-6 md:w-64 md:border-l md:border-t-0 md:pl-8 md:pt-0 dark:border-neutral-800">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-500">Đánh giá Shop</span>
+              <span className="text-sm text-neutral-700">Đánh giá Shop</span>
               <span className="font-semibold text-orange-500">{shopData.rating} / 5.0</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-500">Sản phẩm</span>
+              <span className="text-sm text-neutral-700">Sản phẩm</span>
               <span className="font-semibold text-neutral-900 dark:text-white">{shopData.total_products}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-500">Người theo dõi</span>
+              <span className="text-sm text-neutral-700">Người theo dõi</span>
               <span className="font-semibold text-neutral-900 dark:text-white">{shopData.followers}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm text-neutral-500">Phản hồi Chat</span>
+              <span className="text-sm text-neutral-700">Phản hồi Chat</span>
               <span className="font-semibold text-green-500">{shopData.chat_response_rate}</span>
             </div>
           </div>

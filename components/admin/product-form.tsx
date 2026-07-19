@@ -4,10 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Product, ProductVariant } from "lib/local/types";
 import { createProductAction, updateProductAction } from "app/admin/actions";
+import { getGitHubConfig, uploadImageToGitHub, syncStoreToGitHub } from "lib/github";
 
 export function ProductForm({ initialData }: { initialData?: Product }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
 
   // Basic info
   const [title, setTitle] = useState(initialData?.title || "");
@@ -39,6 +42,38 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         .replace(/[^a-z0-9]+/g, "-") // replace non-alphanumeric with dash
         .replace(/(^-|-$)/g, ""); // remove leading/trailing dashes
       setHandle(newHandle);
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const ghConfig = getGitHubConfig();
+    if (!ghConfig || !ghConfig.token) {
+      alert("Chưa cấu hình GitHub Token! Ảnh sẽ dùng xem trước. Hãy cấu hình Token ở đầu trang Admin để tải ảnh trực tiếp lên GitHub.");
+      // Create local preview blob URL
+      const objectUrl = URL.createObjectURL(file);
+      setImageUrl(objectUrl);
+      return;
+    }
+
+    setIsUploadingImage(true);
+    setUploadStatus("Đang tải ảnh lên GitHub...");
+    try {
+      const res = await uploadImageToGitHub(file);
+      if (res.success && res.url) {
+        setImageUrl(res.url);
+        setUploadStatus("✅ Đã tải ảnh lên GitHub thành công!");
+      } else {
+        alert(`Lỗi upload ảnh lên GitHub: ${res.error}`);
+        setUploadStatus(null);
+      }
+    } catch (err: any) {
+      alert("Lỗi upload ảnh lên GitHub");
+      setUploadStatus(null);
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
@@ -116,26 +151,45 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         updatedAt: new Date().toISOString(),
       };
 
+      // 1. Save locally (for dev server mode)
       if (initialData) {
-        // preserve complex variants if they were heavily customized, 
-        // but for this simple form we will overwrite them to ensure consistency
-        const res = await updateProductAction(initialData.handle, productData);
-        if (res.success) {
-          router.push("/admin");
+        await updateProductAction(initialData.handle, productData);
+      } else {
+        await createProductAction(productData);
+      }
+
+      // 2. Sync directly to GitHub Repo if token is configured
+      const ghConfig = getGitHubConfig();
+      if (ghConfig && ghConfig.token) {
+        const actionText = initialData ? "update" : "create";
+        const syncRes = await syncStoreToGitHub((store) => {
+          if (!store.products) store.products = [];
+          if (initialData) {
+            const idx = store.products.findIndex((p: any) => p.handle === initialData.handle);
+            if (idx !== -1) {
+              store.products[idx] = { ...store.products[idx], ...productData };
+            } else {
+              store.products.push(productData);
+            }
+          } else {
+            store.products.push(productData);
+          }
+          return store;
+        }, `feat(product): ${actionText} product "${title}"`);
+
+        if (!syncRes.success) {
+          alert(`Lưu cục bộ thành công nhưng lỗi khi push lên GitHub: ${syncRes.error}`);
         } else {
-          alert(res.error);
+          alert(`🎉 Đã lưu sản phẩm "${title}" và push commit trực tiếp lên GitHub thành công!`);
         }
       } else {
-        const res = await createProductAction(productData);
-        if (res.success) {
-          router.push("/admin");
-        } else {
-          alert(res.error);
-        }
+        alert(`Đã lưu sản phẩm "${title}" cục bộ. (Chưa kết nối GitHub Token)`);
       }
+
+      router.push("/admin");
     } catch (error) {
       console.error(error);
-      alert("Đã xảy ra lỗi hệ thống");
+      alert("Đã xảy ra lỗi hệ thống khi lưu sản phẩm");
     } finally {
       setIsSubmitting(false);
     }
@@ -192,18 +246,44 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
           />
         </div>
 
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-semibold">Hình ảnh chính (URL) *</label>
-          <input
-            required
-            type="text"
-            className="w-full p-3 rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            placeholder="/commerce/images/products/..."
-          />
+        <div className="space-y-3 md:col-span-2">
+          <label className="text-sm font-semibold block">Hình ảnh sản phẩm *</label>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 block mb-1">▶️ Cách 1: Tải ảnh từ máy tính (Tự động đẩy lên GitHub)</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                disabled={isUploadingImage}
+                className="w-full text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-orange-950 dark:file:text-orange-300"
+              />
+              {uploadStatus && (
+                <p className="text-xs text-green-600 dark:text-green-400 mt-1.5 font-medium">{uploadStatus}</p>
+              )}
+            </div>
+
+            <div>
+              <span className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 block mb-1">▶️ Cách 2: Hoặc Dán URL đường dẫn ảnh</span>
+              <input
+                required
+                type="text"
+                className="w-full p-2.5 rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm"
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
+                placeholder="/commerce/images/products/... hoặc https://..."
+              />
+            </div>
+          </div>
+
           {imageUrl && (
-            <img src={imageUrl} alt="Preview" className="mt-2 h-32 w-32 object-cover rounded-lg border border-neutral-200" />
+            <div className="flex items-center gap-4 mt-2">
+              <img src={imageUrl} alt="Preview" className="h-28 w-28 object-cover rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-sm" />
+              <div className="text-xs text-neutral-500 font-mono break-all max-w-md">
+                <strong>URL:</strong> {imageUrl}
+              </div>
+            </div>
           )}
         </div>
 
@@ -221,7 +301,7 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
 
       <div className="border-t border-neutral-200 dark:border-neutral-800 pt-8">
         <h3 className="text-lg font-bold mb-4">Phân loại sản phẩm (Tùy chọn)</h3>
-        <p className="text-sm text-neutral-500 mb-4">Nếu sản phẩm có nhiều kích cỡ hoặc màu sắc, hãy điền vào đây. Hệ thống sẽ tự động tạo các biến thể (Variants).</p>
+        <p className="text-sm text-neutral-700 mb-4">Nếu sản phẩm có nhiều kích cỡ hoặc màu sắc, hãy điền vào đây. Hệ thống sẽ tự động tạo các biến thể (Variants).</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">

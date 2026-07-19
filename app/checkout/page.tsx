@@ -169,9 +169,9 @@ export default function CheckoutPage() {
         
         {/* Progress Indicator */}
         <div className="flex items-center gap-2 text-sm font-medium">
-          <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 1 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-500'}`}>1</span>
+          <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 1 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-700'}`}>1</span>
           <span className={`h-1 w-8 rounded ${step >= 2 ? 'bg-orange-600' : 'bg-neutral-200'}`}></span>
-          <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 2 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-500'}`}>2</span>
+          <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 2 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-700'}`}>2</span>
         </div>
       </div>
       
@@ -268,7 +268,7 @@ export default function CheckoutPage() {
                     </p>
                   </div>
                   <div className="rounded-xl bg-neutral-50 p-4 dark:bg-neutral-800/50">
-                    <p className="text-xs text-neutral-500 mb-1">Chủ tài khoản</p>
+                    <p className="text-xs text-neutral-700 mb-1">Chủ tài khoản</p>
                     <p className="font-bold uppercase text-neutral-900 dark:text-white">{ACCOUNT_NAME}</p>
                     <p className="text-sm mt-1">{BANK_ID} - {ACCOUNT_NO}</p>
                   </div>
@@ -299,7 +299,7 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-medium leading-tight truncate">{line.merchandise.product.title}</h3>
-                    <p className="text-xs text-neutral-500 mt-1">
+                    <p className="text-xs text-neutral-700 mt-1">
                       {line.merchandise.title} x {line.quantity}
                     </p>
                     <Price
@@ -314,11 +314,11 @@ export default function CheckoutPage() {
 
             <div className="mt-6 space-y-3 pt-6 border-t border-neutral-100 dark:border-neutral-800">
               <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Tạm tính</span>
+                <span className="text-neutral-700">Tạm tính</span>
                 <Price amount={cart.cost.subtotalAmount.amount} currencyCode={cart.cost.subtotalAmount.currencyCode} />
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-neutral-500">Phí vận chuyển</span>
+                <span className="text-neutral-700">Phí vận chuyển</span>
                 <span className="text-green-500 font-medium">Miễn phí</span>
               </div>
               <div className="flex justify-between pt-2 text-xl font-bold text-neutral-900 dark:text-white">

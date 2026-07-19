@@ -45,7 +45,7 @@ export function ProductPrice({ product }: { product: Product }) {
       </div>
       
       {compareAtAmount && discountPercentage > 0 && (
-        <div className="text-sm text-neutral-500 line-through dark:text-neutral-400">
+        <div className="text-sm text-neutral-700 line-through dark:text-neutral-400">
           <Price amount={compareAtAmount} currencyCode={currencyCode} />
         </div>
       )}

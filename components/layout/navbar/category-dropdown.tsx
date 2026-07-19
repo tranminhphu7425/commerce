@@ -10,7 +10,7 @@ export default function CategoryDropdown({ menu }: { menu: MenuType[] }) {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="inline-flex items-center gap-1 text-sm font-medium text-neutral-500 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300">
+        <Menu.Button className="inline-flex items-center gap-1 text-sm font-medium text-neutral-700 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300">
           Danh mục sản phẩm
           <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
         </Menu.Button>

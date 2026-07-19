@@ -1,5 +1,6 @@
 import CartModal from "components/cart/modal";
 import LogoSquare from "components/logo-square";
+import ThemeToggle from "components/theme-toggle";
 import { getMenu } from "lib/local";
 import { Menu } from "lib/local/types";
 import Link from "next/link";
@@ -38,7 +39,7 @@ export async function Navbar() {
                 <li>
                   <Link
                     href="/search"
-                    className="text-neutral-500 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
+                    className="text-neutral-700 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
                   >
                     Tất cả
                   </Link>
@@ -54,7 +55,8 @@ export async function Navbar() {
               <Search />
             </Suspense>
           </div>
-          <div className="flex justify-end md:w-1/3">
+          <div className="flex items-center justify-end gap-2 md:w-1/3">
+            <ThemeToggle />
             <CartModal />
           </div>
         </div>
@@ -62,3 +64,4 @@ export async function Navbar() {
     </nav>
   );
 }
+

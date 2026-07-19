@@ -2,12 +2,32 @@
 
 import Link from "next/link";
 import { Product } from "lib/local";
+import { getGitHubConfig, syncStoreToGitHub } from "lib/github";
 
 export function ProductTable({ products }: { products: (Product & { collections?: string[] })[] }) {
-  const handleDelete = async (handle: string) => {
-    if (confirm("Bạn có chắc muốn xóa?")) {
+  const handleDelete = async (handle: string, title: string) => {
+    if (confirm(`Bạn có chắc muốn xóa sản phẩm "${title}"?`)) {
+      // 1. Delete locally
       const { deleteProductAction } = await import("app/admin/actions");
       const res = await deleteProductAction(handle);
+
+      // 2. Sync to GitHub if token configured
+      const ghConfig = getGitHubConfig();
+      if (ghConfig && ghConfig.token) {
+        const syncRes = await syncStoreToGitHub((store) => {
+          if (store.products) {
+            store.products = store.products.filter((p: any) => p.handle !== handle);
+          }
+          return store;
+        }, `feat(product): delete product "${title}" (${handle})`);
+
+        if (!syncRes.success) {
+          alert(`Lỗi khi đồng bộ xóa lên GitHub: ${syncRes.error}`);
+        } else {
+          alert(`🎉 Đã xóa sản phẩm "${title}" và push commit lên GitHub!`);
+        }
+      }
+
       if (res.success) {
         window.location.reload();
       } else {
@@ -57,7 +77,7 @@ export function ProductTable({ products }: { products: (Product & { collections?
                   </Link>
                   <button
                     className="text-red-600 hover:underline"
-                    onClick={() => handleDelete(product.handle)}
+                    onClick={() => handleDelete(product.handle, product.title)}
                   >
                     Xóa
                   </button>

@@ -1,6 +1,7 @@
 import { getAllProductsSync } from "lib/local";
 import Link from "next/link";
 import { ProductTable } from "components/admin/product-table";
+import { GitHubConfigModal } from "components/admin/github-config-modal";
 
 export default function AdminPage() {
   const products = getAllProductsSync();
@@ -11,11 +12,13 @@ export default function AdminPage() {
         <h1 className="text-3xl font-bold">Quản lý sản phẩm</h1>
         <Link
           href="/admin/products/new"
-          className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors"
+          className="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition-colors font-medium text-sm"
         >
           + Thêm sản phẩm mới
         </Link>
       </div>
+
+      <GitHubConfigModal />
 
       <ProductTable products={products} />
     </div>
