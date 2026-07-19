@@ -9,7 +9,7 @@
       "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá.</p>",
       "options": [
         {
-          "id": "opt-1784468096957",
+          "id": "opt-1784469126039",
           "name": "Trọng lượng",
           "values": [
             "6.5g",
@@ -20,17 +20,17 @@
       ],
       "priceRange": {
         "minVariantPrice": {
-          "amount": "123456789",
+          "amount": "123000",
           "currencyCode": "VND"
         },
         "maxVariantPrice": {
-          "amount": "123456789",
+          "amount": "123000",
           "currencyCode": "VND"
         }
       },
       "variants": [
         {
-          "id": "var-1784468096957-0",
+          "id": "var-1784469126039-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -40,16 +40,12 @@
             }
           ],
           "price": {
-            "amount": "123456789",
-            "currencyCode": "VND"
-          },
-          "compareAtPrice": {
-            "amount": "1231312",
+            "amount": "123000",
             "currencyCode": "VND"
           }
         },
         {
-          "id": "var-1784468096957-1",
+          "id": "var-1784469126039-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -59,16 +55,12 @@
             }
           ],
           "price": {
-            "amount": "123456789",
-            "currencyCode": "VND"
-          },
-          "compareAtPrice": {
-            "amount": "1231312",
+            "amount": "123000",
             "currencyCode": "VND"
           }
         },
         {
-          "id": "var-1784468096957-2",
+          "id": "var-1784469126039-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -78,11 +70,7 @@
             }
           ],
           "price": {
-            "amount": "123456789",
-            "currencyCode": "VND"
-          },
-          "compareAtPrice": {
-            "amount": "1231312",
+            "amount": "123000",
             "currencyCode": "VND"
           }
         }
@@ -110,7 +98,7 @@
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-19T13:34:56.958Z",
+      "updatedAt": "2026-07-19T13:52:06.039Z",
       "collections": [
         "moi-cau"
       ]
