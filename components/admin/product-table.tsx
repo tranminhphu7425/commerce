@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Product } from "lib/local";
 import { getGitHubConfig, syncStoreToGitHub } from "lib/github";
+import { toast } from "sonner";
 
 export function ProductTable({ products }: { products: (Product & { collections?: string[] })[] }) {
   const handleDelete = async (handle: string, title: string) => {
@@ -22,16 +23,16 @@ export function ProductTable({ products }: { products: (Product & { collections?
         }, `feat(product): delete product "${title}" (${handle})`);
 
         if (!syncRes.success) {
-          alert(`Lỗi khi đồng bộ xóa lên GitHub: ${syncRes.error}`);
+          toast.error(`Lỗi khi đồng bộ xóa lên GitHub: ${syncRes.error}`);
         } else {
-          alert(`🎉 Đã xóa sản phẩm "${title}" và push commit lên GitHub!`);
+          toast.success(`🎉 Đã xóa sản phẩm "${title}" và push commit lên GitHub!`);
         }
       }
 
       if (res.success) {
         window.location.reload();
       } else {
-        alert(res.error || "Lỗi khi xóa sản phẩm");
+        toast.error(res.error || "Lỗi khi xóa sản phẩm");
       }
     }
   };

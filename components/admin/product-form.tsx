@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Product, ProductVariant } from "lib/local/types";
 import { createProductAction, updateProductAction } from "app/admin/actions";
 import { getGitHubConfig, uploadImageToGitHub, syncStoreToGitHub } from "lib/github";
+import { toast } from "sonner";
 
 export function ProductForm({ initialData }: { initialData?: Product }) {
   const router = useRouter();
@@ -51,7 +52,7 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
 
     const ghConfig = getGitHubConfig();
     if (!ghConfig || !ghConfig.token) {
-      alert("Chưa cấu hình GitHub Token! Ảnh sẽ dùng xem trước. Hãy cấu hình Token ở đầu trang Admin để tải ảnh trực tiếp lên GitHub.");
+      toast.warning("Chưa cấu hình GitHub Token! Ảnh sẽ dùng xem trước. Hãy cấu hình Token ở đầu trang Admin để tải ảnh trực tiếp lên GitHub.");
       // Create local preview blob URL
       const objectUrl = URL.createObjectURL(file);
       setImageUrl(objectUrl);
@@ -65,12 +66,13 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
       if (res.success && res.url) {
         setImageUrl(res.url);
         setUploadStatus("✅ Đã tải ảnh lên GitHub thành công!");
+        toast.success("Tải ảnh lên GitHub thành công!");
       } else {
-        alert(`Lỗi upload ảnh lên GitHub: ${res.error}`);
+        toast.error(`Lỗi upload ảnh lên GitHub: ${res.error}`);
         setUploadStatus(null);
       }
     } catch (err: any) {
-      alert("Lỗi upload ảnh lên GitHub");
+      toast.error("Lỗi upload ảnh lên GitHub");
       setUploadStatus(null);
     } finally {
       setIsUploadingImage(false);
@@ -178,18 +180,18 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         }, `feat(product): ${actionText} product "${title}"`);
 
         if (!syncRes.success) {
-          alert(`Lưu cục bộ thành công nhưng lỗi khi push lên GitHub: ${syncRes.error}`);
+          toast.error(`Lưu cục bộ thành công nhưng lỗi khi push lên GitHub: ${syncRes.error}`);
         } else {
-          alert(`🎉 Đã lưu sản phẩm "${title}" và push commit trực tiếp lên GitHub thành công!`);
+          toast.success(`🎉 Đã lưu sản phẩm "${title}" và push commit trực tiếp lên GitHub thành công!`);
         }
       } else {
-        alert(`Đã lưu sản phẩm "${title}" cục bộ. (Chưa kết nối GitHub Token)`);
+        toast.info(`Đã lưu sản phẩm "${title}" cục bộ. (Chưa kết nối GitHub Token)`);
       }
 
       router.push("/admin");
     } catch (error) {
       console.error(error);
-      alert("Đã xảy ra lỗi hệ thống khi lưu sản phẩm");
+      toast.error("Đã xảy ra lỗi hệ thống khi lưu sản phẩm");
     } finally {
       setIsSubmitting(false);
     }
