@@ -1,6 +1,7 @@
 import CartModal from "components/cart/modal";
 import LogoSquare from "components/logo-square";
 import ThemeToggle from "components/theme-toggle";
+import { GitHubStatusButton } from "components/admin/github-config-modal";
 import { getMenu } from "lib/local";
 import { Menu } from "lib/local/types";
 import Link from "next/link";
@@ -56,6 +57,7 @@ export async function Navbar() {
             </Suspense>
           </div>
           <div className="flex items-center justify-end gap-2 md:w-1/3">
+            <GitHubStatusButton />
             <ThemeToggle />
             <CartModal />
           </div>

@@ -21,12 +21,14 @@ export function getGitHubConfig(): GitHubConfig | null {
 export function saveGitHubConfig(config: GitHubConfig): void {
   if (typeof window !== "undefined") {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    window.dispatchEvent(new Event("github-config-updated"));
   }
 }
 
 export function clearGitHubConfig(): void {
   if (typeof window !== "undefined") {
     localStorage.removeItem(STORAGE_KEY);
+    window.dispatchEvent(new Event("github-config-updated"));
   }
 }
 
