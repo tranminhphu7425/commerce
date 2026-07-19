@@ -9,7 +9,7 @@
       "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá.</p>",
       "options": [
         {
-          "id": "opt-1784469328444",
+          "id": "opt-1784469632351",
           "name": "Trọng lượng",
           "values": [
             "6.5g",
@@ -20,17 +20,17 @@
       ],
       "priceRange": {
         "minVariantPrice": {
-          "amount": "12313100000",
+          "amount": "1234123",
           "currencyCode": "VND"
         },
         "maxVariantPrice": {
-          "amount": "12313100000",
+          "amount": "1234123",
           "currencyCode": "VND"
         }
       },
       "variants": [
         {
-          "id": "var-1784469328444-0",
+          "id": "var-1784469632351-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -40,12 +40,12 @@
             }
           ],
           "price": {
-            "amount": "12313100000",
+            "amount": "1234123",
             "currencyCode": "VND"
           }
         },
         {
-          "id": "var-1784469328444-1",
+          "id": "var-1784469632351-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -55,12 +55,12 @@
             }
           ],
           "price": {
-            "amount": "12313100000",
+            "amount": "1234123",
             "currencyCode": "VND"
           }
         },
         {
-          "id": "var-1784469328444-2",
+          "id": "var-1784469632351-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -70,7 +70,7 @@
             }
           ],
           "price": {
-            "amount": "12313100000",
+            "amount": "1234123",
             "currencyCode": "VND"
           }
         }
@@ -98,7 +98,7 @@
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-19T13:55:28.444Z",
+      "updatedAt": "2026-07-19T14:00:32.351Z",
       "collections": [
         "moi-cau"
       ]
