@@ -9,7 +9,7 @@
       "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá.</p>",
       "options": [
         {
-          "id": "opt-1784470011012",
+          "id": "opt-1784470960505",
           "name": "Trọng lượng",
           "values": [
             "6.5g",
@@ -20,17 +20,17 @@
       ],
       "priceRange": {
         "minVariantPrice": {
-          "amount": "1263124",
+          "amount": "555555",
           "currencyCode": "VND"
         },
         "maxVariantPrice": {
-          "amount": "1263124",
+          "amount": "555555",
           "currencyCode": "VND"
         }
       },
       "variants": [
         {
-          "id": "var-1784470011012-0",
+          "id": "var-1784470960505-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -40,12 +40,12 @@
             }
           ],
           "price": {
-            "amount": "1263124",
+            "amount": "555555",
             "currencyCode": "VND"
           }
         },
         {
-          "id": "var-1784470011012-1",
+          "id": "var-1784470960505-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -55,12 +55,12 @@
             }
           ],
           "price": {
-            "amount": "1263124",
+            "amount": "555555",
             "currencyCode": "VND"
           }
         },
         {
-          "id": "var-1784470011012-2",
+          "id": "var-1784470960505-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -70,7 +70,7 @@
             }
           ],
           "price": {
-            "amount": "1263124",
+            "amount": "555555",
             "currencyCode": "VND"
           }
         }
@@ -98,7 +98,7 @@
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-19T14:06:51.012Z",
+      "updatedAt": "2026-07-19T14:22:40.505Z",
       "collections": [
         "moi-cau"
       ]
