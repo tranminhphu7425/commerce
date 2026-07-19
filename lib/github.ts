@@ -112,9 +112,9 @@ export async function uploadImageToGitHub(file: File): Promise<{ success: boolea
     }
     const base64Content = btoa(binary);
 
-    // 3. Commit image to GitHub
-    const url = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${filePath}`;
-    const res = await fetch(url, {
+    // 3. Commit image to public/images/products/
+    const urlPublic = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${filePath}`;
+    const res = await fetch(urlPublic, {
       method: "PUT",
       headers: {
         Authorization: `token ${config.token}`,
@@ -132,6 +132,23 @@ export async function uploadImageToGitHub(file: File): Promise<{ success: boolea
       const errorData = await res.json().catch(() => ({}));
       return { success: false, error: errorData.message || "Lỗi khi upload ảnh lên GitHub" };
     }
+
+    // 4. Also commit image to docs/images/products/ (so GitHub Pages serving /docs updates image immediately)
+    const docsFilePath = `docs/images/products/${filename}`;
+    const urlDocs = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${docsFilePath}`;
+    await fetch(urlDocs, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${config.token}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `upload(image): add product image to docs ${filename}`,
+        content: base64Content,
+        branch: config.branch || "main",
+      }),
+    }).catch(() => {});
 
     // Relative image path for Next.js app
     const imageUrl = `/commerce/images/products/${filename}`;
