@@ -1,6 +1,0 @@
-1:"$Sreact.fragment"
-2:I[91296,["/commerce/_next/static/chunks/e367b4b1186fb855.js","/commerce/_next/static/chunks/997672e7fda7b277.js","/commerce/_next/static/chunks/ae1dbfc2532debbf.js","/commerce/_next/static/chunks/c2a9aebd9432dd48.js","/commerce/_next/static/chunks/3cc588b877656d2d.js"],"default"]
-3:I[45698,["/commerce/_next/static/chunks/8c726a51732a8291.js","/commerce/_next/static/chunks/ffbad761d25dd595.js"],"OutletBoundary"]
-4:"$Sreact.suspense"
-0:{"buildId":"ipAqoojb85d-Q7oz-9yOY","rsc":["$","$1","c",{"children":[["$","section",null,{"children":["$","ul",null,{"className":"grid grid-flow-row gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3","children":["$","$L2",null,{"products":[]}]}]}],[["$","script","script-0",{"src":"/commerce/_next/static/chunks/3cc588b877656d2d.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
-5:null
