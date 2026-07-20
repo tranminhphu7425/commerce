@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@source ".";
+@source "../components";
+@source "../lib";
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @plugin "@tailwindcss/container-queries";

@@ -150,7 +150,7 @@ export async function uploadImageToGitHub(file: File): Promise<{ success: boolea
         content: base64Content,
         branch: config.branch || "main",
       }),
-    }).catch(() => {});
+    }).catch(() => { });
 
     // Relative image path for Next.js app
     const imageUrl = `/commerce/images/products/${filename}`;
@@ -184,7 +184,6 @@ export async function syncStoreToGitHub(
       headers: {
         Authorization: `token ${config.token}`,
         Accept: "application/vnd.github.v3+json",
-        "Cache-Control": "no-cache",
       },
     });
 
