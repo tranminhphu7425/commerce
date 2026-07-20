@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Product } from "lib/local";
-import { getGitHubConfig, syncStoreToGitHub } from "lib/github";
+import { getGitHubConfig } from "lib/github";
 import { toast } from "sonner";
 import { deleteLocalProductOverride, mergeProductsWithLocalOverride } from "lib/local/client-store";
 import { useCachedImageUrl, getImageCache } from "lib/local/image-cache";
 
 function TableProductImage({ src, alt }: { src: string; alt: string }) {
-  const effectiveSrc = useCachedImageUrl(src);
+  const cachedSrc = useCachedImageUrl(src);
+  const effectiveSrc = cachedSrc || getImageCache(src) || src;
   return (
     <img
       src={effectiveSrc}

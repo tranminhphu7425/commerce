@@ -113,18 +113,20 @@ function FormImagePreview({
   const cachedSrc = useCachedImageUrl(src);
   const [fallbackSrc, setFallbackSrc] = useState<string | null>(null);
 
-  const effectiveSrc = fallbackSrc || cachedSrc || src;
+  // Directly resolve Data URL from getImageCache before falling back to raw src
+  const displaySrc = fallbackSrc || cachedSrc || getImageCache(src) || src;
 
   return (
     <div className={`relative group overflow-hidden rounded-xl border transition-all ${isFeatured ? "border-orange-500 ring-2 ring-orange-500/30" : "border-neutral-200 dark:border-neutral-700"}`}>
       <img
-        src={effectiveSrc}
+        src={displaySrc}
         alt={alt || "Preview"}
         className={className || "h-24 w-24 object-cover"}
-        onError={() => {
+        onError={(e) => {
           const cached = getImageCache(src);
-          if (cached && fallbackSrc !== cached) {
+          if (cached && e.currentTarget.src !== cached) {
             setFallbackSrc(cached);
+            e.currentTarget.src = cached;
           }
         }}
       />
