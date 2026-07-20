@@ -4,7 +4,9 @@ import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { GridTileImage } from "components/grid/tile";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ProductVariant } from "lib/local/types";
+import { useCachedImageUrl, getImageCache } from "lib/local/image-cache";
+import { useState } from "react";
+import type { ProductVariant } from "lib/local/types";
 
 export function Gallery({
   images,
@@ -15,7 +17,8 @@ export function Gallery({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+  const [fallbackSrc, setFallbackSrc] = useState<string | null>(null);
+
   let imageIndex = 0;
   if (searchParams.has("image")) {
     imageIndex = parseInt(searchParams.get("image")!);
@@ -38,7 +41,12 @@ export function Gallery({
     }
   }
 
+  const currentImageSrc = images[imageIndex]?.src || "";
+  const cachedUrl = useCachedImageUrl(currentImageSrc);
+  const mainImageSrc = fallbackSrc || cachedUrl || currentImageSrc;
+
   const updateImage = (index: string) => {
+    setFallbackSrc(null);
     const params = new URLSearchParams(searchParams.toString());
     params.set("image", index);
     router.replace(`?${params.toString()}`, { scroll: false });
@@ -60,8 +68,14 @@ export function Gallery({
             fill
             sizes="(min-width: 1024px) 66vw, 100vw"
             alt={images[imageIndex]?.altText as string}
-            src={images[imageIndex]?.src as string}
+            src={mainImageSrc}
             priority={true}
+            onError={() => {
+              const cached = getImageCache(currentImageSrc);
+              if (cached && fallbackSrc !== cached) {
+                setFallbackSrc(cached);
+              }
+            }}
           />
         )}
 

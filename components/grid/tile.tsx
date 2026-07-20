@@ -1,6 +1,10 @@
+"use client";
+
 import clsx from "clsx";
 import Image from "next/image";
 import Label from "../label";
+import { useCachedImageUrl, getImageCache } from "lib/local/image-cache";
+import { useState } from "react";
 
 export function GridTileImage({
   isInteractive = true,
@@ -17,6 +21,12 @@ export function GridTileImage({
     position?: "bottom" | "center";
   };
 } & React.ComponentProps<typeof Image>) {
+  const originalSrc = typeof props.src === "string" ? props.src : "";
+  const cachedUrl = useCachedImageUrl(originalSrc);
+  const [fallbackSrc, setFallbackSrc] = useState<string | null>(null);
+
+  const finalSrc = fallbackSrc || cachedUrl || props.src;
+
   return (
     <div
       className={clsx(
@@ -35,6 +45,16 @@ export function GridTileImage({
               isInteractive,
           })}
           {...props}
+          src={finalSrc}
+          onError={(e) => {
+            const cached = getImageCache(originalSrc);
+            if (cached && fallbackSrc !== cached) {
+              setFallbackSrc(cached);
+            }
+            if (props.onError) {
+              props.onError(e);
+            }
+          }}
         />
       ) : null}
       {label ? (

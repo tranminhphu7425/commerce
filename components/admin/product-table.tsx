@@ -6,6 +6,24 @@ import { Product } from "lib/local";
 import { getGitHubConfig, syncStoreToGitHub } from "lib/github";
 import { toast } from "sonner";
 import { deleteLocalProductOverride, mergeProductsWithLocalOverride } from "lib/local/client-store";
+import { useCachedImageUrl, getImageCache } from "lib/local/image-cache";
+
+function TableProductImage({ src, alt }: { src: string; alt: string }) {
+  const effectiveSrc = useCachedImageUrl(src);
+  return (
+    <img
+      src={effectiveSrc}
+      alt={alt}
+      className="w-12 h-12 object-cover rounded"
+      onError={(e) => {
+        const cached = getImageCache(src);
+        if (cached && e.currentTarget.src !== cached) {
+          e.currentTarget.src = cached;
+        }
+      }}
+    />
+  );
+}
 
 export function ProductTable({ products: initialProducts }: { products: (Product & { collections?: string[] })[] }) {
   const [productList, setProductList] = useState(() => mergeProductsWithLocalOverride(initialProducts));
@@ -66,10 +84,9 @@ export function ProductTable({ products: initialProducts }: { products: (Product
               className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
             >
               <td className="p-4">
-                <img
-                  src={product.featuredImage.url}
+                <TableProductImage
+                  src={product.featuredImage?.url || ""}
                   alt={product.title}
-                  className="w-12 h-12 object-cover rounded"
                 />
               </td>
               <td className="p-4 font-medium">{product.title}</td>

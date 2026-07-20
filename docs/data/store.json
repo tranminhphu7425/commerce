@@ -20,7 +20,7 @@
       ],
       "priceRange": {
         "minVariantPrice": {
-          "amount": "1111111",
+          "amount": "111111",
           "currencyCode": "VND"
         },
         "maxVariantPrice": {
@@ -30,7 +30,7 @@
       },
       "variants": [
         {
-          "id": "var-1784537049666-0",
+          "id": "var-1784537642270-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -40,12 +40,12 @@
             }
           ],
           "price": {
-            "amount": "1111111",
+            "amount": "111111",
             "currencyCode": "VND"
           }
         },
         {
-          "id": "var-1784537049666-1",
+          "id": "var-1784537642270-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -60,7 +60,7 @@
           }
         },
         {
-          "id": "var-1784537049666-2",
+          "id": "var-1784537642270-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -76,14 +76,14 @@
         }
       ],
       "featuredImage": {
-        "url": "/commerce/images/products/1784530059674--ang-ki-ngay.png",
+        "url": "/commerce/images/products/1784537623623-260710-google-namnguyen-4325.jpg",
         "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
         "width": 800,
         "height": 800
       },
       "images": [
         {
-          "url": "/commerce/images/products/1784530059674--ang-ki-ngay.png",
+          "url": "/commerce/images/products/1784537623623-260710-google-namnguyen-4325.jpg",
           "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
           "width": 800,
           "height": 800
@@ -98,7 +98,7 @@
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-20T08:44:09.666Z",
+      "updatedAt": "2026-07-20T08:54:02.270Z",
       "collections": [
         "moi-cau"
       ]

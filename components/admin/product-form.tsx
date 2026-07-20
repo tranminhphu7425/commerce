@@ -7,6 +7,16 @@ import { createProductAction, updateProductAction } from "app/admin/actions";
 import { getGitHubConfig, uploadImageToGitHub, syncStoreToGitHub } from "lib/github";
 import { toast } from "sonner";
 import { saveLocalProductOverride } from "lib/local/client-store";
+import { saveImageCache } from "lib/local/image-cache";
+
+// Helper to convert File to Base64 Data URL
+const readFileAsDataUrl = (file: File): Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve((reader.result as string) || "");
+    reader.readAsDataURL(file);
+  });
+};
 
 // Helper to generate cartesian product of option values
 const cartesian = (arrays: string[][]): string[][] => {
@@ -72,15 +82,22 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     
-    // 1. Instant local preview via Blob URL
+    // 1. Instant local preview via Blob URL & Data URL caching
     const tempBlobUrls: string[] = [];
     const filesArray: File[] = [];
+    const dataUrls: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (file) {
-        tempBlobUrls.push(URL.createObjectURL(file));
+        const blobUrl = URL.createObjectURL(file);
+        const dataUrl = await readFileAsDataUrl(file);
+        tempBlobUrls.push(blobUrl);
         filesArray.push(file);
+        dataUrls.push(dataUrl);
+
+        // Save blob cache immediately
+        saveImageCache(blobUrl, dataUrl);
       }
     }
 
@@ -110,11 +127,16 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
       for (let i = 0; i < filesArray.length; i++) {
         const file = filesArray[i]!;
         const blobUrl = tempBlobUrls[i]!;
+        const dataUrl = dataUrls[i] || blobUrl;
 
         try {
           const res = await uploadImageToGitHub(file);
           if (res.success && res.url) {
             const uploadedUrl = res.url;
+
+            // Immediately save mapping in browser cache: uploadedUrl -> Base64 Data URL
+            saveImageCache(uploadedUrl, dataUrl);
+
             if (variantTitle) {
               setVariantsData(prev => {
                 const current = prev[variantTitle] || {};
