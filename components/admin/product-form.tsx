@@ -1,13 +1,187 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Product, ProductVariant, ProductOption } from "lib/local/types";
 import { createProductAction, updateProductAction } from "app/admin/actions";
 import { getGitHubConfig, uploadImageToGitHub, syncStoreToGitHub } from "lib/github";
 import { toast } from "sonner";
 import { saveLocalProductOverride } from "lib/local/client-store";
-import { saveImageCache } from "lib/local/image-cache";
+import { saveImageCache, useCachedImageUrl, getImageCache } from "lib/local/image-cache";
+
+// Drag and Drop Upload Zone Component
+function DropZone({
+  onFilesSelected,
+  multiple = true,
+  disabled = false,
+  label = "Kéo & thả file ảnh vào đây, hoặc click để chọn file",
+  sublabel = "Hỗ trợ định dạng JPG, PNG, WEBP, AVIF",
+}: {
+  onFilesSelected: (files: File[]) => void;
+  multiple?: boolean;
+  disabled?: boolean;
+  label?: string;
+  sublabel?: string;
+}) {
+  const [isDragOver, setIsDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (disabled) return;
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setIsDragOver(true);
+    } else if (e.type === "dragleave") {
+      setIsDragOver(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(false);
+    if (disabled) return;
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const filesArr = Array.from(e.dataTransfer.files).filter((f) =>
+        f.type.startsWith("image/")
+      );
+      if (filesArr.length > 0) {
+        onFilesSelected(filesArr);
+      }
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      onFilesSelected(Array.from(e.target.files));
+      e.target.value = "";
+    }
+  };
+
+  return (
+    <div
+      onDragEnter={handleDrag}
+      onDragOver={handleDrag}
+      onDragLeave={handleDrag}
+      onDrop={handleDrop}
+      onClick={() => !disabled && inputRef.current?.click()}
+      className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl transition-all cursor-pointer text-center ${
+        disabled
+          ? "opacity-50 cursor-not-allowed border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800"
+          : isDragOver
+          ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30 scale-[0.99]"
+          : "border-neutral-300 dark:border-neutral-700 hover:border-orange-400 bg-neutral-50/50 dark:bg-neutral-900/50 hover:bg-orange-50/30 dark:hover:bg-orange-950/10"
+      }`}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        multiple={multiple}
+        onChange={handleChange}
+        disabled={disabled}
+        className="hidden"
+      />
+      <div className="w-10 h-10 mb-2 rounded-full bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+        </svg>
+      </div>
+      <p className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{label}</p>
+      {sublabel && <p className="text-[11px] text-neutral-400 mt-1">{sublabel}</p>}
+    </div>
+  );
+}
+
+// Image Preview Component with Cache & Fallback
+function FormImagePreview({
+  src,
+  alt,
+  className,
+  isFeatured = false,
+  onSetFeatured,
+  onRemove,
+}: {
+  src: string;
+  alt?: string;
+  className?: string;
+  isFeatured?: boolean;
+  onSetFeatured?: () => void;
+  onRemove?: () => void;
+}) {
+  const cachedSrc = useCachedImageUrl(src);
+  const [fallbackSrc, setFallbackSrc] = useState<string | null>(null);
+
+  const effectiveSrc = fallbackSrc || cachedSrc || src;
+
+  return (
+    <div className={`relative group overflow-hidden rounded-xl border transition-all ${isFeatured ? "border-orange-500 ring-2 ring-orange-500/30" : "border-neutral-200 dark:border-neutral-700"}`}>
+      <img
+        src={effectiveSrc}
+        alt={alt || "Preview"}
+        className={className || "h-24 w-24 object-cover"}
+        onError={() => {
+          const cached = getImageCache(src);
+          if (cached && fallbackSrc !== cached) {
+            setFallbackSrc(cached);
+          }
+        }}
+      />
+      {isFeatured && (
+        <span className="absolute top-1 left-1 bg-orange-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow">
+          ★ Bìa
+        </span>
+      )}
+      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-1">
+        {!isFeatured && onSetFeatured && (
+          <button
+            type="button"
+            onClick={onSetFeatured}
+            className="bg-white/90 dark:bg-neutral-800 text-neutral-800 dark:text-white hover:bg-orange-500 hover:text-white text-[10px] font-bold px-1.5 py-1 rounded transition-colors"
+            title="Đặt làm ảnh bìa"
+          >
+            ★ Bìa
+          </button>
+        )}
+        {onRemove && (
+          <button
+            type="button"
+            onClick={onRemove}
+            className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-1 rounded hover:bg-red-600 transition-colors"
+            title="Xóa ảnh này"
+          >
+            ✕
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Pill Tags Preview Component for Options
+function OptionPillTags({ valuesStr }: { valuesStr: string }) {
+  if (!valuesStr.trim()) return null;
+  const values = valuesStr
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
+
+  if (values.length === 0) return null;
+
+  return (
+    <div className="flex flex-wrap gap-1.5 pt-1">
+      {values.map((val, i) => (
+        <span
+          key={i}
+          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-200 dark:border-orange-900/50"
+        >
+          {val}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 // Helper to convert File to Base64 Data URL
 const readFileAsDataUrl = (file: File): Promise<string> => {
@@ -23,8 +197,8 @@ const cartesian = (arrays: string[][]): string[][] => {
   if (arrays.length === 0) return [];
   return arrays.reduce((acc, curr) => {
     if (curr.length === 0) return acc;
-    if (acc.length === 0) return curr.map(c => [c]);
-    return acc.flatMap(a => curr.map(c => [...a, c]));
+    if (acc.length === 0) return curr.map((c) => [c]);
+    return acc.flatMap((a) => curr.map((c) => [...a, c]));
   }, [] as string[][]);
 };
 
@@ -39,12 +213,23 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
   const [handle, setHandle] = useState(initialData?.handle || "");
   const [description, setDescription] = useState(initialData?.description || "");
   const [imageUrl, setImageUrl] = useState(initialData?.featuredImage?.url || "");
-  const [availableForSale, setAvailableForSale] = useState(initialData?.availableForSale ?? true);
-  
+  const [galleryImages, setGalleryImages] = useState<string[]>(() => {
+    if (!initialData?.images) return [];
+    const featUrl = initialData.featuredImage?.url;
+    return initialData.images.map((img) => img.url).filter((url) => url !== featUrl);
+  });
+  const [availableForSale, setAvailableForSale] = useState(
+    initialData?.availableForSale ?? true
+  );
+
   // Options
   const [options, setOptions] = useState<{ id: string; name: string; valuesStr: string }[]>(
     initialData?.options && initialData.options.length > 0 && initialData.options[0]?.name !== "Title"
-      ? initialData.options.map((o, i) => ({ id: o.id || `opt-${i}`, name: o.name, valuesStr: o.values.join(", ") })) 
+      ? initialData.options.map((o, i) => ({
+          id: o.id || `opt-${i}`,
+          name: o.name,
+          valuesStr: o.values.join(", "),
+        }))
       : []
   );
 
@@ -52,12 +237,12 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
   const [variantsData, setVariantsData] = useState<Record<string, any>>(() => {
     const vData: Record<string, any> = {};
     if (initialData?.variants) {
-      initialData.variants.forEach(v => {
+      initialData.variants.forEach((v) => {
         vData[v.title] = {
           price: v.price?.amount || "",
           compareAtPrice: v.compareAtPrice?.amount || "",
           importPrice: v.importPrice?.amount || "",
-          images: v.images?.map(img => img.url) || (v.image ? [v.image.url] : [])
+          images: v.images?.map((img) => img.url) || (v.image ? [v.image.url] : []),
         };
       });
     }
@@ -78,11 +263,10 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
     }
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>, variantTitle?: string) => {
-    const files = e.target.files;
+  // Process files for featured or variant images
+  const processUploadedFiles = async (files: File[], variantTitle?: string) => {
     if (!files || files.length === 0) return;
-    
-    // 1. Instant local preview via Blob URL & Data URL caching
+
     const tempBlobUrls: string[] = [];
     const filesArray: File[] = [];
     const dataUrls: string[] = [];
@@ -96,21 +280,20 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         filesArray.push(file);
         dataUrls.push(dataUrl);
 
-        // Save blob cache immediately
         saveImageCache(blobUrl, dataUrl);
       }
     }
 
     if (variantTitle) {
-      setVariantsData(prev => {
-         const current = prev[variantTitle] || {};
-         return {
-           ...prev,
-           [variantTitle]: {
-             ...current,
-             images: [...(current.images || []), ...tempBlobUrls]
-           }
-         };
+      setVariantsData((prev) => {
+        const current = prev[variantTitle] || {};
+        return {
+          ...prev,
+          [variantTitle]: {
+            ...current,
+            images: [...(current.images || []), ...tempBlobUrls],
+          },
+        };
       });
     } else {
       if (tempBlobUrls.length > 0 && tempBlobUrls[0]) {
@@ -118,7 +301,6 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
       }
     }
 
-    // 2. Non-blocking GitHub upload in background if token exists
     const ghConfig = getGitHubConfig();
     if (ghConfig && ghConfig.token) {
       setIsUploadingImage(true);
@@ -133,21 +315,21 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
           const res = await uploadImageToGitHub(file);
           if (res.success && res.url) {
             const uploadedUrl = res.url;
-
-            // Immediately save mapping in browser cache: uploadedUrl -> Base64 Data URL
             saveImageCache(uploadedUrl, dataUrl);
 
             if (variantTitle) {
-              setVariantsData(prev => {
+              setVariantsData((prev) => {
                 const current = prev[variantTitle] || {};
-                const updatedImgs = (current.images || []).map((img: string) => img === blobUrl ? uploadedUrl : img);
+                const updatedImgs = (current.images || []).map((img: string) =>
+                  img === blobUrl ? uploadedUrl : img
+                );
                 return {
                   ...prev,
-                  [variantTitle]: { ...current, images: updatedImgs }
+                  [variantTitle]: { ...current, images: updatedImgs },
                 };
               });
             } else {
-              setImageUrl(prev => prev === blobUrl ? uploadedUrl : prev);
+              setImageUrl((prev) => (prev === blobUrl ? uploadedUrl : prev));
             }
           }
         } catch (err) {
@@ -159,6 +341,79 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
     } else {
       toast.info("Xem trước ảnh tạm thời (Chưa kết nối GitHub Token).");
     }
+  };
+
+  // Process gallery files
+  const processGalleryFiles = async (files: File[]) => {
+    if (!files || files.length === 0) return;
+
+    const tempBlobUrls: string[] = [];
+    const filesArray: File[] = [];
+    const dataUrls: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file) {
+        const blobUrl = URL.createObjectURL(file);
+        const dataUrl = await readFileAsDataUrl(file);
+        tempBlobUrls.push(blobUrl);
+        filesArray.push(file);
+        dataUrls.push(dataUrl);
+
+        saveImageCache(blobUrl, dataUrl);
+      }
+    }
+
+    setGalleryImages((prev) => [...prev, ...tempBlobUrls]);
+
+    const ghConfig = getGitHubConfig();
+    if (ghConfig && ghConfig.token) {
+      setIsUploadingImage(true);
+      setUploadStatus("Đang đồng bộ ảnh bộ sưu tập lên GitHub...");
+
+      for (let i = 0; i < filesArray.length; i++) {
+        const file = filesArray[i]!;
+        const blobUrl = tempBlobUrls[i]!;
+        const dataUrl = dataUrls[i] || blobUrl;
+
+        try {
+          const res = await uploadImageToGitHub(file);
+          if (res.success && res.url) {
+            const uploadedUrl = res.url;
+            saveImageCache(uploadedUrl, dataUrl);
+
+            setGalleryImages((prev) =>
+              prev.map((img) => (img === blobUrl ? uploadedUrl : img))
+            );
+          }
+        } catch (err) {
+          console.error("Lỗi upload ảnh gallery background:", err);
+        }
+      }
+      setUploadStatus(null);
+      setIsUploadingImage(false);
+    }
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const setAsFeaturedImage = (targetUrl: string) => {
+    if (targetUrl === imageUrl) return;
+    const oldFeatured = imageUrl;
+    setImageUrl(targetUrl);
+
+    // Swap old featured into gallery if exists
+    if (oldFeatured) {
+      setGalleryImages((prev) => {
+        const filtered = prev.filter((u) => u !== targetUrl);
+        return [oldFeatured, ...filtered];
+      });
+    } else {
+      setGalleryImages((prev) => prev.filter((u) => u !== targetUrl));
+    }
+    toast.success("★ Đã đặt làm ảnh bìa chính sản phẩm!");
   };
 
   const addOption = () => {
@@ -180,36 +435,43 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
   };
 
   const variantList = useMemo(() => {
-    const validOptions = options.filter(o => o.name.trim() !== "" && o.valuesStr.trim() !== "");
+    const validOptions = options.filter(
+      (o) => o.name.trim() !== "" && o.valuesStr.trim() !== ""
+    );
     if (validOptions.length === 0) return [];
-    
-    const arrays = validOptions.map(o => o.valuesStr.split(",").map(v => v.trim()).filter(Boolean));
-    const isAnyEmpty = arrays.some(a => a.length === 0);
+
+    const arrays = validOptions.map((o) =>
+      o.valuesStr
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean)
+    );
+    const isAnyEmpty = arrays.some((a) => a.length === 0);
     if (isAnyEmpty) return [];
 
     const combinations = cartesian(arrays);
-    return combinations.map(combo => {
+    return combinations.map((combo) => {
       const title = combo.join(" / ");
       const selectedOptions = combo.map((val, idx) => ({
         name: validOptions[idx]?.name.trim() || "",
-        value: val
+        value: val,
       }));
       return { title, selectedOptions };
     });
   }, [options]);
 
   const handleVariantChange = (title: string, field: string, value: any) => {
-    setVariantsData(prev => ({
+    setVariantsData((prev) => ({
       ...prev,
       [title]: {
         ...(prev[title] || {}),
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const removeVariantImage = (title: string, imgIndex: number) => {
-    setVariantsData(prev => {
+    setVariantsData((prev) => {
       const current = prev[title] || {};
       const newImages = [...(current.images || [])];
       newImages.splice(imgIndex, 1);
@@ -217,38 +479,51 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         ...prev,
         [title]: {
           ...current,
-          images: newImages
-        }
+          images: newImages,
+        },
       };
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!imageUrl) {
+      toast.error("Vui lòng chọn hoặc tải ảnh bìa sản phẩm!");
+      return;
+    }
     setIsSubmitting(true);
 
     try {
-      const validOptions = options.filter(o => o.name.trim() !== "" && o.valuesStr.trim() !== "");
-      
-      const finalOptions: ProductOption[] = validOptions.length > 0 
-        ? validOptions.map(o => ({
-            id: o.id,
-            name: o.name.trim(),
-            values: o.valuesStr.split(",").map(v => v.trim()).filter(Boolean)
-          }))
-        : [
-            {
-              id: `opt-default`,
-              name: "Title",
-              values: ["Default Title"],
-            }
-          ];
+      const validOptions = options.filter(
+        (o) => o.name.trim() !== "" && o.valuesStr.trim() !== ""
+      );
+
+      const finalOptions: ProductOption[] =
+        validOptions.length > 0
+          ? validOptions.map((o) => ({
+              id: o.id,
+              name: o.name.trim(),
+              values: o.valuesStr
+                .split(",")
+                .map((v) => v.trim())
+                .filter(Boolean),
+            }))
+          : [
+              {
+                id: `opt-default`,
+                name: "Title",
+                values: ["Default Title"],
+              },
+            ];
 
       const variantsToSave: ProductVariant[] = [];
       let minPrice = Infinity;
       let maxPrice = -Infinity;
-      
+
       const allImages: string[] = imageUrl ? [imageUrl] : [];
+      galleryImages.forEach((url) => {
+        if (url && !allImages.includes(url)) allImages.push(url);
+      });
 
       if (validOptions.length > 0 && variantList.length > 0) {
         variantList.forEach((v, idx) => {
@@ -262,7 +537,7 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
             url: imgUrl,
             altText: v.title,
             width: 800,
-            height: 800
+            height: 800,
           }));
 
           images.forEach((img: any) => {
@@ -275,10 +550,14 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
             availableForSale: true,
             selectedOptions: v.selectedOptions,
             price: { amount: priceAmt, currencyCode: "VND" },
-            compareAtPrice: vData.compareAtPrice ? { amount: vData.compareAtPrice, currencyCode: "VND" } : undefined,
-            importPrice: vData.importPrice ? { amount: vData.importPrice, currencyCode: "VND" } : undefined,
+            compareAtPrice: vData.compareAtPrice
+              ? { amount: vData.compareAtPrice, currencyCode: "VND" }
+              : undefined,
+            importPrice: vData.importPrice
+              ? { amount: vData.importPrice, currencyCode: "VND" }
+              : undefined,
             image: images.length > 0 ? images[0] : undefined,
-            images: images.length > 0 ? images : undefined
+            images: images.length > 0 ? images : undefined,
           });
         });
       } else {
@@ -295,8 +574,12 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
           availableForSale: true,
           selectedOptions: [{ name: "Title", value: "Default Title" }],
           price: { amount: priceAmt, currencyCode: "VND" },
-          compareAtPrice: vData.compareAtPrice ? { amount: vData.compareAtPrice, currencyCode: "VND" } : undefined,
-          importPrice: vData.importPrice ? { amount: vData.importPrice, currencyCode: "VND" } : undefined,
+          compareAtPrice: vData.compareAtPrice
+            ? { amount: vData.compareAtPrice, currencyCode: "VND" }
+            : undefined,
+          importPrice: vData.importPrice
+            ? { amount: vData.importPrice, currencyCode: "VND" }
+            : undefined,
         });
       }
 
@@ -310,12 +593,17 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         height: 800,
       };
 
-      const finalImages = [featuredImageObj, ...allImages.filter(url => url !== featuredImageObj.url).map(url => ({
-        url,
-        altText: title,
-        width: 800,
-        height: 800
-      }))];
+      const finalImages = [
+        featuredImageObj,
+        ...allImages
+          .filter((url) => url !== featuredImageObj.url)
+          .map((url) => ({
+            url,
+            altText: title,
+            width: 800,
+            height: 800,
+          })),
+      ];
 
       const productData: Product = {
         id: initialData?.id || `prod-${Date.now()}`,
@@ -357,7 +645,9 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         syncStoreToGitHub((store) => {
           if (!store.products) store.products = [];
           if (initialData) {
-            const idx = store.products.findIndex((p: any) => p.handle === initialData.handle);
+            const idx = store.products.findIndex(
+              (p: any) => p.handle === initialData.handle
+            );
             if (idx !== -1) {
               store.products[idx] = { ...store.products[idx], ...productData };
             } else {
@@ -388,217 +678,366 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-neutral-900 p-8 rounded-xl border border-neutral-200 dark:border-neutral-800">
-      
-      <div className="flex justify-between items-center pb-4 border-b border-neutral-200 dark:border-neutral-800">
-        <h2 className="text-xl font-bold">Thông tin cơ bản</h2>
-        <label className="flex items-center gap-2 cursor-pointer bg-neutral-100 dark:bg-neutral-800 p-2 rounded-lg border border-neutral-200 dark:border-neutral-700">
-          <span className="text-sm font-medium">Trạng thái:</span>
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-5xl mx-auto pb-24">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xs">
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
+            {initialData ? "Chỉnh Sửa Sản Phẩm" : "Tạo Sản Phẩm Mới"}
+          </h1>
+          <p className="text-xs text-neutral-700 dark:text-neutral-400 mt-1">
+            {initialData
+              ? `Cập nhật thông tin và hình ảnh cho "${initialData.title}"`
+              : "Thêm sản phẩm mới vào cửa hàng của bạn"}
+          </p>
+        </div>
+        <label className="flex items-center gap-3 cursor-pointer bg-neutral-50 dark:bg-neutral-800 px-4 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700">
+          <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+            Trạng thái bán:
+          </span>
           <div className="relative inline-flex items-center">
-            <input 
-              type="checkbox" 
-              className="sr-only peer" 
+            <input
+              type="checkbox"
+              className="sr-only peer"
               checked={availableForSale}
               onChange={(e) => setAvailableForSale(e.target.checked)}
             />
-            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-empty after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
+            <div className="w-10 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-empty after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
           </div>
-          <span className="text-sm font-bold text-orange-600 dark:text-orange-400 w-16">{availableForSale ? "Hiển thị" : "Đã ẩn"}</span>
+          <span
+            className={`text-xs font-bold w-16 ${
+              availableForSale
+                ? "text-green-600 dark:text-green-400"
+                : "text-neutral-400"
+            }`}
+          >
+            {availableForSale ? "✓ Hiển thị" : "Đã ẩn"}
+          </span>
         </label>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label className="text-sm font-semibold">Tên sản phẩm *</label>
-          <input
-            required
-            type="text"
-            className="w-full p-3 rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800"
-            value={title}
-            onChange={handleTitleChange}
-            placeholder="Ví dụ: Máy đứng Titan Special"
-          />
+      {/* Card 1: Thông tin cơ bản */}
+      <div className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xs space-y-6">
+        <div className="flex items-center gap-3 border-b border-neutral-100 dark:border-neutral-800 pb-4">
+          <span className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-sm">
+            1
+          </span>
+          <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
+            Thông Tin Cơ Bản
+          </h2>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-semibold">Đường dẫn (URL Handle) *</label>
-          <input
-            required
-            type="text"
-            className="w-full p-3 rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800"
-            value={handle}
-            onChange={(e) => setHandle(e.target.value)}
-            placeholder="vi-du-may-dung"
-          />
-        </div>
-
-        <div className="space-y-3 md:col-span-2">
-          <label className="text-sm font-semibold block">Ảnh Bìa Sản Phẩm (Ảnh Chính) *</label>
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <input
-                type="text"
-                required
-                className="w-full p-2.5 rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm mb-2"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="/commerce/images/products/... hoặc https://..."
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handleFileChange(e)}
-                disabled={isUploadingImage}
-                className="w-full text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-orange-950 dark:file:text-orange-300"
-              />
-              {uploadStatus && !isUploadingImage && <p className="text-xs text-green-600 mt-1">{uploadStatus}</p>}
-            </div>
-            {imageUrl && (
-              <img src={imageUrl} alt="Preview" className="h-24 w-24 object-cover rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-sm" />
-            )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+              Tên sản phẩm *
+            </label>
+            <input
+              required
+              type="text"
+              className="w-full p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm focus:border-orange-500 focus:outline-none transition-colors"
+              value={title}
+              onChange={handleTitleChange}
+              placeholder="Ví dụ: Máy đứng Titan Special 3000"
+            />
           </div>
-        </div>
 
-        <div className="space-y-2 md:col-span-2">
-          <label className="text-sm font-semibold">Mô tả sản phẩm</label>
-          <textarea
-            rows={4}
-            className="w-full p-3 rounded-md border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Mô tả chi tiết về sản phẩm..."
-          />
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+              Đường dẫn (URL Handle) *
+            </label>
+            <input
+              required
+              type="text"
+              className="w-full p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm focus:border-orange-500 focus:outline-none transition-colors"
+              value={handle}
+              onChange={(e) => setHandle(e.target.value)}
+              placeholder="may-dung-titan-special-3000"
+            />
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+              Mô tả chi tiết sản phẩm
+            </label>
+            <textarea
+              rows={4}
+              className="w-full p-3.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm focus:border-orange-500 focus:outline-none transition-colors"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Nhập mô tả chi tiết về thông số kỹ thuật, chất liệu, ứng dụng của sản phẩm..."
+            />
+          </div>
         </div>
       </div>
 
-      <div className="border-t border-neutral-200 dark:border-neutral-800 pt-8">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h3 className="text-lg font-bold">Phân loại sản phẩm (Options)</h3>
-            <p className="text-sm text-neutral-700">Tạo nhiều phân loại (VD: Kích cỡ, Màu sắc) để sinh ra các biến thể tương ứng.</p>
+      {/* Card 2: Thư viện hình ảnh */}
+      <div className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xs space-y-6">
+        <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-4">
+          <div className="flex items-center gap-3">
+            <span className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-sm">
+              2
+            </span>
+            <div>
+              <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
+                Bộ Sưu Tập Hình Ảnh
+              </h2>
+              <p className="text-xs text-neutral-700 dark:text-neutral-400">
+                Kéo thả file để tải ảnh lên. Nhấp vào ảnh bất kỳ để đặt làm **Ảnh Bìa Chính**.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {uploadStatus && !isUploadingImage && (
+          <div className="p-3 bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 text-green-700 dark:text-green-300 rounded-xl text-xs flex items-center gap-2">
+            <span>✓</span> {uploadStatus}
+          </div>
+        )}
+
+        <DropZone
+          onFilesSelected={(files) => processGalleryFiles(files)}
+          disabled={isUploadingImage}
+          label="Kéo & thả file ảnh vào đây, hoặc click để tải lên bộ sưu tập"
+          sublabel="Tải lên ảnh chính và ảnh các góc độ khác (mặt sau, chi tiết...)"
+        />
+
+        {/* Gallery Grid Display */}
+        {(imageUrl || galleryImages.length > 0) && (
+          <div className="space-y-3 pt-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+              Danh sách ảnh đã tải ({ (imageUrl ? 1 : 0) + galleryImages.length } ảnh)
+            </label>
+            <div className="flex flex-wrap gap-4">
+              {/* Featured Main Cover Image */}
+              {imageUrl && (
+                <FormImagePreview
+                  src={imageUrl}
+                  alt="Ảnh Bìa Chính"
+                  isFeatured={true}
+                  className="h-28 w-28 object-cover rounded-xl"
+                  onRemove={() => {
+                    if (galleryImages.length > 0) {
+                      const newFeat = galleryImages[0]!;
+                      setImageUrl(newFeat);
+                      setGalleryImages((prev) => prev.slice(1));
+                    } else {
+                      setImageUrl("");
+                    }
+                  }}
+                />
+              )}
+
+              {/* Gallery Images */}
+              {galleryImages.map((imgUrl, imgIdx) => (
+                <FormImagePreview
+                  key={imgIdx}
+                  src={imgUrl}
+                  alt={`Ảnh ${imgIdx + 1}`}
+                  isFeatured={false}
+                  className="h-28 w-28 object-cover rounded-xl cursor-pointer"
+                  onSetFeatured={() => setAsFeaturedImage(imgUrl)}
+                  onRemove={() => removeGalleryImage(imgIdx)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Card 3: Phân loại sản phẩm (Options) */}
+      <div className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xs space-y-6">
+        <div className="flex justify-between items-center border-b border-neutral-100 dark:border-neutral-800 pb-4">
+          <div className="flex items-center gap-3">
+            <span className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-sm">
+              3
+            </span>
+            <div>
+              <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
+                Phân Loại Sản Phẩm (Options)
+              </h2>
+              <p className="text-xs text-neutral-700 dark:text-neutral-400">
+                Tạo các tùy chọn như Kích cỡ (S, M, L) hoặc Màu sắc (Đỏ, Xanh) để sinh ra biến thể.
+              </p>
+            </div>
           </div>
           <button
             type="button"
             onClick={addOption}
-            className="px-4 py-2 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg text-sm font-semibold transition-colors"
+            className="px-4 py-2 bg-orange-50 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900/60 border border-orange-200 dark:border-orange-900/40 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
           >
-            + Thêm phân loại
+            <span>+</span> Thêm phân loại
           </button>
         </div>
-        
+
         <div className="space-y-4">
           {options.map((opt, idx) => (
-            <div key={opt.id} className="flex gap-4 items-start bg-neutral-50 dark:bg-neutral-800/50 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700">
-              <div className="flex-1 space-y-2">
-                <label className="text-xs font-semibold text-neutral-500">Tên phân loại</label>
+            <div
+              key={opt.id}
+              className="flex flex-col sm:flex-row gap-4 items-start bg-neutral-50 dark:bg-neutral-800/40 p-4 rounded-xl border border-neutral-200 dark:border-neutral-700/60"
+            >
+              <div className="w-full sm:w-1/3 space-y-1.5">
+                <label className="text-xs font-bold text-neutral-600 dark:text-neutral-400">
+                  Tên phân loại
+                </label>
                 <input
                   type="text"
-                  className="w-full p-2.5 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                  className="w-full p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm"
                   value={opt.name}
                   onChange={(e) => updateOption(idx, "name", e.target.value)}
-                  placeholder="VD: Size"
+                  placeholder="VD: Kích thước, Màu sắc..."
                 />
               </div>
-              <div className="flex-[2] space-y-2">
-                <label className="text-xs font-semibold text-neutral-500">Các giá trị (Ngăn cách bởi dấu phẩy)</label>
+              <div className="w-full sm:flex-1 space-y-1.5">
+                <label className="text-xs font-bold text-neutral-600 dark:text-neutral-400">
+                  Các giá trị (Phân cách bằng dấu phẩy)
+                </label>
                 <input
                   type="text"
-                  className="w-full p-2.5 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                  className="w-full p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm"
                   value={opt.valuesStr}
                   onChange={(e) => updateOption(idx, "valuesStr", e.target.value)}
-                  placeholder="VD: S, M, L"
+                  placeholder="VD: 3000, 4000, 5000"
                 />
+                <OptionPillTags valuesStr={opt.valuesStr} />
               </div>
               <button
                 type="button"
                 onClick={() => removeOption(idx)}
-                className="mt-7 p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                className="self-end sm:self-center mt-2 sm:mt-5 p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
                 title="Xóa phân loại này"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                  />
+                </svg>
               </button>
             </div>
           ))}
           {options.length === 0 && (
-             <div className="p-4 text-center border-2 border-dashed border-neutral-200 dark:border-neutral-800 rounded-xl text-neutral-500 text-sm">
-               Sản phẩm hiện không có phân loại. Nếu có, hãy nhấn "+ Thêm phân loại".
-             </div>
+            <div className="p-6 text-center border-2 border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl text-neutral-700 dark:text-neutral-400 text-xs space-y-2">
+              <p className="font-semibold">Sản phẩm chưa có phân loại (Ví dụ: Size, Màu sắc).</p>
+              <p className="text-neutral-400">
+                Nếu sản phẩm có nhiều biến thể, hãy nhấn nút <strong>"+ Thêm phân loại"</strong> ở trên.
+              </p>
+            </div>
           )}
         </div>
       </div>
 
-      <div className="border-t border-neutral-200 dark:border-neutral-800 pt-8">
-        <h3 className="text-lg font-bold mb-4">Danh Sách Biến Thể (Variants)</h3>
+      {/* Card 4: Giá bán & Biến thể */}
+      <div className="bg-white dark:bg-neutral-900 p-6 sm:p-8 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xs space-y-6">
+        <div className="flex items-center gap-3 border-b border-neutral-100 dark:border-neutral-800 pb-4">
+          <span className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-950/60 text-orange-600 dark:text-orange-400 flex items-center justify-center font-bold text-sm">
+            4
+          </span>
+          <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
+            Giá Bán & Các Biến Thể (Variants)
+          </h2>
+        </div>
+
         {variantList.length > 0 ? (
           <div className="overflow-x-auto rounded-xl border border-neutral-200 dark:border-neutral-800">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-bold uppercase tracking-wider">
                 <tr>
-                  <th className="px-4 py-3 font-semibold whitespace-nowrap">Phân loại</th>
-                  <th className="px-4 py-3 font-semibold min-w-[120px]">Giá nhập (VND)</th>
-                  <th className="px-4 py-3 font-semibold min-w-[120px]">Giá bán (VND) *</th>
-                  <th className="px-4 py-3 font-semibold min-w-[120px]">Giá gốc (VND)</th>
-                  <th className="px-4 py-3 font-semibold min-w-[200px]">Ảnh biến thể</th>
+                  <th className="px-4 py-3.5 whitespace-nowrap">Biến thể</th>
+                  <th className="px-4 py-3.5 min-w-[130px]">Giá nhập (VND)</th>
+                  <th className="px-4 py-3.5 min-w-[130px]">Giá bán (VND) *</th>
+                  <th className="px-4 py-3.5 min-w-[130px]">Giá gốc (VND)</th>
+                  <th className="px-4 py-3.5 min-w-[200px]">Ảnh riêng cho biến thể</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
                 {variantList.map((v) => {
                   const vData = variantsData[v.title] || {};
                   return (
-                    <tr key={v.title} className="bg-white dark:bg-neutral-900">
-                      <td className="px-4 py-3 font-medium whitespace-nowrap">{v.title}</td>
-                      <td className="px-4 py-3">
+                    <tr
+                      key={v.title}
+                      className="bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors"
+                    >
+                      <td className="px-4 py-3.5 font-bold text-neutral-800 dark:text-neutral-200 whitespace-nowrap">
+                        {v.title}
+                      </td>
+                      <td className="px-4 py-3.5">
                         <input
                           type="number"
-                          className="w-full p-2 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800"
+                          className="w-full p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-xs"
                           value={vData.importPrice || ""}
-                          onChange={(e) => handleVariantChange(v.title, "importPrice", e.target.value)}
+                          onChange={(e) =>
+                            handleVariantChange(v.title, "importPrice", e.target.value)
+                          }
                           placeholder="Giá nhập"
                         />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5">
                         <input
                           required
                           type="number"
-                          className="w-full p-2 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800"
+                          className="w-full p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-xs font-semibold focus:border-orange-500"
                           value={vData.price || ""}
-                          onChange={(e) => handleVariantChange(v.title, "price", e.target.value)}
-                          placeholder="Giá bán"
+                          onChange={(e) =>
+                            handleVariantChange(v.title, "price", e.target.value)
+                          }
+                          placeholder="Giá bán *"
                         />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5">
                         <input
                           type="number"
-                          className="w-full p-2 rounded border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800"
+                          className="w-full p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-xs"
                           value={vData.compareAtPrice || ""}
-                          onChange={(e) => handleVariantChange(v.title, "compareAtPrice", e.target.value)}
+                          onChange={(e) =>
+                            handleVariantChange(
+                              v.title,
+                              "compareAtPrice",
+                              e.target.value
+                            )
+                          }
                           placeholder="Giá gốc"
                         />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3.5">
                         <div className="space-y-2">
-                          <input
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={(e) => handleFileChange(e, v.title)}
-                            className="w-full text-[10px] text-neutral-500 file:mr-2 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-[10px] file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 dark:file:bg-orange-950 dark:file:text-orange-300"
+                          <DropZone
+                            onFilesSelected={(files) =>
+                              processUploadedFiles(files, v.title)
+                            }
+                            disabled={isUploadingImage}
+                            label="Tải ảnh biến thể"
+                            sublabel=""
                           />
                           {vData.images && vData.images.length > 0 && (
-                             <div className="flex flex-wrap gap-2">
-                               {vData.images.map((imgUrl: string, imgIdx: number) => (
-                                 <div key={imgIdx} className="relative group">
-                                   <img src={imgUrl} className="w-10 h-10 object-cover rounded border border-neutral-200 dark:border-neutral-700" alt="" />
-                                   <button 
-                                     type="button"
-                                     onClick={() => removeVariantImage(v.title, imgIdx)}
-                                     className="absolute -top-1 -right-1 bg-red-500 text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition-opacity"
-                                   >
-                                     ✕
-                                   </button>
-                                 </div>
-                               ))}
-                             </div>
+                            <div className="flex flex-wrap gap-2 pt-1">
+                              {vData.images.map((imgUrl: string, imgIdx: number) => (
+                                <div key={imgIdx} className="relative group">
+                                  <FormImagePreview
+                                    src={imgUrl}
+                                    className="w-12 h-12 object-cover rounded-lg border border-neutral-200 dark:border-neutral-700"
+                                    alt=""
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      removeVariantImage(v.title, imgIdx)
+                                    }
+                                    className="absolute -top-1 -right-1 bg-red-500 text-white w-4 h-4 rounded-full flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
                           )}
                         </div>
                       </td>
@@ -609,35 +1048,56 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
             </table>
           </div>
         ) : (
-          <div className="bg-neutral-50 dark:bg-neutral-800 p-6 rounded-xl border border-neutral-200 dark:border-neutral-700">
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">Sản phẩm chưa có biến thể, vui lòng nhập giá cho sản phẩm mặc định:</p>
+          <div className="bg-neutral-50 dark:bg-neutral-800/50 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-700/60">
+            <p className="text-xs font-semibold text-neutral-600 dark:text-neutral-400 mb-4">
+              Sản phẩm chưa có phân loại. Vui lòng nhập giá bán cho sản phẩm mặc định:
+            </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl">
               <div>
-                <label className="text-xs font-semibold">Giá nhập hàng (VND)</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                  Giá nhập hàng (VND)
+                </label>
                 <input
                   type="number"
-                  className="w-full mt-1 p-2 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                  className="w-full mt-1.5 p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm"
                   value={variantsData["Default Title"]?.importPrice || ""}
-                  onChange={(e) => handleVariantChange("Default Title", "importPrice", e.target.value)}
+                  onChange={(e) =>
+                    handleVariantChange("Default Title", "importPrice", e.target.value)
+                  }
+                  placeholder="0"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold">Giá bán (VND) *</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                  Giá bán (VND) *
+                </label>
                 <input
                   required
                   type="number"
-                  className="w-full mt-1 p-2 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                  className="w-full mt-1.5 p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-bold text-orange-600 dark:text-orange-400 focus:border-orange-500"
                   value={variantsData["Default Title"]?.price || ""}
-                  onChange={(e) => handleVariantChange("Default Title", "price", e.target.value)}
+                  onChange={(e) =>
+                    handleVariantChange("Default Title", "price", e.target.value)
+                  }
+                  placeholder="0"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold">Giá gốc (VND)</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+                  Giá gốc niêm yết (VND)
+                </label>
                 <input
                   type="number"
-                  className="w-full mt-1 p-2 rounded-md border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                  className="w-full mt-1.5 p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm"
                   value={variantsData["Default Title"]?.compareAtPrice || ""}
-                  onChange={(e) => handleVariantChange("Default Title", "compareAtPrice", e.target.value)}
+                  onChange={(e) =>
+                    handleVariantChange(
+                      "Default Title",
+                      "compareAtPrice",
+                      e.target.value
+                    )
+                  }
+                  placeholder="0"
                 />
               </div>
             </div>
@@ -645,26 +1105,30 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         )}
       </div>
 
-      <div className="flex justify-end gap-4 border-t border-neutral-200 dark:border-neutral-800 pt-8">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="px-6 py-3 font-medium text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white"
-        >
-          Hủy bỏ
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="bg-orange-600 text-white px-8 py-3 rounded-full font-bold hover:bg-orange-700 transition-all disabled:opacity-50 flex items-center gap-2"
-        >
-          {isSubmitting ? (
-             <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-          ) : null}
-          {initialData ? "Lưu thay đổi" : "Tạo sản phẩm mới"}
-        </button>
+      {/* Floating / Sticky Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md border-t border-neutral-200 dark:border-neutral-800 p-4 shadow-xl">
+        <div className="max-w-5xl mx-auto flex justify-between items-center gap-4">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="px-6 py-2.5 rounded-xl font-bold text-xs text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-all"
+          >
+            ← Hủy bỏ
+          </button>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="bg-orange-600 text-white px-8 py-3 rounded-xl font-bold text-xs hover:bg-orange-700 transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg shadow-orange-600/30 cursor-pointer"
+          >
+            {isSubmitting ? (
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <span>✓</span>
+            )}
+            {initialData ? "Lưu Thay Đổi Sản Phẩm" : "Tạo Sản Phẩm Mới"}
+          </button>
+        </div>
       </div>
-
     </form>
   );
 }
