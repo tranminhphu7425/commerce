@@ -5,8 +5,8 @@
       "handle": "moi-go-ctf-thu-cong",
       "availableForSale": true,
       "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-      "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá.",
-      "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá.</p>",
+      "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá.....",
+      "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá.....</p>",
       "options": [
         {
           "id": "opt-1784471683739",
@@ -30,7 +30,7 @@
       },
       "variants": [
         {
-          "id": "var-1784530080122-0",
+          "id": "var-1784532028172-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -45,7 +45,7 @@
           }
         },
         {
-          "id": "var-1784530080122-1",
+          "id": "var-1784532028172-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -60,7 +60,7 @@
           }
         },
         {
-          "id": "var-1784530080122-2",
+          "id": "var-1784532028172-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -91,14 +91,14 @@
       ],
       "seo": {
         "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-        "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá."
+        "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá....."
       },
       "tags": [
         "moi-cau",
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-20T06:48:00.122Z",
+      "updatedAt": "2026-07-20T07:20:28.172Z",
       "collections": [
         "moi-cau"
       ]
