@@ -6,6 +6,7 @@ import { Product, ProductVariant, ProductOption } from "lib/local/types";
 import { createProductAction, updateProductAction } from "app/admin/actions";
 import { getGitHubConfig, uploadImageToGitHub, syncStoreToGitHub } from "lib/github";
 import { toast } from "sonner";
+import { saveLocalProductOverride } from "lib/local/client-store";
 
 // Helper to generate cartesian product of option values
 const cartesian = (arrays: string[][]): string[][] => {
@@ -71,30 +72,15 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     
-    const ghConfig = getGitHubConfig();
-    const uploadedUrls: string[] = [];
-
-    setIsUploadingImage(true);
-    setUploadStatus("Đang tải ảnh...");
+    // 1. Instant local preview via Blob URL
+    const tempBlobUrls: string[] = [];
+    const filesArray: File[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      if (!file) continue;
-
-      if (!ghConfig || !ghConfig.token) {
-        toast.warning("Chưa cấu hình GitHub Token! Ảnh sẽ dùng xem trước nội bộ.");
-        uploadedUrls.push(URL.createObjectURL(file));
-      } else {
-        try {
-          const res = await uploadImageToGitHub(file);
-          if (res.success && res.url) {
-            uploadedUrls.push(res.url);
-          } else {
-            toast.error(`Lỗi upload ảnh: ${res.error}`);
-          }
-        } catch (err: any) {
-          toast.error("Lỗi hệ thống khi upload ảnh");
-        }
+      if (file) {
+        tempBlobUrls.push(URL.createObjectURL(file));
+        filesArray.push(file);
       }
     }
 
@@ -105,18 +91,52 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
            ...prev,
            [variantTitle]: {
              ...current,
-             images: [...(current.images || []), ...uploadedUrls]
+             images: [...(current.images || []), ...tempBlobUrls]
            }
          };
       });
     } else {
-      if (uploadedUrls.length > 0 && uploadedUrls[0]) {
-        setImageUrl(uploadedUrls[0]);
+      if (tempBlobUrls.length > 0 && tempBlobUrls[0]) {
+        setImageUrl(tempBlobUrls[0]);
       }
     }
-    
-    setUploadStatus(null);
-    setIsUploadingImage(false);
+
+    // 2. Non-blocking GitHub upload in background if token exists
+    const ghConfig = getGitHubConfig();
+    if (ghConfig && ghConfig.token) {
+      setIsUploadingImage(true);
+      setUploadStatus("Đang đồng bộ ảnh lên GitHub...");
+
+      for (let i = 0; i < filesArray.length; i++) {
+        const file = filesArray[i]!;
+        const blobUrl = tempBlobUrls[i]!;
+
+        try {
+          const res = await uploadImageToGitHub(file);
+          if (res.success && res.url) {
+            const uploadedUrl = res.url;
+            if (variantTitle) {
+              setVariantsData(prev => {
+                const current = prev[variantTitle] || {};
+                const updatedImgs = (current.images || []).map((img: string) => img === blobUrl ? uploadedUrl : img);
+                return {
+                  ...prev,
+                  [variantTitle]: { ...current, images: updatedImgs }
+                };
+              });
+            } else {
+              setImageUrl(prev => prev === blobUrl ? uploadedUrl : prev);
+            }
+          }
+        } catch (err) {
+          console.error("Lỗi upload ảnh GitHub background:", err);
+        }
+      }
+      setUploadStatus(null);
+      setIsUploadingImage(false);
+    } else {
+      toast.info("Xem trước ảnh tạm thời (Chưa kết nối GitHub Token).");
+    }
   };
 
   const addOption = () => {
@@ -298,18 +318,21 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         updatedAt: new Date().toISOString(),
       };
 
-      // 1. Save locally
+      // 1. Save locally to localStorage (Instant Optimistic Update)
+      saveLocalProductOverride(productData, initialData?.handle);
       if (initialData) {
         await updateProductAction(initialData.handle, productData);
       } else {
         await createProductAction(productData);
       }
 
-      // 2. Sync directly to GitHub Repo if token is configured
+      toast.success(`🎉 Đã lưu sản phẩm "${title}" thành công!`);
+
+      // 2. Sync directly to GitHub Repo in background (Non-blocking)
       const ghConfig = getGitHubConfig();
       if (ghConfig && ghConfig.token) {
         const actionText = initialData ? "update" : "create";
-        const syncRes = await syncStoreToGitHub((store) => {
+        syncStoreToGitHub((store) => {
           if (!store.products) store.products = [];
           if (initialData) {
             const idx = store.products.findIndex((p: any) => p.handle === initialData.handle);
@@ -322,15 +345,15 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
             store.products.push(productData);
           }
           return store;
-        }, `feat(product): ${actionText} product "${title}"`);
-
-        if (!syncRes.success) {
-          toast.error(`Lưu cục bộ thành công nhưng lỗi khi push lên GitHub: ${syncRes.error}`);
-        } else {
-          toast.success(`🎉 Đã lưu sản phẩm "${title}" và push commit trực tiếp lên GitHub thành công!`);
-        }
+        }, `feat(product): ${actionText} product "${title}"`).then((syncRes) => {
+          if (!syncRes.success) {
+            toast.warning(`Lưu cục bộ thành công! (Chưa đồng bộ GitHub: ${syncRes.error})`);
+          } else {
+            toast.info(`☁️ Đã đồng bộ sản phẩm "${title}" lên GitHub!`);
+          }
+        });
       } else {
-        toast.info(`Đã lưu sản phẩm "${title}" cục bộ. (Chưa kết nối GitHub Token)`);
+        toast.info(`Đã lưu sản phẩm "${title}" cục bộ.`);
       }
 
       router.push("/admin");

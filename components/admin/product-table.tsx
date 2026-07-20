@@ -1,38 +1,49 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Product } from "lib/local";
 import { getGitHubConfig, syncStoreToGitHub } from "lib/github";
 import { toast } from "sonner";
+import { deleteLocalProductOverride, mergeProductsWithLocalOverride } from "lib/local/client-store";
 
-export function ProductTable({ products }: { products: (Product & { collections?: string[] })[] }) {
+export function ProductTable({ products: initialProducts }: { products: (Product & { collections?: string[] })[] }) {
+  const [productList, setProductList] = useState(() => mergeProductsWithLocalOverride(initialProducts));
+
+  useEffect(() => {
+    const sync = () => {
+      setProductList(mergeProductsWithLocalOverride(initialProducts));
+    };
+    sync();
+    window.addEventListener("commerce-store-updated", sync);
+    return () => window.removeEventListener("commerce-store-updated", sync);
+  }, [initialProducts]);
+
   const handleDelete = async (handle: string, title: string) => {
     if (confirm(`Bạn có chắc muốn xóa sản phẩm "${title}"?`)) {
-      // 1. Delete locally
-      const { deleteProductAction } = await import("app/admin/actions");
-      const res = await deleteProductAction(handle);
+      // 1. Delete locally & update state immediately
+      deleteLocalProductOverride(handle);
+      setProductList(prev => prev.filter(p => p.handle !== handle));
+      toast.success(`🎉 Đã xóa sản phẩm "${title}"!`);
 
-      // 2. Sync to GitHub if token configured
+      const { deleteProductAction } = await import("app/admin/actions");
+      await deleteProductAction(handle);
+
+      // 2. Sync to GitHub in background if token configured
       const ghConfig = getGitHubConfig();
       if (ghConfig && ghConfig.token) {
-        const syncRes = await syncStoreToGitHub((store) => {
+        syncStoreToGitHub((store) => {
           if (store.products) {
             store.products = store.products.filter((p: any) => p.handle !== handle);
           }
           return store;
-        }, `feat(product): delete product "${title}" (${handle})`);
-
-        if (!syncRes.success) {
-          toast.error(`Lỗi khi đồng bộ xóa lên GitHub: ${syncRes.error}`);
-        } else {
-          toast.success(`🎉 Đã xóa sản phẩm "${title}" và push commit lên GitHub!`);
-        }
-      }
-
-      if (res.success) {
-        window.location.reload();
-      } else {
-        toast.error(res.error || "Lỗi khi xóa sản phẩm");
+        }, `feat(product): delete product "${title}" (${handle})`).then((syncRes) => {
+          if (!syncRes.success) {
+            toast.error(`Lỗi khi đồng bộ xóa lên GitHub: ${syncRes.error}`);
+          } else {
+            toast.info(`☁️ Đã đồng bộ xóa sản phẩm "${title}" lên GitHub!`);
+          }
+        });
       }
     }
   };
@@ -49,7 +60,7 @@ export function ProductTable({ products }: { products: (Product & { collections?
           </tr>
         </thead>
         <tbody>
-          {products.map((product) => (
+          {productList.map((product) => (
             <tr
               key={product.id}
               className="border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors"
