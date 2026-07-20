@@ -31,7 +31,7 @@
       },
       "variants": [
         {
-          "id": "var-1784546814018-0",
+          "id": "var-1784546928992-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -46,7 +46,7 @@
           }
         },
         {
-          "id": "var-1784546814018-1",
+          "id": "var-1784546928992-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -61,7 +61,7 @@
           }
         },
         {
-          "id": "var-1784546814018-2",
+          "id": "var-1784546928992-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -76,7 +76,7 @@
           }
         },
         {
-          "id": "var-1784546814018-3",
+          "id": "var-1784546928992-3",
           "title": "15g",
           "availableForSale": true,
           "selectedOptions": [
@@ -92,14 +92,14 @@
         }
       ],
       "featuredImage": {
-        "url": "/commerce/images/products/1784537623623-260710-google-namnguyen-4325.jpg",
+        "url": "/commerce/images/products/1784546878155-260710-google-namnguyen-4149.jpg",
         "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
         "width": 800,
         "height": 800
       },
       "images": [
         {
-          "url": "/commerce/images/products/1784537623623-260710-google-namnguyen-4325.jpg",
+          "url": "/commerce/images/products/1784546878155-260710-google-namnguyen-4149.jpg",
           "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
           "width": 800,
           "height": 800
@@ -114,7 +114,7 @@
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-20T11:26:54.018Z",
+      "updatedAt": "2026-07-20T11:28:48.992Z",
       "collections": [
         "moi-cau"
       ]
