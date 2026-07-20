@@ -39,30 +39,15 @@ export function ProductTable({ products: initialProducts }: { products: (Product
 
   const handleDelete = async (handle: string, title: string) => {
     if (confirm(`Bạn có chắc muốn xóa sản phẩm "${title}"?`)) {
-      // 1. Delete locally & update state immediately
+      // 1. Delete locally & update state immediately (Staged in localStorage)
       deleteLocalProductOverride(handle);
-      setProductList(prev => prev.filter(p => p.handle !== handle));
-      toast.success(`🎉 Đã xóa sản phẩm "${title}"!`);
+      setProductList((prev) => prev.filter((p) => p.handle !== handle));
+      toast.success(
+        `🎉 Đã xóa tạm thời sản phẩm "${title}"! Hãy bấm "Lưu thay đổi" để commit lên GitHub.`
+      );
 
       const { deleteProductAction } = await import("app/admin/actions");
       await deleteProductAction(handle);
-
-      // 2. Sync to GitHub in background if token configured
-      const ghConfig = getGitHubConfig();
-      if (ghConfig && ghConfig.token) {
-        syncStoreToGitHub((store) => {
-          if (store.products) {
-            store.products = store.products.filter((p: any) => p.handle !== handle);
-          }
-          return store;
-        }, `feat(product): delete product "${title}" (${handle})`).then((syncRes) => {
-          if (!syncRes.success) {
-            toast.error(`Lỗi khi đồng bộ xóa lên GitHub: ${syncRes.error}`);
-          } else {
-            toast.info(`☁️ Đã đồng bộ xóa sản phẩm "${title}" lên GitHub!`);
-          }
-        });
-      }
     }
   };
 

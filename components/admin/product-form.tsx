@@ -4,9 +4,9 @@ import { useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Product, ProductVariant, ProductOption } from "lib/local/types";
 import { createProductAction, updateProductAction } from "app/admin/actions";
-import { getGitHubConfig, uploadImageToGitHub, syncStoreToGitHub } from "lib/github";
+import { getGitHubConfig } from "lib/github";
 import { toast } from "sonner";
-import { saveLocalProductOverride } from "lib/local/client-store";
+import { saveLocalProductOverride, savePendingImage } from "lib/local/client-store";
 import { saveImageCache, useCachedImageUrl, getImageCache } from "lib/local/image-cache";
 
 // Drag and Drop Upload Zone Component
@@ -183,13 +183,61 @@ function OptionPillTags({ valuesStr }: { valuesStr: string }) {
   );
 }
 
-// Helper to convert File to Base64 Data URL
-const readFileAsDataUrl = (file: File): Promise<string> => {
+// Helper to compress image file and convert to optimized Base64 Data URL
+const compressImageFile = (
+  file: File,
+  maxWidth = 1200,
+  maxHeight = 1200,
+  quality = 0.82
+): Promise<string> => {
   return new Promise((resolve) => {
+    if (file.type === "image/svg+xml") {
+      const reader = new FileReader();
+      reader.onload = () => resolve((reader.result as string) || "");
+      reader.onerror = () => resolve("");
+      reader.readAsDataURL(file);
+      return;
+    }
+
     const reader = new FileReader();
-    reader.onloadend = () => resolve((reader.result as string) || "");
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        if (height > maxHeight) {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", quality);
+          resolve(dataUrl);
+        } else {
+          resolve((e.target?.result as string) || "");
+        }
+      };
+      img.onerror = () => resolve((e.target?.result as string) || "");
+      img.src = (e.target?.result as string) || "";
+    };
+    reader.onerror = () => resolve("");
     reader.readAsDataURL(file);
   });
+};
+
+const readFileAsDataUrl = (file: File): Promise<string> => {
+  return compressImageFile(file);
 };
 
 // Helper to generate cartesian product of option values
@@ -267,20 +315,27 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
   const processUploadedFiles = async (files: File[], variantTitle?: string) => {
     if (!files || files.length === 0) return;
 
-    const tempBlobUrls: string[] = [];
-    const filesArray: File[] = [];
-    const dataUrls: string[] = [];
+    const generatedUrls: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (file) {
-        const blobUrl = URL.createObjectURL(file);
-        const dataUrl = await readFileAsDataUrl(file);
-        tempBlobUrls.push(blobUrl);
-        filesArray.push(file);
-        dataUrls.push(dataUrl);
+        const timestamp = Date.now();
+        const cleanFileName = file.name
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9.]+/g, "-");
+        const filename = `${timestamp}-${cleanFileName}`;
+        const relativeUrl = `/commerce/images/products/${filename}`;
 
-        saveImageCache(blobUrl, dataUrl);
+        // Compress image to ~150KB Base64
+        const dataUrl = await compressImageFile(file);
+
+        // Stage file in localStorage pending images list & image cache
+        savePendingImage(filename, dataUrl);
+
+        generatedUrls.push(relativeUrl);
       }
     }
 
@@ -291,108 +346,47 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
           ...prev,
           [variantTitle]: {
             ...current,
-            images: [...(current.images || []), ...tempBlobUrls],
+            images: [...(current.images || []), ...generatedUrls],
           },
         };
       });
     } else {
-      if (tempBlobUrls.length > 0 && tempBlobUrls[0]) {
-        setImageUrl(tempBlobUrls[0]);
+      if (generatedUrls.length > 0 && generatedUrls[0]) {
+        setImageUrl(generatedUrls[0]);
       }
     }
 
-    const ghConfig = getGitHubConfig();
-    if (ghConfig && ghConfig.token) {
-      setIsUploadingImage(true);
-      setUploadStatus("Đang đồng bộ ảnh lên GitHub...");
-
-      for (let i = 0; i < filesArray.length; i++) {
-        const file = filesArray[i]!;
-        const blobUrl = tempBlobUrls[i]!;
-        const dataUrl = dataUrls[i] || blobUrl;
-
-        try {
-          const res = await uploadImageToGitHub(file);
-          if (res.success && res.url) {
-            const uploadedUrl = res.url;
-            saveImageCache(uploadedUrl, dataUrl);
-
-            if (variantTitle) {
-              setVariantsData((prev) => {
-                const current = prev[variantTitle] || {};
-                const updatedImgs = (current.images || []).map((img: string) =>
-                  img === blobUrl ? uploadedUrl : img
-                );
-                return {
-                  ...prev,
-                  [variantTitle]: { ...current, images: updatedImgs },
-                };
-              });
-            } else {
-              setImageUrl((prev) => (prev === blobUrl ? uploadedUrl : prev));
-            }
-          }
-        } catch (err) {
-          console.error("Lỗi upload ảnh GitHub background:", err);
-        }
-      }
-      setUploadStatus(null);
-      setIsUploadingImage(false);
-    } else {
-      toast.info("Xem trước ảnh tạm thời (Chưa kết nối GitHub Token).");
-    }
+    toast.success(`Đã lưu tạm ${generatedUrls.length} ảnh vào trình duyệt`);
   };
 
   // Process gallery files
   const processGalleryFiles = async (files: File[]) => {
     if (!files || files.length === 0) return;
 
-    const tempBlobUrls: string[] = [];
-    const filesArray: File[] = [];
-    const dataUrls: string[] = [];
+    const generatedUrls: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (file) {
-        const blobUrl = URL.createObjectURL(file);
-        const dataUrl = await readFileAsDataUrl(file);
-        tempBlobUrls.push(blobUrl);
-        filesArray.push(file);
-        dataUrls.push(dataUrl);
+        const timestamp = Date.now();
+        const cleanFileName = file.name
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9.]+/g, "-");
+        const filename = `${timestamp}-${cleanFileName}`;
+        const relativeUrl = `/commerce/images/products/${filename}`;
 
-        saveImageCache(blobUrl, dataUrl);
+        const dataUrl = await compressImageFile(file);
+
+        savePendingImage(filename, dataUrl);
+
+        generatedUrls.push(relativeUrl);
       }
     }
 
-    setGalleryImages((prev) => [...prev, ...tempBlobUrls]);
-
-    const ghConfig = getGitHubConfig();
-    if (ghConfig && ghConfig.token) {
-      setIsUploadingImage(true);
-      setUploadStatus("Đang đồng bộ ảnh bộ sưu tập lên GitHub...");
-
-      for (let i = 0; i < filesArray.length; i++) {
-        const file = filesArray[i]!;
-        const blobUrl = tempBlobUrls[i]!;
-        const dataUrl = dataUrls[i] || blobUrl;
-
-        try {
-          const res = await uploadImageToGitHub(file);
-          if (res.success && res.url) {
-            const uploadedUrl = res.url;
-            saveImageCache(uploadedUrl, dataUrl);
-
-            setGalleryImages((prev) =>
-              prev.map((img) => (img === blobUrl ? uploadedUrl : img))
-            );
-          }
-        } catch (err) {
-          console.error("Lỗi upload ảnh gallery background:", err);
-        }
-      }
-      setUploadStatus(null);
-      setIsUploadingImage(false);
-    }
+    setGalleryImages((prev) => [...prev, ...generatedUrls]);
+    toast.success(`Đã lưu tạm ${generatedUrls.length} ảnh bộ sưu tập vào trình duyệt`);
   };
 
   const removeGalleryImage = (index: number) => {
@@ -628,7 +622,7 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         updatedAt: new Date().toISOString(),
       };
 
-      // 1. Save locally to localStorage (Instant Optimistic Update)
+      // 1. Save locally to localStorage (Instant Staging)
       saveLocalProductOverride(productData, initialData?.handle);
       if (initialData) {
         await updateProductAction(initialData.handle, productData);
@@ -636,37 +630,9 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         await createProductAction(productData);
       }
 
-      toast.success(`🎉 Đã lưu sản phẩm "${title}" thành công!`);
-
-      // 2. Sync directly to GitHub Repo in background (Non-blocking)
-      const ghConfig = getGitHubConfig();
-      if (ghConfig && ghConfig.token) {
-        const actionText = initialData ? "update" : "create";
-        syncStoreToGitHub((store) => {
-          if (!store.products) store.products = [];
-          if (initialData) {
-            const idx = store.products.findIndex(
-              (p: any) => p.handle === initialData.handle
-            );
-            if (idx !== -1) {
-              store.products[idx] = { ...store.products[idx], ...productData };
-            } else {
-              store.products.push(productData);
-            }
-          } else {
-            store.products.push(productData);
-          }
-          return store;
-        }, `feat(product): ${actionText} product "${title}"`).then((syncRes) => {
-          if (!syncRes.success) {
-            toast.warning(`Lưu cục bộ thành công! (Chưa đồng bộ GitHub: ${syncRes.error})`);
-          } else {
-            toast.info(`☁️ Đã đồng bộ sản phẩm "${title}" lên GitHub!`);
-          }
-        });
-      } else {
-        toast.info(`Đã lưu sản phẩm "${title}" cục bộ.`);
-      }
+      toast.success(
+        `🎉 Đã lưu tạm sản phẩm "${title}" vào trình duyệt! Hãy bấm "Lưu thay đổi" ở trang Admin để commit lên GitHub.`
+      );
 
       router.push("/admin");
     } catch (error) {

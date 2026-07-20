@@ -2,6 +2,7 @@ import { getAllProductsSync } from "lib/local";
 import Link from "next/link";
 import { ProductTable } from "components/admin/product-table";
 import { GitHubConfigModal } from "components/admin/github-config-modal";
+import { BatchCommitBar } from "components/admin/batch-commit-bar";
 
 export default function AdminPage() {
   const products = getAllProductsSync();
@@ -17,6 +18,8 @@ export default function AdminPage() {
           + Thêm sản phẩm mới
         </Link>
       </div>
+
+      <BatchCommitBar />
 
       <GitHubConfigModal />
 
