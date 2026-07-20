@@ -4,7 +4,7 @@ import { useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Product, ProductVariant, ProductOption } from "lib/local/types";
 import { createProductAction, updateProductAction } from "app/admin/actions";
-import { getGitHubConfig, syncStoreToGitHub } from "lib/github";
+import { getGitHubConfig, uploadImageToGitHub, syncStoreToGitHub } from "lib/github";
 import { toast } from "sonner";
 import { saveLocalProductOverride } from "lib/local/client-store";
 import { saveImageCache, useCachedImageUrl, getImageCache } from "lib/local/image-cache";
@@ -205,6 +205,8 @@ const cartesian = (arrays: string[][]): string[][] => {
 export function ProductForm({ initialData }: { initialData?: Product }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
 
   // Basic info
   const [title, setTitle] = useState(initialData?.title || "");
@@ -261,18 +263,24 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
     }
   };
 
-  // Process files for featured or variant images (Direct Base64 conversion)
+  // Process files for featured or variant images
   const processUploadedFiles = async (files: File[], variantTitle?: string) => {
     if (!files || files.length === 0) return;
 
+    const tempBlobUrls: string[] = [];
+    const filesArray: File[] = [];
     const dataUrls: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (file) {
+        const blobUrl = URL.createObjectURL(file);
         const dataUrl = await readFileAsDataUrl(file);
+        tempBlobUrls.push(blobUrl);
+        filesArray.push(file);
         dataUrls.push(dataUrl);
-        saveImageCache(dataUrl, dataUrl);
+
+        saveImageCache(blobUrl, dataUrl);
       }
     }
 
@@ -283,33 +291,108 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
           ...prev,
           [variantTitle]: {
             ...current,
-            images: [...(current.images || []), ...dataUrls],
+            images: [...(current.images || []), ...tempBlobUrls],
           },
         };
       });
     } else {
-      if (dataUrls.length > 0 && dataUrls[0]) {
-        setImageUrl(dataUrls[0]);
+      if (tempBlobUrls.length > 0 && tempBlobUrls[0]) {
+        setImageUrl(tempBlobUrls[0]);
       }
+    }
+
+    const ghConfig = getGitHubConfig();
+    if (ghConfig && ghConfig.token) {
+      setIsUploadingImage(true);
+      setUploadStatus("Đang đồng bộ ảnh lên GitHub...");
+
+      for (let i = 0; i < filesArray.length; i++) {
+        const file = filesArray[i]!;
+        const blobUrl = tempBlobUrls[i]!;
+        const dataUrl = dataUrls[i] || blobUrl;
+
+        try {
+          const res = await uploadImageToGitHub(file);
+          if (res.success && res.url) {
+            const uploadedUrl = res.url;
+            saveImageCache(uploadedUrl, dataUrl);
+
+            if (variantTitle) {
+              setVariantsData((prev) => {
+                const current = prev[variantTitle] || {};
+                const updatedImgs = (current.images || []).map((img: string) =>
+                  img === blobUrl ? uploadedUrl : img
+                );
+                return {
+                  ...prev,
+                  [variantTitle]: { ...current, images: updatedImgs },
+                };
+              });
+            } else {
+              setImageUrl((prev) => (prev === blobUrl ? uploadedUrl : prev));
+            }
+          }
+        } catch (err) {
+          console.error("Lỗi upload ảnh GitHub background:", err);
+        }
+      }
+      setUploadStatus(null);
+      setIsUploadingImage(false);
+    } else {
+      toast.info("Xem trước ảnh tạm thời (Chưa kết nối GitHub Token).");
     }
   };
 
-  // Process gallery files (Direct Base64 conversion)
+  // Process gallery files
   const processGalleryFiles = async (files: File[]) => {
     if (!files || files.length === 0) return;
 
+    const tempBlobUrls: string[] = [];
+    const filesArray: File[] = [];
     const dataUrls: string[] = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (file) {
+        const blobUrl = URL.createObjectURL(file);
         const dataUrl = await readFileAsDataUrl(file);
+        tempBlobUrls.push(blobUrl);
+        filesArray.push(file);
         dataUrls.push(dataUrl);
-        saveImageCache(dataUrl, dataUrl);
+
+        saveImageCache(blobUrl, dataUrl);
       }
     }
 
-    setGalleryImages((prev) => [...prev, ...dataUrls]);
+    setGalleryImages((prev) => [...prev, ...tempBlobUrls]);
+
+    const ghConfig = getGitHubConfig();
+    if (ghConfig && ghConfig.token) {
+      setIsUploadingImage(true);
+      setUploadStatus("Đang đồng bộ ảnh bộ sưu tập lên GitHub...");
+
+      for (let i = 0; i < filesArray.length; i++) {
+        const file = filesArray[i]!;
+        const blobUrl = tempBlobUrls[i]!;
+        const dataUrl = dataUrls[i] || blobUrl;
+
+        try {
+          const res = await uploadImageToGitHub(file);
+          if (res.success && res.url) {
+            const uploadedUrl = res.url;
+            saveImageCache(uploadedUrl, dataUrl);
+
+            setGalleryImages((prev) =>
+              prev.map((img) => (img === blobUrl ? uploadedUrl : img))
+            );
+          }
+        } catch (err) {
+          console.error("Lỗi upload ảnh gallery background:", err);
+        }
+      }
+      setUploadStatus(null);
+      setIsUploadingImage(false);
+    }
   };
 
   const removeGalleryImage = (index: number) => {
@@ -706,9 +789,15 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
           </div>
         </div>
 
+        {uploadStatus && !isUploadingImage && (
+          <div className="p-3 bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 text-green-700 dark:text-green-300 rounded-xl text-xs flex items-center gap-2">
+            <span>✓</span> {uploadStatus}
+          </div>
+        )}
+
         <DropZone
           onFilesSelected={(files) => processGalleryFiles(files)}
-          disabled={isSubmitting}
+          disabled={isUploadingImage}
           label="Kéo & thả file ảnh vào đây, hoặc click để tải lên bộ sưu tập"
           sublabel="Tải lên ảnh chính và ảnh các góc độ khác (mặt sau, chi tiết...)"
         />
@@ -924,7 +1013,7 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
                             onFilesSelected={(files) =>
                               processUploadedFiles(files, v.title)
                             }
-                            disabled={isSubmitting}
+                            disabled={isUploadingImage}
                             label="Tải ảnh biến thể"
                             sublabel=""
                           />

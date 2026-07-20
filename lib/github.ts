@@ -85,7 +85,80 @@ export async function testGitHubConnection(config: GitHubConfig): Promise<{ succ
   }
 }
 
+/**
+ * Upload an image file directly to GitHub repo: public/images/products/{filename}
+ */
+export async function uploadImageToGitHub(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
+  const config = getGitHubConfig();
+  if (!config || !config.token) {
+    return { success: false, error: "Chưa cấu hình GitHub Token" };
+  }
 
+  try {
+    // 1. Sanitize file name
+    const timestamp = Date.now();
+    const cleanFileName = file.name
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9.]+/g, "-");
+    const filename = `${timestamp}-${cleanFileName}`;
+    const filePath = `public/images/products/${filename}`;
+
+    // 2. Convert file to Base64
+    const arrayBuffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(arrayBuffer);
+    let binary = "";
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]!);
+    }
+    const base64Content = btoa(binary);
+
+    // 3. Commit image to public/images/products/
+    const urlPublic = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${filePath}`;
+    const res = await fetch(urlPublic, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${config.token}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `upload(image): add product image ${filename}`,
+        content: base64Content,
+        branch: config.branch || "main",
+      }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      return { success: false, error: errorData.message || "Lỗi khi upload ảnh lên GitHub" };
+    }
+
+    // 4. Also commit image to docs/images/products/ (so GitHub Pages serving /docs updates image immediately)
+    const docsFilePath = `docs/images/products/${filename}`;
+    const urlDocs = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${docsFilePath}`;
+    await fetch(urlDocs, {
+      method: "PUT",
+      headers: {
+        Authorization: `token ${config.token}`,
+        Accept: "application/vnd.github.v3+json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: `upload(image): add product image to docs ${filename}`,
+        content: base64Content,
+        branch: config.branch || "main",
+      }),
+    }).catch(() => { });
+
+    // Relative image path for Next.js app
+    const imageUrl = `/commerce/images/products/${filename}`;
+    return { success: true, url: imageUrl };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Lỗi khi gửi request upload ảnh" };
+  }
+}
 
 /**
  * Sync store data (products) directly to GitHub repo data/store.json
