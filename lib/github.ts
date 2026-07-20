@@ -179,9 +179,12 @@ export async function syncStoreToGitHub(
 
     // 1. Get current store.json from GitHub
     const getRes = await fetch(apiUrl, {
+      method: "GET",
+      cache: "no-store",
       headers: {
         Authorization: `token ${config.token}`,
         Accept: "application/vnd.github.v3+json",
+        "Cache-Control": "no-cache",
       },
     });
 

@@ -68,7 +68,7 @@ export function GitHubStatusButton() {
             <button onClick={() => setIsOpen(false)} className="text-xs text-neutral-400 hover:text-black dark:hover:text-white">✕</button>
           </div>
 
-          <div className="space-y-3 w-24">
+          <div className="space-y-3">
             <div className="flex items-start gap-2.5">
               <div className={`mt-1 h-2.5 w-2.5 rounded-full shrink-0 ${activeConfig ? "bg-green-500" : "bg-amber-500 animate-pulse"}`} />
               <div className="text-xs">

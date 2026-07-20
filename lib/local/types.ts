@@ -33,7 +33,9 @@ export type ProductVariant = {
   }[];
   price: Money;
   compareAtPrice?: Money;
+  importPrice?: Money;
   image?: Image;
+  images?: Image[];
 };
 
 export type Product = {

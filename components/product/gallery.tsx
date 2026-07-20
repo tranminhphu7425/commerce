@@ -25,7 +25,12 @@ export function Gallery({
         (option) => option.value === searchParams.get(option.name.toLowerCase()),
       ),
     );
-    if (variant?.image) {
+    if (variant?.images && variant.images.length > 0) {
+      const variantImageIndex = images.findIndex((img) => img.src === variant.images?.[0]?.url);
+      if (variantImageIndex !== -1) {
+        imageIndex = variantImageIndex;
+      }
+    } else if (variant?.image) {
       const variantImageIndex = images.findIndex((img) => img.src === variant.image?.url);
       if (variantImageIndex !== -1) {
         imageIndex = variantImageIndex;
