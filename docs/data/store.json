@@ -5,8 +5,8 @@
       "handle": "moi-go-ctf-thu-cong",
       "availableForSale": true,
       "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-      "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá.",
-      "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá.</p>",
+      "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá. xin chèo",
+      "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá. xin chèo</p>",
       "options": [
         {
           "id": "opt-1784471683739",
@@ -14,13 +14,14 @@
           "values": [
             "6.5g",
             "9g",
-            "13g"
+            "13g",
+            "15g"
           ]
         }
       ],
       "priceRange": {
         "minVariantPrice": {
-          "amount": "1111111",
+          "amount": "44444",
           "currencyCode": "VND"
         },
         "maxVariantPrice": {
@@ -30,7 +31,7 @@
       },
       "variants": [
         {
-          "id": "var-1784537049666-0",
+          "id": "var-1784546928992-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -40,12 +41,12 @@
             }
           ],
           "price": {
-            "amount": "1111111",
+            "amount": "111111",
             "currencyCode": "VND"
           }
         },
         {
-          "id": "var-1784537049666-1",
+          "id": "var-1784546928992-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -60,7 +61,7 @@
           }
         },
         {
-          "id": "var-1784537049666-2",
+          "id": "var-1784546928992-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -73,17 +74,32 @@
             "amount": "1231231",
             "currencyCode": "VND"
           }
+        },
+        {
+          "id": "var-1784546928992-3",
+          "title": "15g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Trọng lượng",
+              "value": "15g"
+            }
+          ],
+          "price": {
+            "amount": "44444",
+            "currencyCode": "VND"
+          }
         }
       ],
       "featuredImage": {
-        "url": "/commerce/images/products/1784530059674--ang-ki-ngay.png",
+        "url": "/commerce/images/products/1784546878155-260710-google-namnguyen-4149.jpg",
         "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
         "width": 800,
         "height": 800
       },
       "images": [
         {
-          "url": "/commerce/images/products/1784530059674--ang-ki-ngay.png",
+          "url": "/commerce/images/products/1784546878155-260710-google-namnguyen-4149.jpg",
           "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
           "width": 800,
           "height": 800
@@ -91,14 +107,14 @@
       ],
       "seo": {
         "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-        "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá."
+        "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá. xin chèo"
       },
       "tags": [
         "moi-cau",
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-20T08:44:09.666Z",
+      "updatedAt": "2026-07-20T11:28:48.992Z",
       "collections": [
         "moi-cau"
       ]
