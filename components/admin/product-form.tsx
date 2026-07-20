@@ -379,7 +379,7 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
               checked={availableForSale}
               onChange={(e) => setAvailableForSale(e.target.checked)}
             />
-            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
+            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-empty after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
           </div>
           <span className="text-sm font-bold text-orange-600 dark:text-orange-400 w-16">{availableForSale ? "Hiển thị" : "Đã ẩn"}</span>
         </label>

@@ -4,6 +4,10 @@
 @source "../components";
 @source "../lib";
 
+@utility content-empty {
+  content: "";
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @plugin "@tailwindcss/container-queries";
