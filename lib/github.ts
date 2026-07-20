@@ -271,3 +271,143 @@ export async function syncStoreToGitHub(
     return { success: false, error: err.message || "Lỗi khi đồng bộ dữ liệu với GitHub" };
   }
 }
+
+export interface FileToCommit {
+  path: string;
+  content: string; // Base64 encoded or UTF-8 text string
+  isBase64?: boolean;
+}
+
+/**
+ * Commit multiple files (Images + JSON store) in ONE SINGLE GIT COMMIT to GitHub
+ * Prevents multiple GitHub Actions deployment triggers.
+ */
+export async function commitMultipleFilesToGitHub(
+  files: FileToCommit[],
+  commitMessage: string
+): Promise<{ success: boolean; error?: string }> {
+  const config = getGitHubConfig();
+  if (!config || !config.token) {
+    return { success: false, error: "Chưa cấu hình GitHub Token" };
+  }
+
+  const { owner, repo, token, branch = "main" } = config;
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: "application/vnd.github.v3+json",
+    "Content-Type": "application/json",
+  };
+
+  try {
+    // 1. Get latest commit SHA on branch
+    const refRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${branch}`,
+      { headers, cache: "no-store" }
+    );
+    if (!refRes.ok) {
+      const err = await refRes.json().catch(() => ({}));
+      return { success: false, error: `Không thể lấy thông tin branch: ${err.message || refRes.statusText}` };
+    }
+    const refData = await refRes.json();
+    const latestCommitSha = refData.object.sha;
+
+    // 2. Get tree SHA of latest commit
+    const commitRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/git/commits/${latestCommitSha}`,
+      { headers, cache: "no-store" }
+    );
+    if (!commitRes.ok) {
+      const err = await commitRes.json().catch(() => ({}));
+      return { success: false, error: `Không thể lấy commit SHA: ${err.message || commitRes.statusText}` };
+    }
+    const commitData = await commitRes.json();
+    const baseTreeSha = commitData.tree.sha;
+
+    // 3. Create Blobs for each file
+    const treeItems: { path: string; mode: string; type: string; sha: string }[] = [];
+
+    for (const file of files) {
+      const blobRes = await fetch(
+        `https://api.github.com/repos/${owner}/${repo}/git/blobs`,
+        {
+          method: "POST",
+          headers,
+          body: JSON.stringify({
+            content: file.content,
+            encoding: file.isBase64 ? "base64" : "utf-8",
+          }),
+        }
+      );
+      if (!blobRes.ok) {
+        const err = await blobRes.json().catch(() => ({}));
+        return { success: false, error: `Lỗi tạo blob cho file ${file.path}: ${err.message || blobRes.statusText}` };
+      }
+      const blobData = await blobRes.json();
+
+      treeItems.push({
+        path: file.path,
+        mode: "100644",
+        type: "blob",
+        sha: blobData.sha,
+      });
+    }
+
+    // 4. Create new Tree
+    const treeRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/git/trees`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          base_tree: baseTreeSha,
+          tree: treeItems,
+        }),
+      }
+    );
+    if (!treeRes.ok) {
+      const err = await treeRes.json().catch(() => ({}));
+      return { success: false, error: `Lỗi khi tạo git tree: ${err.message || treeRes.statusText}` };
+    }
+    const treeData = await treeRes.json();
+
+    // 5. Create new Commit
+    const newCommitRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/git/commits`,
+      {
+        method: "POST",
+        headers,
+        body: JSON.stringify({
+          message: commitMessage,
+          tree: treeData.sha,
+          parents: [latestCommitSha],
+        }),
+      }
+    );
+    if (!newCommitRes.ok) {
+      const err = await newCommitRes.json().catch(() => ({}));
+      return { success: false, error: `Lỗi khi tạo commit mới: ${err.message || newCommitRes.statusText}` };
+    }
+    const newCommitData = await newCommitRes.json();
+
+    // 6. Update reference (branch HEAD)
+    const updateRefRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${branch}`,
+      {
+        method: "PATCH",
+        headers,
+        body: JSON.stringify({
+          sha: newCommitData.sha,
+          force: false,
+        }),
+      }
+    );
+    if (!updateRefRes.ok) {
+      const err = await updateRefRes.json().catch(() => ({}));
+      return { success: false, error: `Lỗi khi cập nhật HEAD branch: ${err.message || updateRefRes.statusText}` };
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message || "Lỗi đồng bộ gộp commit lên GitHub" };
+  }
+}
