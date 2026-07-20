@@ -4,6 +4,7 @@ import { ThreeItemGrid } from "components/grid/three-items";
 import Hero from "components/hero";
 import Footer from "components/layout/footer";
 import ShopInfo from "components/shop-info";
+import { getProducts } from "lib/local";
 
 export const metadata = {
   description:
@@ -13,14 +14,16 @@ export const metadata = {
   },
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await getProducts({});
+
   return (
     <>
       <Hero />
       <ShopInfo />
       <Features />
-      <ThreeItemGrid />
-      <Carousel />
+      <ThreeItemGrid initialProducts={products} />
+      <Carousel initialProducts={products} />
       <Footer />
     </>
   );

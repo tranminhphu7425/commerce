@@ -202,7 +202,7 @@ export async function syncStoreToGitHub(
     const updatedJsonString = JSON.stringify(updatedStore, null, 2);
     const base64UpdatedContent = utf8ToBase64(updatedJsonString);
 
-    // 3. Put updated store.json back to GitHub
+    // 3. Put updated store.json back to GitHub (data/store.json)
     const putUrl = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${filePath}`;
     const putRes = await fetch(putUrl, {
       method: "PUT",
@@ -223,6 +223,48 @@ export async function syncStoreToGitHub(
       const err = await putRes.json().catch(() => ({}));
       return { success: false, error: `Không thể cập nhật store.json trên GitHub: ${err.message || putRes.statusText}` };
     }
+
+    // 4. Helper to commit file to extra path (public/data/store.json and docs/data/store.json)
+    const syncExtraPath = async (targetPath: string) => {
+      try {
+        const getExtraUrl = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${targetPath}?ref=${branch}`;
+        const extraRes = await fetch(getExtraUrl, {
+          method: "GET",
+          cache: "no-store",
+          headers: {
+            Authorization: `token ${config.token}`,
+            Accept: "application/vnd.github.v3+json",
+          },
+        });
+
+        let extraSha: string | undefined = undefined;
+        if (extraRes.ok) {
+          const extraData = await extraRes.json();
+          extraSha = extraData.sha;
+        }
+
+        const putExtraUrl = `https://api.github.com/repos/${config.owner}/${config.repo}/contents/${targetPath}`;
+        await fetch(putExtraUrl, {
+          method: "PUT",
+          headers: {
+            Authorization: `token ${config.token}`,
+            Accept: "application/vnd.github.v3+json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: `${commitMessage} (sync ${targetPath})`,
+            content: base64UpdatedContent,
+            ...(extraSha ? { sha: extraSha } : {}),
+            branch: branch,
+          }),
+        });
+      } catch {
+        // ignore background extra sync errors
+      }
+    };
+
+    await syncExtraPath("public/data/store.json");
+    await syncExtraPath("docs/data/store.json");
 
     return { success: true };
   } catch (err: any) {

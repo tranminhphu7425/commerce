@@ -1,6 +1,6 @@
 1:"$Sreact.fragment"
-2:I[91296,["/commerce/_next/static/chunks/a638fd68d9418c68.js","/commerce/_next/static/chunks/e367b4b1186fb855.js","/commerce/_next/static/chunks/42628819cc9408a5.js","/commerce/_next/static/chunks/997672e7fda7b277.js","/commerce/_next/static/chunks/c2a9aebd9432dd48.js","/commerce/_next/static/chunks/3cc588b877656d2d.js"],"default"]
+2:I[91296,["/commerce/_next/static/chunks/515784a7b792a908.js","/commerce/_next/static/chunks/997672e7fda7b277.js","/commerce/_next/static/chunks/2cbd8714c0a62b9e.js","/commerce/_next/static/chunks/c2a9aebd9432dd48.js","/commerce/_next/static/chunks/0aed6d7f87cefa25.js"],"default"]
 3:I[45698,["/commerce/_next/static/chunks/8c726a51732a8291.js","/commerce/_next/static/chunks/ffbad761d25dd595.js"],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"buildId":"UzOVK66QJ5IrKTQ0bYpi6","rsc":["$","$1","c",{"children":[["$","section",null,{"children":["$","ul",null,{"className":"grid grid-flow-row gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3","children":["$","$L2",null,{"products":[]}]}]}],[["$","script","script-0",{"src":"/commerce/_next/static/chunks/3cc588b877656d2d.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
+0:{"buildId":"z_reljwP8bm7rgC7MvKwk","rsc":["$","$1","c",{"children":[["$","section",null,{"children":["$","ul",null,{"className":"grid grid-flow-row gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3","children":["$","$L2",null,{"products":[]}]}]}],[["$","script","script-0",{"src":"/commerce/_next/static/chunks/0aed6d7f87cefa25.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"loading":null,"isPartial":false}
 5:null

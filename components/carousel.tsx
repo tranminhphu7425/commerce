@@ -1,12 +1,18 @@
-import { getCollectionProducts } from "lib/local";
+"use client";
+
+import type { Product } from "lib/local/types";
+import { useDynamicProducts } from "lib/local/client-store";
 import Link from "next/link";
 import { GridTileImage } from "./grid/tile";
 
-export async function Carousel() {
-  // Show featured products in the carousel
-  const products = await getCollectionProducts({
-    collection: "featured",
-  });
+export function Carousel({ initialProducts = [] }: { initialProducts?: Product[] }) {
+  const dynamicProducts = useDynamicProducts(initialProducts);
+
+  const featuredProducts = dynamicProducts.filter((p) =>
+    ((p as any).collections || []).includes("featured")
+  );
+
+  const products = featuredProducts.length > 0 ? featuredProducts : dynamicProducts;
 
   if (!products?.length) return null;
 

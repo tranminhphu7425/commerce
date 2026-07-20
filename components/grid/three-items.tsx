@@ -1,6 +1,8 @@
+"use client";
+
 import { GridTileImage } from "components/grid/tile";
-import { getCollectionProducts } from "lib/local";
 import type { Product } from "lib/local/types";
+import { useDynamicProducts } from "lib/local/client-store";
 import Link from "next/link";
 
 function ThreeItemGridItem({
@@ -47,21 +49,25 @@ function ThreeItemGridItem({
   );
 }
 
-export async function ThreeItemGrid() {
-  // Show featured products on the homepage
-  const homepageItems = await getCollectionProducts({
-    collection: "featured",
-  });
+export function ThreeItemGrid({ initialProducts = [] }: { initialProducts?: Product[] }) {
+  const dynamicProducts = useDynamicProducts(initialProducts);
 
-  if (!homepageItems[0] || !homepageItems[1] || !homepageItems[2]) return null;
+  // Filter products by collection "featured" or take top products
+  const homepageItems = dynamicProducts.filter((p) =>
+    ((p as any).collections || []).includes("featured")
+  );
 
-  const [firstProduct, secondProduct, thirdProduct] = homepageItems;
+  const displayItems = homepageItems.length >= 3 ? homepageItems : dynamicProducts;
+
+  if (!displayItems[0] || !displayItems[1] || !displayItems[2]) return null;
+
+  const [firstProduct, secondProduct, thirdProduct] = displayItems;
 
   return (
     <section className="mx-auto grid max-w-(--breakpoint-2xl) gap-4 px-4 pb-4 md:grid-cols-6 md:grid-rows-2 lg:max-h-[calc(100vh-200px)]">
-      <ThreeItemGridItem size="full" item={firstProduct} priority={true} />
-      <ThreeItemGridItem size="half" item={secondProduct} priority={true} />
-      <ThreeItemGridItem size="half" item={thirdProduct} />
+      <ThreeItemGridItem size="full" item={firstProduct!} priority={true} />
+      <ThreeItemGridItem size="half" item={secondProduct!} priority={true} />
+      <ThreeItemGridItem size="half" item={thirdProduct!} />
     </section>
   );
 }

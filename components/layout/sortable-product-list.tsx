@@ -3,15 +3,17 @@
 import { useSearchParams } from "next/navigation";
 import { Product } from "lib/local/types";
 import { sorting, defaultSort } from "lib/constants";
+import { useDynamicProducts } from "lib/local/client-store";
 import ProductGridItems from "./product-grid-items";
 
 export default function SortableProductList({ products }: { products: Product[] }) {
+  const dynamicProducts = useDynamicProducts(products);
   const searchParams = useSearchParams();
   const sort = searchParams.get("sort");
   const query = searchParams.get("q");
   const { sortKey, reverse } = sorting.find((item) => item.slug === sort) || defaultSort;
 
-  let processedProducts = [...products];
+  let processedProducts = [...dynamicProducts];
 
   // Client-side filtering for search query
   if (query) {
