@@ -30,7 +30,7 @@
       },
       "variants": [
         {
-          "id": "var-1784471683739-0",
+          "id": "var-1784530080122-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -45,7 +45,7 @@
           }
         },
         {
-          "id": "var-1784471683739-1",
+          "id": "var-1784530080122-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -60,7 +60,7 @@
           }
         },
         {
-          "id": "var-1784471683739-2",
+          "id": "var-1784530080122-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -76,14 +76,14 @@
         }
       ],
       "featuredImage": {
-        "url": "/commerce/images/products/moi-go-ctf-thu-cong.webp",
+        "url": "/commerce/images/products/1784530059674--ang-ki-ngay.png",
         "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
         "width": 800,
         "height": 800
       },
       "images": [
         {
-          "url": "/commerce/images/products/moi-go-ctf-thu-cong.webp",
+          "url": "/commerce/images/products/1784530059674--ang-ki-ngay.png",
           "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
           "width": 800,
           "height": 800
@@ -98,7 +98,7 @@
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-19T14:34:43.739Z",
+      "updatedAt": "2026-07-20T06:48:00.122Z",
       "collections": [
         "moi-cau"
       ]
