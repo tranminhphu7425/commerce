@@ -5,8 +5,8 @@
       "handle": "moi-go-ctf-thu-cong",
       "availableForSale": true,
       "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-      "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá nha !!@I*#(&",
-      "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá nha !!@I*#(&</p>",
+      "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá nha !!@I*#(&qưeqwgejqwetuiq",
+      "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá nha !!@I*#(&qưeqwgejqwetuiq</p>",
       "options": [
         {
           "id": "opt-1784471683739",
@@ -31,7 +31,7 @@
       },
       "variants": [
         {
-          "id": "var-1784568884893-0",
+          "id": "var-1784628712150-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -46,7 +46,7 @@
           }
         },
         {
-          "id": "var-1784568884893-1",
+          "id": "var-1784628712150-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -61,7 +61,7 @@
           }
         },
         {
-          "id": "var-1784568884893-2",
+          "id": "var-1784628712150-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -76,7 +76,7 @@
           }
         },
         {
-          "id": "var-1784568884893-3",
+          "id": "var-1784628712150-3",
           "title": "15g",
           "availableForSale": true,
           "selectedOptions": [
@@ -109,18 +109,30 @@
           "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
           "width": 800,
           "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784628681107--ang-ki-ngay.png",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784628698748-z7953179564729-bccc59d2c798c3902d7810f811aa2f28.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
         }
       ],
       "seo": {
         "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-        "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá nha !!@I*#(&"
+        "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá nha !!@I*#(&qưeqwgejqwetuiq"
       },
       "tags": [
         "moi-cau",
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-20T17:34:44.893Z",
+      "updatedAt": "2026-07-21T10:11:52.150Z",
       "collections": [
         "moi-cau"
       ]
@@ -131,7 +143,7 @@
       "availableForSale": true,
       "title": "Dây câu cá Pe 8X CTF Premium Megabarra chính hãng",
       "description": "Dây câu cá Pe 8X CTF Premium Megabarra độ bền cao, chịu tải tốt.",
-      "descriptionHtml": "<p>Dây câu cá Pe 8X CTF Premium.</p><ul><li>Chính hãng Megabarra</li><li>Độ bền cao</li></ul>",
+      "descriptionHtml": "<p>Dây câu cá Pe 8X CTF Premium Megabarra độ bền cao, chịu tải tốt.</p>",
       "options": [
         {
           "id": "opt-2",
@@ -145,18 +157,33 @@
         }
       ],
       "priceRange": {
-        "maxVariantPrice": {
+        "minVariantPrice": {
           "amount": "240000",
           "currencyCode": "VND"
         },
-        "minVariantPrice": {
-          "amount": "240000",
+        "maxVariantPrice": {
+          "amount": "24323412",
           "currencyCode": "VND"
         }
       },
       "variants": [
         {
-          "id": "var-2",
+          "id": "var-1784605624896-0",
+          "title": "0.8",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Size",
+              "value": "0.8"
+            }
+          ],
+          "price": {
+            "amount": "1263813",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1784605624896-1",
           "title": "1.0",
           "availableForSale": true,
           "selectedOptions": [
@@ -169,31 +196,61 @@
             "amount": "240000",
             "currencyCode": "VND"
           }
+        },
+        {
+          "id": "var-1784605624896-2",
+          "title": "1.5",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Size",
+              "value": "1.5"
+            }
+          ],
+          "price": {
+            "amount": "1252352",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1784605624896-3",
+          "title": "2.0",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Size",
+              "value": "2.0"
+            }
+          ],
+          "price": {
+            "amount": "24323412",
+            "currencyCode": "VND"
+          }
         }
       ],
       "featuredImage": {
         "url": "/commerce/images/products/day-cau-pe-8x-ctf-premium.webp",
-        "altText": "Dây câu Pe 8X",
+        "altText": "Dây câu cá Pe 8X CTF Premium Megabarra chính hãng",
         "width": 800,
         "height": 800
       },
       "images": [
         {
           "url": "/commerce/images/products/day-cau-pe-8x-ctf-premium.webp",
-          "altText": "Dây câu Pe 8X",
+          "altText": "Dây câu cá Pe 8X CTF Premium Megabarra chính hãng",
           "width": 800,
           "height": 800
         }
       ],
       "seo": {
-        "title": "Dây câu cá Pe 8X CTF Premium",
-        "description": "Dây câu Pe 8X siêu bền."
+        "title": "Dây câu cá Pe 8X CTF Premium Megabarra chính hãng",
+        "description": "Dây câu cá Pe 8X CTF Premium Megabarra độ bền cao, chịu tải tốt."
       },
       "tags": [
         "day-cau",
         "megabarra"
       ],
-      "updatedAt": "2026-05-13T00:00:00Z",
+      "updatedAt": "2026-07-21T03:47:04.896Z",
       "collections": [
         "day-cau"
       ]
