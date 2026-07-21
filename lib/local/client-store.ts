@@ -148,7 +148,11 @@ export function savePendingImage(filenameOrPath: string, base64Content: string):
       : base64Content;
 
     map[cleanFilename] = cleanBase64;
-    localStorage.setItem(PENDING_IMAGES_KEY, JSON.stringify(map));
+    try {
+      localStorage.setItem(PENDING_IMAGES_KEY, JSON.stringify(map));
+    } catch (quotaErr) {
+      console.warn("Could not save pending image to localStorage (quota reached), RAM cache will serve image preview:", quotaErr);
+    }
     window.dispatchEvent(new CustomEvent("commerce-store-updated"));
   } catch (err) {
     console.warn("Could not save pending image to localStorage:", err);
