@@ -31,7 +31,7 @@
       },
       "variants": [
         {
-          "id": "var-1784628712150-0",
+          "id": "var-1784629890515-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -43,10 +43,24 @@
           "price": {
             "amount": "111111",
             "currencyCode": "VND"
-          }
+          },
+          "image": {
+            "url": "/commerce/images/products/1784629882801-260710-google-namnguyen-4149.jpg",
+            "altText": "6.5g",
+            "width": 800,
+            "height": 800
+          },
+          "images": [
+            {
+              "url": "/commerce/images/products/1784629882801-260710-google-namnguyen-4149.jpg",
+              "altText": "6.5g",
+              "width": 800,
+              "height": 800
+            }
+          ]
         },
         {
-          "id": "var-1784628712150-1",
+          "id": "var-1784629890515-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -58,10 +72,24 @@
           "price": {
             "amount": "1231231",
             "currencyCode": "VND"
-          }
+          },
+          "image": {
+            "url": "/commerce/images/products/1784629886772-fpt.png",
+            "altText": "9g",
+            "width": 800,
+            "height": 800
+          },
+          "images": [
+            {
+              "url": "/commerce/images/products/1784629886772-fpt.png",
+              "altText": "9g",
+              "width": 800,
+              "height": 800
+            }
+          ]
         },
         {
-          "id": "var-1784628712150-2",
+          "id": "var-1784629890515-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -76,7 +104,7 @@
           }
         },
         {
-          "id": "var-1784628712150-3",
+          "id": "var-1784629890515-3",
           "title": "15g",
           "availableForSale": true,
           "selectedOptions": [
@@ -92,20 +120,26 @@
         }
       ],
       "featuredImage": {
-        "url": "/commerce/images/products/1784546878155-260710-google-namnguyen-4149.jpg",
+        "url": "/commerce/images/products/1784629871222-260710-google-namnguyen-4331.jpg",
         "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
         "width": 800,
         "height": 800
       },
       "images": [
         {
-          "url": "/commerce/images/products/1784546878155-260710-google-namnguyen-4149.jpg",
+          "url": "/commerce/images/products/1784629871222-260710-google-namnguyen-4331.jpg",
           "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
           "width": 800,
           "height": 800
         },
         {
           "url": "/commerce/images/products/1784568871465-tai-xuong-1-.png",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784546878155-260710-google-namnguyen-4149.jpg",
           "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
           "width": 800,
           "height": 800
@@ -121,6 +155,72 @@
           "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
           "width": 800,
           "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629522918-260710-google-namnguyen-3453.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629870436-260710-google-namnguyen-4797.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629870676-260710-google-namnguyen-4763.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629870874-260710-google-namnguyen-4149.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629871048-260710-google-namnguyen-4565.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629871401-260710-google-namnguyen-3547.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629871600-260710-google-namnguyen-3540.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629871796-260710-google-namnguyen-3463.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629871998-260710-google-namnguyen-3453.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629882801-260710-google-namnguyen-4149.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1784629886772-fpt.png",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "width": 800,
+          "height": 800
         }
       ],
       "seo": {
@@ -132,7 +232,7 @@
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-21T10:11:52.150Z",
+      "updatedAt": "2026-07-21T10:31:30.515Z",
       "collections": [
         "moi-cau"
       ]
