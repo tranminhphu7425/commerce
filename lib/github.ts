@@ -274,12 +274,13 @@ export async function syncStoreToGitHub(
 
 export interface FileToCommit {
   path: string;
-  content: string; // Base64 encoded or UTF-8 text string
+  content?: string; // Base64 encoded or UTF-8 text string (optional if isDelete is true)
   isBase64?: boolean;
+  isDelete?: boolean;
 }
 
 /**
- * Commit multiple files (Images + JSON store) in ONE SINGLE GIT COMMIT to GitHub
+ * Commit multiple files (Add, Modify, Delete) in ONE SINGLE GIT COMMIT to GitHub
  * Prevents multiple GitHub Actions deployment triggers.
  */
 export async function commitMultipleFilesToGitHub(
@@ -323,17 +324,27 @@ export async function commitMultipleFilesToGitHub(
     const commitData = await commitRes.json();
     const baseTreeSha = commitData.tree.sha;
 
-    // 3. Create Blobs for each file
-    const treeItems: { path: string; mode: string; type: string; sha: string }[] = [];
+    // 3. Create Blobs for each file (or mark for deletion if isDelete is true)
+    const treeItems: { path: string; mode: string; type: string; sha: string | null }[] = [];
 
     for (const file of files) {
+      if (file.isDelete) {
+        treeItems.push({
+          path: file.path,
+          mode: "100644",
+          type: "blob",
+          sha: null,
+        });
+        continue;
+      }
+
       const blobRes = await fetch(
         `https://api.github.com/repos/${owner}/${repo}/git/blobs`,
         {
           method: "POST",
           headers,
           body: JSON.stringify({
-            content: file.content,
+            content: file.content || "",
             encoding: file.isBase64 ? "base64" : "utf-8",
           }),
         }

@@ -3,7 +3,76 @@
 import { useState, useEffect } from "react";
 import type { Product } from "./types";
 import { getGitHubConfig, commitMultipleFilesToGitHub, FileToCommit } from "lib/github";
-import { saveImageCache, getImageCache } from "./image-cache";
+import { saveImageCache, getImageCache, extractFilename } from "./image-cache";
+import type { GitHubConfig } from "lib/github";
+
+/**
+ * Extract set of active image filenames referenced across all products
+ */
+function extractActiveImageFilenames(products: any[]): Set<string> {
+  const set = new Set<string>();
+  products.forEach((p: any) => {
+    if (p.featuredImage?.url) {
+      const fn = extractFilename(p.featuredImage.url);
+      if (fn) set.add(fn);
+    }
+    if (Array.isArray(p.images)) {
+      p.images.forEach((img: any) => {
+        if (img?.url) {
+          const fn = extractFilename(img.url);
+          if (fn) set.add(fn);
+        }
+      });
+    }
+    if (Array.isArray(p.variants)) {
+      p.variants.forEach((v: any) => {
+        if (v.image?.url) {
+          const fn = extractFilename(v.image.url);
+          if (fn) set.add(fn);
+        }
+        if (Array.isArray(v.images)) {
+          v.images.forEach((img: any) => {
+            if (img?.url) {
+              const fn = extractFilename(img.url);
+              if (fn) set.add(fn);
+            }
+          });
+        }
+      });
+    }
+  });
+  return set;
+}
+
+/**
+ * Fetch list of physical image filenames currently on GitHub in public/images/products
+ */
+async function getRemoteImageFilenamesOnGitHub(config: GitHubConfig): Promise<string[]> {
+  const { owner, repo, token, branch = "main" } = config;
+  try {
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/public/images/products?ref=${branch}`;
+    const res = await fetch(apiUrl, {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        Authorization: `token ${token}`,
+        Accept: "application/vnd.github.v3+json",
+      },
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        return data
+          .filter((item: any) => item.type === "file")
+          .map((item: any) => item.name);
+      }
+    }
+  } catch {
+    // ignore fetch errors
+  }
+  return [];
+}
 
 const OVERRIDE_KEY = "commerce_products_override";
 const PENDING_IMAGES_KEY = "commerce_pending_images";
@@ -370,7 +439,7 @@ export async function commitPendingChangesToGitHub(): Promise<{
       },
     ];
 
-    // Add all pending images
+    // 5. Add all pending images
     const pendingImages = getPendingImages();
     pendingImages.forEach((img) => {
       filesToCommit.push({
@@ -380,16 +449,36 @@ export async function commitPendingChangesToGitHub(): Promise<{
       });
     });
 
-    // 6. Generate descriptive commit message
-    const commitMsg = `feat(admin): batch commit ${counts.products} sp đã sửa, ${counts.deleted} sp đã xóa, ${counts.images} ảnh mới`;
+    // 6. Detect orphaned/unused physical image files on GitHub Repo
+    const activeFilenames = extractActiveImageFilenames(storeJson.products);
+    const remoteFilenames = await getRemoteImageFilenamesOnGitHub(config);
+    const orphanFilenames = remoteFilenames.filter((fn) => !activeFilenames.has(fn));
 
-    // 7. Perform single commit to GitHub
+    let deletedOrphanCount = 0;
+    orphanFilenames.forEach((fn) => {
+      filesToCommit.push({
+        path: `public/images/products/${fn}`,
+        isDelete: true,
+      });
+      filesToCommit.push({
+        path: `docs/images/products/${fn}`,
+        isDelete: true,
+      });
+      deletedOrphanCount++;
+    });
+
+    // 7. Generate descriptive commit message
+    const commitMsg = `feat(admin): batch commit ${counts.products} sp đã sửa, ${counts.deleted} sp đã xóa, ${counts.images} ảnh mới${
+      deletedOrphanCount > 0 ? `, ${deletedOrphanCount} ảnh thừa đã xóa` : ""
+    }`;
+
+    // 8. Perform single commit to GitHub
     const res = await commitMultipleFilesToGitHub(filesToCommit, commitMsg);
     if (!res.success) {
       return res;
     }
 
-    // 8. Clear local staging draft upon successful commit
+    // 9. Clear local staging draft upon successful commit
     clearAllLocalOverridesAndPending();
 
     return { success: true };
