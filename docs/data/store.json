@@ -4,7 +4,7 @@
       "id": "prod-001",
       "handle": "moi-go-ctf-thu-cong",
       "availableForSale": true,
-      "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+      "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam 15g chính hãng bắt cá",
       "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá nha !!@I*#(&qưeqwgejqwetuiq",
       "descriptionHtml": "<p>Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá nha !!@I*#(&qưeqwgejqwetuiq</p>",
       "options": [
@@ -31,7 +31,7 @@
       },
       "variants": [
         {
-          "id": "var-1784630697759-0",
+          "id": "var-1784793631945-0",
           "title": "6.5g",
           "availableForSale": true,
           "selectedOptions": [
@@ -60,7 +60,7 @@
           ]
         },
         {
-          "id": "var-1784630697759-1",
+          "id": "var-1784793631945-1",
           "title": "9g",
           "availableForSale": true,
           "selectedOptions": [
@@ -89,7 +89,7 @@
           ]
         },
         {
-          "id": "var-1784630697759-2",
+          "id": "var-1784793631945-2",
           "title": "13g",
           "availableForSale": true,
           "selectedOptions": [
@@ -103,14 +103,14 @@
             "currencyCode": "VND"
           },
           "image": {
-            "url": "/commerce/images/products/1784630691390-20260705-231415.jpg",
+            "url": "/commerce/images/products/1784637341395-picture1.png",
             "altText": "13g",
             "width": 800,
             "height": 800
           },
           "images": [
             {
-              "url": "/commerce/images/products/1784630691390-20260705-231415.jpg",
+              "url": "/commerce/images/products/1784637341395-picture1.png",
               "altText": "13g",
               "width": 800,
               "height": 800
@@ -118,7 +118,7 @@
           ]
         },
         {
-          "id": "var-1784630697759-3",
+          "id": "var-1784793631945-3",
           "title": "15g",
           "availableForSale": true,
           "selectedOptions": [
@@ -132,14 +132,14 @@
             "currencyCode": "VND"
           },
           "image": {
-            "url": "/commerce/images/products/1784630693088-20260705-231401.jpg",
+            "url": "/commerce/images/products/1784793629686-1783916449852-4410141307633374344-g1938351949153887837-4bae70984f9aa9294b919c930b933559.jpg",
             "altText": "15g",
             "width": 800,
             "height": 800
           },
           "images": [
             {
-              "url": "/commerce/images/products/1784630693088-20260705-231401.jpg",
+              "url": "/commerce/images/products/1784793629686-1783916449852-4410141307633374344-g1938351949153887837-4bae70984f9aa9294b919c930b933559.jpg",
               "altText": "15g",
               "width": 800,
               "height": 800
@@ -148,513 +148,51 @@
         }
       ],
       "featuredImage": {
-        "url": "/commerce/images/products/1784629871222-260710-google-namnguyen-4331.jpg",
-        "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+        "url": "/commerce/images/products/1784637341395-picture1.png",
+        "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam 15g chính hãng bắt cá",
         "width": 800,
         "height": 800
       },
       "images": [
         {
-          "url": "/commerce/images/products/1784629871222-260710-google-namnguyen-4331.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784568871465-tai-xuong-1-.png",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784546878155-260710-google-namnguyen-4149.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784628681107--ang-ki-ngay.png",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784628698748-z7953179564729-bccc59d2c798c3902d7810f811aa2f28.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784629522918-260710-google-namnguyen-3453.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784629870436-260710-google-namnguyen-4797.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784629870676-260710-google-namnguyen-4763.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784629870874-260710-google-namnguyen-4149.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784629871048-260710-google-namnguyen-4565.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784629871401-260710-google-namnguyen-3547.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784629871600-260710-google-namnguyen-3540.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784629871796-260710-google-namnguyen-3463.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784629871998-260710-google-namnguyen-3453.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "url": "/commerce/images/products/1784637341395-picture1.png",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam 15g chính hãng bắt cá",
           "width": 800,
           "height": 800
         },
         {
           "url": "/commerce/images/products/1784629882801-260710-google-namnguyen-4149.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam 15g chính hãng bắt cá",
           "width": 800,
           "height": 800
         },
         {
           "url": "/commerce/images/products/1784629886772-fpt.png",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam 15g chính hãng bắt cá",
           "width": 800,
           "height": 800
         },
         {
-          "url": "/commerce/images/products/1784630652681-20260703-143241.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "url": "/commerce/images/products/1784568871465-tai-xuong-1-.png",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam 15g chính hãng bắt cá",
           "width": 800,
           "height": 800
         },
         {
-          "url": "/commerce/images/products/1784630664342-20260703-143307.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "url": "/commerce/images/products/1784629871222-260710-google-namnguyen-4331.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam 15g chính hãng bắt cá",
           "width": 800,
           "height": 800
         },
         {
-          "url": "/commerce/images/products/1784630664624-20260703-143212.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630664920-20260703-143213.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630665265-20260703-143214.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630665566-20260703-143215-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630665908-20260703-143215.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630666121-20260703-143216-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630666379-20260703-143216.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630666636-20260703-143217.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630666908-20260703-143218-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630667172-20260703-143218.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630667477-20260703-143219-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630667763-20260703-143219.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630668100-20260703-143220-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630668394-20260703-143220.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630668712-20260703-143221.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630669067-20260703-143222-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630669402-20260703-143223.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630669699-20260703-143224.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630669997-20260703-143225-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630670316-20260703-143225.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630670622-20260703-143227-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630670948-20260703-143227.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630671281-20260703-143228.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630671582-20260703-143229-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630671857-20260703-143229.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630672175-20260703-143230.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630672500-20260703-143231-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630672853-20260703-143231.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630673156-20260703-143232.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630673536-20260703-143233.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630673845-20260703-143234-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630674175-20260703-143234.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630674461-20260703-143235.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630674774-20260703-143236.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630675131-20260703-143237.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630675515-20260703-143238.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630676034-20260703-143240-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630676355-20260703-143240.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630676692-20260703-143241-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630677014-20260703-143241.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630677321-20260703-143242.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630677762-20260703-143243-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630678200-20260703-143243.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630678511-20260703-143244.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630678817-20260703-143245.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630679119-20260703-143247.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630679511-20260703-143249.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630679770-20260703-143250.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630680039-20260703-143252.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630680379-20260703-143253.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630680728-20260703-143254.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630681095-20260703-143255.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630681421-20260703-143257.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630681677-20260703-143258.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630681974-20260703-143259-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630682275-20260703-143259.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630682597-20260703-143300.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630682897-20260703-143301-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630683203-20260703-143301.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630683461-20260703-143302.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630683824-20260703-143304.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630684144-20260703-143306-0-.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630684418-20260703-143306.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630691390-20260705-231415.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
-          "width": 800,
-          "height": 800
-        },
-        {
-          "url": "/commerce/images/products/1784630693088-20260705-231401.jpg",
-          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+          "url": "/commerce/images/products/1784793629686-1783916449852-4410141307633374344-g1938351949153887837-4bae70984f9aa9294b919c930b933559.jpg",
+          "altText": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam 15g chính hãng bắt cá",
           "width": 800,
           "height": 800
         }
       ],
       "seo": {
-        "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam chính hãng bắt cá",
+        "title": "Mồi gỗ CTF thủ công 6.5gam 9gam 13gam 15g chính hãng bắt cá",
         "description": "Mồi gỗ CTF thủ công chất lượng cao, có nhiều kích cỡ 6.5g, 9g, 13g. Thích hợp cho nhiều loại cá nha !!@I*#(&qưeqwgejqwetuiq"
       },
       "tags": [
@@ -662,7 +200,7 @@
         "ctf",
         "thu-cong"
       ],
-      "updatedAt": "2026-07-21T10:44:57.759Z",
+      "updatedAt": "2026-07-23T08:00:31.945Z",
       "collections": [
         "moi-cau"
       ]
