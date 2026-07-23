@@ -58,15 +58,24 @@ function SubmitButton({
   );
 }
 
-export function AddToCart({ product }: { product: Product }) {
+export function AddToCart({
+  product,
+  selectedOptions,
+}: {
+  product: Product;
+  selectedOptions?: Record<string, string>;
+}) {
   const { variants } = product;
   const { addCartItem } = useCart();
   const searchParams = useSearchParams();
 
   const variant = variants.find((variant: ProductVariant) =>
-    variant.selectedOptions.every(
-      (option) => option.value === searchParams.get(option.name.toLowerCase()),
-    ),
+    variant.selectedOptions.every((option) => {
+      const val = selectedOptions
+        ? selectedOptions[option.name.toLowerCase()]
+        : searchParams.get(option.name.toLowerCase());
+      return option.value === val;
+    })
   );
   const defaultVariantId = variants.length === 1 ? variants[0]?.id : undefined;
   const selectedVariantId = variant?.id || defaultVariantId;

@@ -10,6 +10,18 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
+interface ShippingProfile {
+  id: string;
+  name: string;
+  phone: string;
+  street: string;
+  provinceCode: number;
+  provinceName: string;
+  wardCode: number;
+  wardName: string;
+  note?: string;
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart } = useCart();
@@ -18,27 +30,109 @@ export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const [formData, setFormData] = useState({
+
+  // Address profiles state
+  const [profiles, setProfiles] = useState<ShippingProfile[]>([]);
+  const [activeProfileId, setActiveProfileId] = useState<string>('');
+  const [isEditingOrAdding, setIsEditingOrAdding] = useState(false);
+  const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
+  const [formValues, setFormValues] = useState({
     name: '',
     phone: '',
-    address: '',
+    street: '',
+    provinceCode: 0,
+    wardCode: 0,
     note: ''
   });
+
+  // Provinces API state
+  const [provinces, setProvinces] = useState<{ code: number; name: string }[]>([]);
+  const [wards, setWards] = useState<{ code: number; name: string }[]>([]);
+  const [loadingProvinces, setLoadingProvinces] = useState(false);
+  const [loadingWards, setLoadingWards] = useState(false);
+
+  // Payment method state
+  const [paymentMethod, setPaymentMethod] = useState<'qr' | 'cod'>('qr');
 
   const { bankId: BANK_ID, accountNo: ACCOUNT_NO, accountName: ACCOUNT_NAME } = CONTACT_INFO;
   const TEMPLATE = "compact";
 
   useEffect(() => {
     setMounted(true);
+
+    // Retrieve profiles from localStorage
+    const storedProfiles = localStorage.getItem("commerce_shipping_profiles");
+    const storedActiveId = localStorage.getItem("commerce_active_profile_id");
+    if (storedProfiles) {
+      try {
+        const parsed = JSON.parse(storedProfiles);
+        setProfiles(parsed);
+        if (parsed.length > 0) {
+          const activeId = storedActiveId && parsed.some((p: any) => p.id === storedActiveId)
+            ? storedActiveId
+            : parsed[0].id;
+          setActiveProfileId(activeId);
+        } else {
+          setIsEditingOrAdding(true);
+          setFormMode('add');
+        }
+      } catch (e) {
+        console.error("Error parsing stored profiles", e);
+        setIsEditingOrAdding(true);
+        setFormMode('add');
+      }
+    } else {
+      setIsEditingOrAdding(true);
+      setFormMode('add');
+    }
+
+    // Fetch provinces list
+    const fetchProvinces = async () => {
+      setLoadingProvinces(true);
+      try {
+        const res = await fetch("https://provinces.open-api.vn/api/v2/p/");
+        if (res.ok) {
+          const data = await res.json();
+          setProvinces(data);
+        }
+      } catch (err) {
+        console.error("Error fetching provinces:", err);
+      } finally {
+        setLoadingProvinces(false);
+      }
+    };
+    fetchProvinces();
   }, []);
+
+  // Fetch wards when province code changes
+  useEffect(() => {
+    if (!formValues.provinceCode) {
+      setWards([]);
+      return;
+    }
+    const fetchWards = async () => {
+      setLoadingWards(true);
+      try {
+        const res = await fetch(`https://provinces.open-api.vn/api/v2/w/?province=${formValues.provinceCode}`);
+        if (res.ok) {
+          const data = await res.json();
+          setWards(data || []);
+        }
+      } catch (err) {
+        console.error("Error fetching wards:", err);
+      } finally {
+        setLoadingWards(false);
+      }
+    };
+    fetchWards();
+  }, [formValues.provinceCode]);
 
   if (!mounted) return null;
 
   if (!cart || cart.lines.length === 0) {
     if (step === 3) {
       return (
-        <div className="flex min-h-[60vh] flex-col items-center justify-center p-8 text-center">
+        <div className="flex min-h-[60vh] flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
           <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100 text-green-600">
             <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -65,7 +159,12 @@ export default function CheckoutPage() {
     );
   }
 
-  // Generate a random order ID that persists during the session
+  const activeProfile = profiles.find((p) => p.id === activeProfileId);
+  const displayAddress = activeProfile
+    ? `${activeProfile.street}, ${activeProfile.wardName}, ${activeProfile.provinceName}`
+    : '';
+
+  // Order code generation
   const orderId = `CTF${Date.now()}${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
   const qrUrl = `https://img.vietqr.io/image/${BANK_ID}-${ACCOUNT_NO}-${TEMPLATE}.png?amount=${cart.cost.totalAmount.amount}&addInfo=Thanh toan don hang ${orderId}&accountName=${encodeURIComponent(ACCOUNT_NAME)}`;
 
@@ -76,7 +175,7 @@ export default function CheckoutPage() {
     }).format(parseFloat(amount));
   };
 
-  const isFormValid = formData.name.trim() !== '' && formData.phone.trim() !== '' && formData.address.trim() !== '';
+  const isFormValid = !!activeProfile && !isEditingOrAdding;
 
   const generateOrderMessage = (html: boolean = false) => {
     const itemsText = cart.lines
@@ -89,25 +188,34 @@ export default function CheckoutPage() {
       })
       .join('\n');
 
+    const addressStr = activeProfile 
+      ? `${activeProfile.street}, ${activeProfile.wardName}, ${activeProfile.provinceName}`
+      : '';
+    const nameStr = activeProfile ? activeProfile.name : '';
+    const phoneStr = activeProfile ? activeProfile.phone : '';
+    const noteStr = activeProfile ? (activeProfile.note || 'Không có') : '';
+    const paymentStr = paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : 'Chuyển khoản VietQR';
+
     if (html) {
       return `📦 <b>ĐƠN HÀNG MỚI: ${orderId}</b>\n` +
              `---------------------------\n` +
-             `👤 <b>Khách hàng:</b> ${formData.name}\n` +
-             `📞 <b>Điện thoại:</b> ${formData.phone}\n` +
-             `🏠 <b>Địa chỉ:</b> ${formData.address}\n` +
-             `📝 <b>Ghi chú:</b> ${formData.note || 'Không có'}\n` +
+             `👤 <b>Khách hàng:</b> ${nameStr}\n` +
+             `📞 <b>Điện thoại:</b> ${phoneStr}\n` +
+             `🏠 <b>Địa chỉ:</b> ${addressStr}\n` +
+             `💵 <b>Thanh toán:</b> ${paymentStr}\n` +
+             `📝 <b>Ghi chú:</b> ${noteStr}\n` +
              `---------------------------\n` +
              `🛒 <b>Chi tiết mặt hàng:</b>\n${itemsText}\n` +
              `---------------------------\n` +
              `💰 <b>Tổng cộng: ${formatCurrency(cart.cost.totalAmount.amount)}</b>`;
     }
 
-    return `📦 ĐƠN HÀNG MỚI: ${orderId}\n---------------------------\n👤 Khách hàng: ${formData.name}\n📞 Điện thoại: ${formData.phone}\n🏠 Địa chỉ: ${formData.address}\n📝 Ghi chú: ${formData.note || 'Không có'}\n---------------------------\n🛒 Chi tiết mặt hàng:\n${itemsText}\n---------------------------\n💰 Tổng cộng: ${formatCurrency(cart.cost.totalAmount.amount)}\n---------------------------\nVui lòng xác nhận đơn hàng giúp em nhé!`;
+    return `📦 ĐƠN HÀNG MỚI: ${orderId}\n---------------------------\n👤 Khách hàng: ${nameStr}\n📞 Điện thoại: ${phoneStr}\n🏠 Địa chỉ: ${addressStr}\n💵 Thanh toán: ${paymentStr}\n📝 Ghi chú: ${noteStr}\n---------------------------\n🛒 Chi tiết mặt hàng:\n${itemsText}\n---------------------------\n💰 Tổng cộng: ${formatCurrency(cart.cost.totalAmount.amount)}\n---------------------------\nVui lòng xác nhận đơn hàng giúp em nhé!`;
   };
 
   const handleNextStep = () => {
-    if (!isFormValid) {
-      toast.error('Vui lòng điền đầy đủ thông tin giao hàng bắt buộc');
+    if (!activeProfile) {
+      toast.error('Vui lòng tạo hoặc chọn địa chỉ giao hàng trước khi tiếp tục');
       return;
     }
     setStep(2);
@@ -121,7 +229,7 @@ export default function CheckoutPage() {
       const telegramToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
       const telegramChatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
 
-      // Send to Telegram if configured
+      // Send to Telegram if chat details are configured
       if (telegramToken && telegramChatId) {
         const message = generateOrderMessage(true);
         const url = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
@@ -157,9 +265,117 @@ export default function CheckoutPage() {
     router.push('/');
   };
 
-  // Render Step 3 (Success) directly
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      !formValues.name.trim() ||
+      !formValues.phone.trim() ||
+      !formValues.street.trim() ||
+      !formValues.provinceCode ||
+      !formValues.wardCode
+    ) {
+      toast.error("Vui lòng nhập đầy đủ các trường bắt buộc (*)");
+      return;
+    }
+
+    const provinceName = provinces.find((p) => p.code === formValues.provinceCode)?.name || "";
+    const wardName = wards.find((w) => w.code === formValues.wardCode)?.name || "";
+
+    const newProfile: ShippingProfile = {
+      id: formMode === 'edit' ? activeProfileId : `prof-${Date.now()}`,
+      name: formValues.name,
+      phone: formValues.phone,
+      street: formValues.street,
+      provinceCode: formValues.provinceCode,
+      provinceName,
+      wardCode: formValues.wardCode,
+      wardName,
+      note: formValues.note
+    };
+
+    let updatedProfiles = [];
+    if (formMode === 'edit') {
+      updatedProfiles = profiles.map((p) => p.id === activeProfileId ? newProfile : p);
+    } else {
+      updatedProfiles = [...profiles, newProfile];
+    }
+
+    setProfiles(updatedProfiles);
+    setActiveProfileId(newProfile.id);
+    localStorage.setItem("commerce_shipping_profiles", JSON.stringify(updatedProfiles));
+    localStorage.setItem("commerce_active_profile_id", newProfile.id);
+    setIsEditingOrAdding(false);
+    toast.success(formMode === 'edit' ? "Đã cập nhật địa chỉ giao hàng" : "Đã thêm địa chỉ giao hàng mới");
+  };
+
+  const handleAddNewClick = () => {
+    setFormMode('add');
+    setFormValues({
+      name: '',
+      phone: '',
+      street: '',
+      provinceCode: 0,
+      wardCode: 0,
+      note: ''
+    });
+    setIsEditingOrAdding(true);
+  };
+
+  const handleEditProfileClick = (profile: ShippingProfile, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setFormMode('edit');
+    setActiveProfileId(profile.id);
+    localStorage.setItem("commerce_active_profile_id", profile.id);
+    setFormValues({
+      name: profile.name,
+      phone: profile.phone,
+      street: profile.street,
+      provinceCode: profile.provinceCode,
+      wardCode: profile.wardCode,
+      note: profile.note || ''
+    });
+    setIsEditingOrAdding(true);
+  };
+
+  const handleDeleteProfile = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm("Bạn có chắc chắn muốn xóa địa chỉ này?")) {
+      const updated = profiles.filter((p) => p.id !== id);
+      setProfiles(updated);
+      localStorage.setItem("commerce_shipping_profiles", JSON.stringify(updated));
+      
+      if (activeProfileId === id) {
+        const nextActive = updated[0]?.id || '';
+        setActiveProfileId(nextActive);
+        localStorage.setItem("commerce_active_profile_id", nextActive);
+        
+        if (updated.length === 0) {
+          setIsEditingOrAdding(true);
+          setFormMode('add');
+          setFormValues({
+            name: '',
+            phone: '',
+            street: '',
+            provinceCode: 0,
+            wardCode: 0,
+            note: ''
+          });
+        }
+      }
+      toast.success("Đã xóa địa chỉ thành công!");
+    }
+  };
+
+  const handleSelectProfile = (id: string) => {
+    if (isEditingOrAdding) {
+      setIsEditingOrAdding(false);
+    }
+    setActiveProfileId(id);
+    localStorage.setItem("commerce_active_profile_id", id);
+  };
+
   if (step === 3) {
-    return null; // Will trigger the empty cart + step 3 condition at the top
+    return null; // Triggers the success container on render cycle
   }
 
   return (
@@ -191,93 +407,279 @@ export default function CheckoutPage() {
             </div>
             
             {step === 1 ? (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 animate-in fade-in slide-in-from-top-4 duration-500">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Họ và tên *</label>
-                  <input
-                    type="text"
-                    placeholder="Nguyễn Văn A"
-                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Số điện thoại *</label>
-                  <input
-                    type="tel"
-                    placeholder="0912 xxx xxx"
-                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
-                    value={formData.phone}
-                    onChange={(e) => {
-                      // Only allow digits, spaces, and plus signs
-                      const sanitizedValue = e.target.value.replace(/[^\d\s+]/g, '');
-                      setFormData({...formData, phone: sanitizedValue});
-                    }}
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Địa chỉ giao hàng *</label>
-                  <input
-                    type="text"
-                    placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"
-                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
-                    value={formData.address}
-                    onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-2">
-                  <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Ghi chú thêm</label>
-                  <textarea
-                    placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi đến..."
-                    rows={3}
-                    className="w-full rounded-lg border border-neutral-200 bg-neutral-50 p-3 text-sm focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
-                    value={formData.note}
-                    onChange={(e) => setFormData({...formData, note: e.target.value})}
-                  />
-                </div>
+              <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                
+                {/* Form Editor */}
+                {isEditingOrAdding ? (
+                  <form onSubmit={handleSaveProfile} className="space-y-4 border border-neutral-200 dark:border-neutral-800 p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-800/10">
+                    <h3 className="font-bold text-sm text-neutral-800 dark:text-neutral-200">
+                      {formMode === 'add' ? 'Thêm địa chỉ giao hàng mới' : 'Chỉnh sửa địa chỉ giao hàng'}
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Họ và tên *</label>
+                        <input
+                          type="text"
+                          required
+                          value={formValues.name}
+                          onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
+                          placeholder="Nguyễn Văn A"
+                          className="w-full rounded-lg border border-neutral-200 bg-white p-2.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Số điện thoại *</label>
+                        <input
+                          type="tel"
+                          required
+                          value={formValues.phone}
+                          onChange={(e) => {
+                            const sanitized = e.target.value.replace(/[^\d\s+]/g, '');
+                            setFormValues({ ...formValues, phone: sanitized });
+                          }}
+                          placeholder="0912 xxx xxx"
+                          className="w-full rounded-lg border border-neutral-200 bg-white p-2.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
+                        />
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Tỉnh / Thành phố *</label>
+                        <select
+                          required
+                          value={formValues.provinceCode || ''}
+                          onChange={(e) => {
+                            const code = parseInt(e.target.value, 10);
+                            setFormValues({ ...formValues, provinceCode: code, wardCode: 0 });
+                          }}
+                          className="w-full rounded-lg border border-neutral-200 bg-white p-2.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
+                        >
+                          <option value="">Chọn Tỉnh / Thành phố</option>
+                          {provinces.map((p) => (
+                            <option key={p.code} value={p.code}>{p.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Phường / Xã *</label>
+                        <select
+                          required
+                          disabled={!formValues.provinceCode || loadingWards}
+                          value={formValues.wardCode || ''}
+                          onChange={(e) => setFormValues({ ...formValues, wardCode: parseInt(e.target.value, 10) })}
+                          className="w-full rounded-lg border border-neutral-200 bg-white p-2.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 disabled:opacity-50"
+                        >
+                          <option value="">
+                            {loadingWards ? 'Đang tải danh sách...' : 'Chọn Phường / Xã'}
+                          </option>
+                          {wards.map((w) => (
+                            <option key={w.code} value={w.code}>{w.name}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="md:col-span-2 space-y-1">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Số nhà, tên đường *</label>
+                        <input
+                          type="text"
+                          required
+                          value={formValues.street}
+                          onChange={(e) => setFormValues({ ...formValues, street: e.target.value })}
+                          placeholder="Ví dụ: 123 Đường Trần Hưng Đạo"
+                          className="w-full rounded-lg border border-neutral-200 bg-white p-2.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2 space-y-1">
+                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Ghi chú thêm</label>
+                        <textarea
+                          value={formValues.note}
+                          onChange={(e) => setFormValues({ ...formValues, note: e.target.value })}
+                          placeholder="Giao giờ hành chính, gọi trước khi đến..."
+                          rows={2}
+                          className="w-full rounded-lg border border-neutral-200 bg-white p-2.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 pt-2">
+                      {profiles.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setIsEditingOrAdding(false)}
+                          className="px-4 py-2 text-xs rounded-lg border border-neutral-300 hover:bg-neutral-100 text-neutral-700 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-colors"
+                        >
+                          Hủy
+                        </button>
+                      )}
+                      <button
+                        type="submit"
+                        className="px-5 py-2 text-xs text-white bg-orange-600 hover:bg-orange-700 rounded-lg font-bold transition-colors shadow"
+                      >
+                        Lưu địa chỉ
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  /* Profile Selector List */
+                  <div className="space-y-4">
+                    {profiles.map((p) => {
+                      const isActive = p.id === activeProfileId;
+                      return (
+                        <div
+                          key={p.id}
+                          onClick={() => handleSelectProfile(p.id)}
+                          className={`relative rounded-xl border p-4 cursor-pointer transition-all ${
+                            isActive
+                              ? 'border-orange-500 bg-orange-50/5 ring-1 ring-orange-500'
+                              : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-800'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex items-start gap-3">
+                              <input
+                                type="radio"
+                                checked={isActive}
+                                onChange={() => handleSelectProfile(p.id)}
+                                className="mt-1 h-4 w-4 text-orange-600 focus:ring-orange-500"
+                              />
+                              <div>
+                                <div className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                                  {p.name}
+                                  {isActive && (
+                                    <span className="bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                      Đang chọn
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 mt-1.5">SĐT: {p.phone}</p>
+                                <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">Địa chỉ: {p.street}, {p.wardName}, {p.provinceName}</p>
+                                {p.note && (
+                                  <p className="text-[11px] text-orange-600 font-medium italic mt-1.5">Ghi chú: {p.note}</p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={(e) => handleEditProfileClick(p, e)}
+                                className="text-xs font-semibold text-neutral-600 hover:text-orange-600 transition-colors"
+                              >
+                                Sửa
+                              </button>
+                              <button
+                                onClick={(e) => handleDeleteProfile(p.id, e)}
+                                className="text-xs font-semibold text-neutral-400 hover:text-red-600 transition-colors"
+                              >
+                                Xóa
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    <button
+                      onClick={handleAddNewClick}
+                      className="w-full py-3.5 rounded-xl border border-dashed border-neutral-300 hover:border-orange-500 text-neutral-600 hover:text-orange-600 text-xs font-bold transition-all flex items-center justify-center gap-1.5"
+                    >
+                      + Thêm địa chỉ mới
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4 text-sm text-neutral-600 dark:text-neutral-400">
-                <div><span className="font-medium text-neutral-900 dark:text-neutral-200">Người nhận:</span> {formData.name}</div>
-                <div><span className="font-medium text-neutral-900 dark:text-neutral-200">SĐT:</span> {formData.phone}</div>
-                <div className="col-span-2"><span className="font-medium text-neutral-900 dark:text-neutral-200">Địa chỉ:</span> {formData.address}</div>
+              /* Review Active Address */
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-neutral-600 dark:text-neutral-400 animate-in fade-in duration-300">
+                <div><span className="font-semibold text-neutral-900 dark:text-neutral-200">Người nhận:</span> {activeProfile?.name}</div>
+                <div><span className="font-semibold text-neutral-900 dark:text-neutral-200">SĐT:</span> {activeProfile?.phone}</div>
+                <div className="md:col-span-2"><span className="font-semibold text-neutral-900 dark:text-neutral-200">Địa chỉ:</span> {displayAddress}</div>
+                {activeProfile?.note && (
+                  <div className="md:col-span-2"><span className="font-semibold text-neutral-900 dark:text-neutral-200">Ghi chú:</span> {activeProfile.note}</div>
+                )}
               </div>
             )}
           </div>
 
-          {/* Step 2: Payment QR Section */}
+          {/* Step 2: Payment Selector & Instruction Section */}
           {step === 2 && (
             <div className="rounded-2xl border border-orange-500 ring-1 ring-orange-500 bg-white p-8 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 dark:bg-neutral-900 dark:border-neutral-800">
               <h2 className="mb-6 text-xl font-bold flex items-center gap-2">
-                Quét mã để thanh toán
+                Chọn phương thức thanh toán
               </h2>
-              <div className="flex flex-col md:flex-row gap-8 items-center">
-                <div className="relative aspect-square w-full max-w-full md:max-w-[350px] overflow-hidden rounded-xl border border-neutral-100 bg-white p-2 shadow-md dark:border-neutral-800">
-                  <img
-                    src={qrUrl}
-                    alt="VietQR Payment"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-                <div className="flex-1 space-y-4 w-full">
-                  <div className="rounded-xl bg-orange-50/50 p-4 dark:bg-orange-900/10">
-                    <p className="text-xs text-orange-800 dark:text-orange-300 mb-1">Số tiền thanh toán</p>
-                    <p className="text-xl font-bold text-neutral-900 dark:text-white">
-                      {formatCurrency(cart.cost.totalAmount.amount)}
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-neutral-50 p-4 dark:bg-neutral-800/50">
-                    <p className="text-xs text-neutral-700 mb-1">Chủ tài khoản</p>
-                    <p className="font-bold uppercase text-neutral-900 dark:text-white">{ACCOUNT_NAME}</p>
-                    <p className="text-sm mt-1">{BANK_ID} - {ACCOUNT_NO}</p>
-                  </div>
-                  <div className="rounded-xl bg-orange-50/50 p-4 dark:bg-orange-900/10">
-                    <p className="text-xs text-orange-800 dark:text-orange-300 mb-1">Nội dung chuyển khoản (bắt buộc)</p>
-                    <p className="font-bold text-orange-600">{orderId}</p>
-                  </div>
-                </div>
+
+              {/* Payment Toggler */}
+              <div className="mb-8 flex flex-col sm:flex-row gap-4">
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('qr')}
+                  className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border text-center transition-all ${
+                    paymentMethod === 'qr'
+                      ? 'border-orange-500 bg-orange-50/10 ring-1 ring-orange-500 font-bold'
+                      : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-800'
+                  }`}
+                >
+                  <span className="text-2xl mb-1.5">💳</span>
+                  <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Chuyển khoản VietQR</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('cod')}
+                  className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border text-center transition-all ${
+                    paymentMethod === 'cod'
+                      ? 'border-orange-500 bg-orange-50/10 ring-1 ring-orange-500 font-bold'
+                      : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-800'
+                  }`}
+                >
+                  <span className="text-2xl mb-1.5">💵</span>
+                  <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Thanh toán khi nhận hàng (COD)</span>
+                </button>
               </div>
+
+              {paymentMethod === 'qr' ? (
+                /* QR Method */
+                <div className="flex flex-col md:flex-row gap-8 items-center animate-in fade-in duration-300">
+                  <div className="relative aspect-square w-full max-w-full md:max-w-[350px] overflow-hidden rounded-xl border border-neutral-100 bg-white p-2 shadow-md dark:border-neutral-800">
+                    <img
+                      src={qrUrl}
+                      alt="VietQR Payment"
+                      className="h-full w-full object-contain"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-4 w-full">
+                    <div className="rounded-xl bg-orange-50/50 p-4 dark:bg-orange-900/10">
+                      <p className="text-xs text-orange-800 dark:text-orange-300 mb-1">Số tiền thanh toán</p>
+                      <p className="text-xl font-bold text-neutral-900 dark:text-white">
+                        {formatCurrency(cart.cost.totalAmount.amount)}
+                      </p>
+                    </div>
+                    <div className="rounded-xl bg-neutral-50 p-4 dark:bg-neutral-800/50">
+                      <p className="text-xs text-neutral-700 mb-1">Chủ tài khoản</p>
+                      <p className="font-bold uppercase text-neutral-900 dark:text-white">{ACCOUNT_NAME}</p>
+                      <p className="text-sm mt-1">{BANK_ID} - {ACCOUNT_NO}</p>
+                    </div>
+                    <div className="rounded-xl bg-orange-50/50 p-4 dark:bg-orange-900/10">
+                      <p className="text-xs text-orange-800 dark:text-orange-300 mb-1">Nội dung chuyển khoản (bắt buộc)</p>
+                      <p className="font-bold text-orange-600">{orderId}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* COD Method */
+                <div className="rounded-xl bg-neutral-50 dark:bg-neutral-800/40 p-6 space-y-4 animate-in fade-in duration-300">
+                  <div className="flex items-center gap-3 text-orange-600">
+                    <span className="text-3xl">🚚</span>
+                    <div>
+                      <h3 className="font-bold text-sm text-neutral-900 dark:text-neutral-100">Dịch vụ giao hàng COD</h3>
+                      <p className="text-xs text-neutral-500">Thanh toán bằng tiền mặt ngay khi nhận hàng</p>
+                    </div>
+                  </div>
+                  <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4 text-xs text-neutral-600 dark:text-neutral-400 space-y-2 leading-relaxed">
+                    <p>• Bạn sẽ thanh toán số tiền tổng cộng là <strong className="text-orange-600 text-sm font-bold">{formatCurrency(cart.cost.totalAmount.amount)}</strong> cho nhân viên giao hàng (shipper).</p>
+                    <p>• Phí vận chuyển: <strong className="text-green-600">Miễn phí toàn quốc</strong>.</p>
+                    <p>• Vui lòng chú ý điện thoại từ shipper trong vòng 2-4 ngày tới để nhận hàng.</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -344,7 +746,11 @@ export default function CheckoutPage() {
                 <button
                   onClick={handleCompletePayment}
                   disabled={isSubmitting}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-green-600 py-4 text-sm font-bold text-white shadow-lg transition-all hover:bg-green-700 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className={`flex w-full items-center justify-center gap-2 rounded-full py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed ${
+                    paymentMethod === 'cod'
+                      ? 'bg-orange-600 hover:bg-orange-700'
+                      : 'bg-green-600 hover:bg-green-700'
+                  }`}
                 >
                   {isSubmitting ? (
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -353,7 +759,7 @@ export default function CheckoutPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   )}
-                  Tôi đã chuyển khoản thành công
+                  {paymentMethod === 'cod' ? 'Xác nhận đặt hàng (COD)' : 'Tôi đã chuyển khoản thành công'}
                 </button>
               )}
 

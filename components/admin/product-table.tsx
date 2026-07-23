@@ -44,7 +44,7 @@ export function ProductTable({ products: initialProducts }: { products: (Product
       deleteLocalProductOverride(handle);
       setProductList((prev) => prev.filter((p) => p.handle !== handle));
       toast.success(
-        `🎉 Đã xóa tạm thời sản phẩm "${title}"! Hãy bấm "Lưu thay đổi" để commit lên GitHub.`
+        `🎉 Đã xóa tạm thời sản phẩm "${title}"! Hãy bấm "Lưu thay đổi" để cập nhật lên Server.`
       );
 
       const { deleteProductAction } = await import("app/admin/actions");

@@ -40,7 +40,7 @@ export function BatchCommitBar() {
 
   const handleCommit = async () => {
     if (!hasConfig) {
-      toast.error("Vui lòng cấu hình GitHub Token trước khi lưu thay đổi lên GitHub!");
+      toast.error("Vui lòng cấu hình Mã liên kết trước khi lưu thay đổi!");
       return;
     }
 
@@ -50,29 +50,29 @@ export function BatchCommitBar() {
     }
 
     setIsCommitting(true);
-    const toastId = toast.loading("Đang chuẩn bị gộp file & commit lên GitHub...");
+    const toastId = toast.loading("Đang chuẩn bị dữ liệu và đồng bộ lên Server...");
 
     try {
       const res = await commitPendingChangesToGitHub();
 
       if (res.success) {
         toast.success(
-          "🎉 Đã commit thành công tất cả thay đổi lên GitHub! Quy trình GitHub Actions đang tự động build lại dự án.",
+          "🎉 Đã lưu thành công tất cả thay đổi! Hệ thống đang tự động cập nhật lại giao diện trang web.",
           { id: toastId, duration: 6000 }
         );
         refreshCounts();
       } else {
-        toast.error(`❌ Lỗi commit lên GitHub: ${res.error}`, { id: toastId });
+        toast.error(`❌ Lỗi cập nhật lên Server: ${res.error}`, { id: toastId });
       }
     } catch (err: any) {
-      toast.error(`❌ Lỗi hệ thống: ${err.message || err}`, { id: toastId });
+      toast.error(`❌ Lỗi kết nối: ${err.message || err}`, { id: toastId });
     } finally {
       setIsCommitting(false);
     }
   };
 
   const handleDiscard = () => {
-    if (confirm("Bạn có chắc chắn muốn HỦY TẤT CẢ các thay đổi chưa commit? Tất cả thông tin sửa/thêm tạm thời sẽ bị khôi phục về trạng thái ban đầu.")) {
+    if (confirm("Bạn có chắc chắn muốn HỦY TẤT CẢ các thay đổi chưa lưu? Tất cả thông tin chỉnh sửa tạm thời sẽ bị khôi phục về trạng thái ban đầu.")) {
       clearAllLocalOverridesAndPending();
       toast.info("Đã hủy bỏ tất cả thay đổi lưu tạm.");
       refreshCounts();
@@ -89,7 +89,7 @@ export function BatchCommitBar() {
           <div>
             <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 text-sm sm:text-base">
               {counts.total > 0
-                ? "Có thay đổi đang lưu tạm thời (Draft)"
+                ? "Có thay đổi chưa lưu lên website"
                 : "Dữ liệu đã đồng bộ mới nhất"}
             </h3>
             <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-0.5">
@@ -113,7 +113,7 @@ export function BatchCommitBar() {
                   )}
                 </span>
               ) : (
-                "Tất cả sản phẩm và hình ảnh đã được commit và deploy trên GitHub."
+                "Tất cả sản phẩm và hình ảnh đã được cập nhật lên Server."
               )}
             </p>
           </div>
@@ -163,11 +163,11 @@ export function BatchCommitBar() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Đang Commit & Build...
+                Đang lưu thay đổi...
               </>
             ) : (
               <>
-                🚀 Lưu thay đổi lên GitHub & Deploy
+                Lưu thay đổi
               </>
             )}
           </button>

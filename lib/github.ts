@@ -68,20 +68,20 @@ export async function testGitHubConnection(config: GitHubConfig): Promise<{ succ
       if (data.permissions && data.permissions.push === false) {
         return {
           success: false,
-          message: "❌ Token này chỉ có quyền ĐỌC (Read-only), thiếu quyền GHI (Write). Vui lòng cấp quyền 'Read and write' cho Contents khi tạo Token!",
+          message: "❌ Mã kết nối này chỉ có quyền ĐỌC (Read-only), thiếu quyền GHI (Write). Vui lòng cấp thêm quyền GHI khi tạo Mã kết nối!",
         };
       }
-      return { success: true, message: `Kết nối & Cấp quyền GHI thành công tới GitHub Repository: ${config.owner}/${config.repo}` };
+      return { success: true, message: "Kết nối và kích hoạt đồng bộ dữ liệu thành công!" };
     } else if (res.status === 401) {
-      return { success: false, message: "Token không hợp lệ hoặc đã hết hạn." };
+      return { success: false, message: "Mã kết nối không hợp lệ hoặc đã hết hạn." };
     } else if (res.status === 404) {
-      return { success: false, message: "Không tìm thấy Repository hoặc Token không có quyền truy cập." };
+      return { success: false, message: "Không tìm thấy máy chủ lưu trữ hoặc mã kết nối không có quyền truy cập." };
     } else {
       const data = await res.json().catch(() => ({}));
-      return { success: false, message: data.message || "Lỗi khi kiểm tra kết nối GitHub." };
+      return { success: false, message: data.message || "Lỗi khi kiểm tra kết nối máy chủ." };
     }
   } catch (err: any) {
-    return { success: false, message: err.message || "Không thể kết nối tới GitHub API." };
+    return { success: false, message: err.message || "Không thể kết nối tới máy chủ lưu trữ." };
   }
 }
 
@@ -91,7 +91,7 @@ export async function testGitHubConnection(config: GitHubConfig): Promise<{ succ
 export async function uploadImageToGitHub(file: File): Promise<{ success: boolean; url?: string; error?: string }> {
   const config = getGitHubConfig();
   if (!config || !config.token) {
-    return { success: false, error: "Chưa cấu hình GitHub Token" };
+    return { success: false, error: "Chưa cấu hình Mã liên kết" };
   }
 
   try {
@@ -132,7 +132,7 @@ export async function uploadImageToGitHub(file: File): Promise<{ success: boolea
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      return { success: false, error: errorData.message || "Lỗi khi upload ảnh lên GitHub" };
+      return { success: false, error: errorData.message || "Lỗi khi tải ảnh lên máy chủ" };
     }
 
     // 4. Also commit image to docs/images/products/ (so GitHub Pages serving /docs updates image immediately)
@@ -169,7 +169,7 @@ export async function syncStoreToGitHub(
 ): Promise<{ success: boolean; error?: string }> {
   const config = getGitHubConfig();
   if (!config || !config.token) {
-    return { success: false, error: "Chưa cấu hình GitHub Token" };
+    return { success: false, error: "Chưa cấu hình Mã liên kết" };
   }
 
   try {
@@ -189,7 +189,7 @@ export async function syncStoreToGitHub(
 
     if (!getRes.ok) {
       const err = await getRes.json().catch(() => ({}));
-      return { success: false, error: `Không thể đọc data/store.json từ GitHub: ${err.message || getRes.statusText}` };
+      return { success: false, error: `Không thể tải dữ liệu sản phẩm từ máy chủ: ${err.message || getRes.statusText}` };
     }
 
     const fileData = await getRes.json();
@@ -221,7 +221,7 @@ export async function syncStoreToGitHub(
 
     if (!putRes.ok) {
       const err = await putRes.json().catch(() => ({}));
-      return { success: false, error: `Không thể cập nhật store.json trên GitHub: ${err.message || putRes.statusText}` };
+      return { success: false, error: `Không thể cập nhật dữ liệu sản phẩm lên máy chủ: ${err.message || putRes.statusText}` };
     }
 
     // 4. Helper to commit file to extra path (public/data/store.json and docs/data/store.json)
@@ -268,7 +268,7 @@ export async function syncStoreToGitHub(
 
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: err.message || "Lỗi khi đồng bộ dữ liệu với GitHub" };
+    return { success: false, error: err.message || "Lỗi khi đồng bộ dữ liệu với máy chủ" };
   }
 }
 
@@ -289,7 +289,7 @@ export async function commitMultipleFilesToGitHub(
 ): Promise<{ success: boolean; error?: string }> {
   const config = getGitHubConfig();
   if (!config || !config.token) {
-    return { success: false, error: "Chưa cấu hình GitHub Token" };
+    return { success: false, error: "Chưa cấu hình Mã liên kết" };
   }
 
   const { owner, repo, token, branch = "main" } = config;
@@ -307,7 +307,7 @@ export async function commitMultipleFilesToGitHub(
     );
     if (!refRes.ok) {
       const err = await refRes.json().catch(() => ({}));
-      return { success: false, error: `Không thể lấy thông tin branch: ${err.message || refRes.statusText}` };
+      return { success: false, error: `Không thể kết nối nhánh máy chủ: ${err.message || refRes.statusText}` };
     }
     const refData = await refRes.json();
     const latestCommitSha = refData.object.sha;
@@ -319,7 +319,7 @@ export async function commitMultipleFilesToGitHub(
     );
     if (!commitRes.ok) {
       const err = await commitRes.json().catch(() => ({}));
-      return { success: false, error: `Không thể lấy commit SHA: ${err.message || commitRes.statusText}` };
+      return { success: false, error: `Không thể lấy thông tin phiên bản dữ liệu: ${err.message || commitRes.statusText}` };
     }
     const commitData = await commitRes.json();
     const baseTreeSha = commitData.tree.sha;
@@ -351,7 +351,7 @@ export async function commitMultipleFilesToGitHub(
       );
       if (!blobRes.ok) {
         const err = await blobRes.json().catch(() => ({}));
-        return { success: false, error: `Lỗi tạo blob cho file ${file.path}: ${err.message || blobRes.statusText}` };
+        return { success: false, error: `Lỗi đóng gói tệp tin ${file.path}: ${err.message || blobRes.statusText}` };
       }
       const blobData = await blobRes.json();
 
@@ -377,7 +377,7 @@ export async function commitMultipleFilesToGitHub(
     );
     if (!treeRes.ok) {
       const err = await treeRes.json().catch(() => ({}));
-      return { success: false, error: `Lỗi khi tạo git tree: ${err.message || treeRes.statusText}` };
+      return { success: false, error: `Lỗi sắp xếp cấu trúc dữ liệu: ${err.message || treeRes.statusText}` };
     }
     const treeData = await treeRes.json();
 
@@ -396,7 +396,7 @@ export async function commitMultipleFilesToGitHub(
     );
     if (!newCommitRes.ok) {
       const err = await newCommitRes.json().catch(() => ({}));
-      return { success: false, error: `Lỗi khi tạo commit mới: ${err.message || newCommitRes.statusText}` };
+      return { success: false, error: `Lỗi tạo phiên bản dữ liệu mới: ${err.message || newCommitRes.statusText}` };
     }
     const newCommitData = await newCommitRes.json();
 
@@ -414,11 +414,11 @@ export async function commitMultipleFilesToGitHub(
     );
     if (!updateRefRes.ok) {
       const err = await updateRefRes.json().catch(() => ({}));
-      return { success: false, error: `Lỗi khi cập nhật HEAD branch: ${err.message || updateRefRes.statusText}` };
+      return { success: false, error: `Lỗi cập nhật máy chủ: ${err.message || updateRefRes.statusText}` };
     }
 
     return { success: true };
   } catch (err: any) {
-    return { success: false, error: err.message || "Lỗi đồng bộ gộp commit lên GitHub" };
+    return { success: false, error: err.message || "Lỗi đồng bộ dữ liệu lên máy chủ" };
   }
 }

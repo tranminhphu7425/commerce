@@ -13,9 +13,13 @@ type Combination = {
 export function VariantSelector({
   options,
   variants,
+  selectedOptions,
+  onOptionChange,
 }: {
   options: ProductOption[];
   variants: ProductVariant[];
+  selectedOptions?: Record<string, string>;
+  onOptionChange?: (name: string, value: string) => void;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -40,10 +44,14 @@ export function VariantSelector({
   }));
 
   const updateOption = (name: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(name, value);
-    params.delete("image");
-    router.replace(`?${params.toString()}`, { scroll: false });
+    if (onOptionChange) {
+      onOptionChange(name, value);
+    } else {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+      params.delete("image");
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
   };
 
   return options.map((option) => (
@@ -56,7 +64,11 @@ export function VariantSelector({
 
             // Base option params on current searchParams so we can preserve any other param state.
             const optionParams: Record<string, string> = {};
-            searchParams.forEach((v, k) => (optionParams[k] = v));
+            if (selectedOptions) {
+              Object.entries(selectedOptions).forEach(([k, v]) => (optionParams[k] = v));
+            } else {
+              searchParams.forEach((v, k) => (optionParams[k] = v));
+            }
             optionParams[optionNameLowerCase] = value;
 
             // Filter out invalid options and check if the option combination is available for sale.
@@ -76,11 +88,14 @@ export function VariantSelector({
             );
 
             // The option is active if it's in the selected options.
-            const isActive = searchParams.get(optionNameLowerCase) === value;
+            const isActive = selectedOptions
+              ? selectedOptions[optionNameLowerCase] === value
+              : searchParams.get(optionNameLowerCase) === value;
 
             return (
               <button
-                formAction={() => updateOption(optionNameLowerCase, value)}
+                type="button"
+                onClick={() => updateOption(optionNameLowerCase, value)}
                 key={value}
                 aria-disabled={!isAvailableForSale}
                 disabled={!isAvailableForSale}

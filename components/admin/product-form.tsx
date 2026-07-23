@@ -633,7 +633,7 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
       }
 
       toast.success(
-        `🎉 Đã lưu tạm sản phẩm "${title}" vào trình duyệt! Hãy bấm "Lưu thay đổi" ở trang Admin để commit lên GitHub.`
+        `🎉 Đã lưu tạm sản phẩm "${title}" vào trình duyệt! Hãy bấm "Lưu thay đổi" ở trang Admin để cập nhật lên Server.`
       );
 
       router.push("/admin");

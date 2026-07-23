@@ -317,6 +317,8 @@ export function useDynamicProducts(
     mergeProductsWithLocalOverride(initialProducts)
   );
 
+  const initialProductIds = initialProducts.map((p) => p.id).join(",");
+
   useEffect(() => {
     let isMounted = true;
 
@@ -344,7 +346,7 @@ export function useDynamicProducts(
       isMounted = false;
       window.removeEventListener("commerce-store-updated", handleUpdate);
     };
-  }, [initialProducts]);
+  }, [initialProductIds]);
 
   return products;
 }
@@ -358,13 +360,13 @@ export async function commitPendingChangesToGitHub(): Promise<{
 }> {
   const config = getGitHubConfig();
   if (!config || !config.token) {
-    return { success: false, error: "Chưa cấu hình GitHub Token" };
+    return { success: false, error: "Chưa cấu hình Mã liên kết" };
   }
 
   const { owner, repo, token, branch = "main" } = config;
   const counts = getPendingChangesCount();
   if (counts.total === 0) {
-    return { success: false, error: "Không có thay đổi nào đang lưu tạm để commit." };
+    return { success: false, error: "Không có thay đổi nào đang lưu tạm." };
   }
 
   try {
@@ -383,7 +385,7 @@ export async function commitPendingChangesToGitHub(): Promise<{
       const err = await getRes.json().catch(() => ({}));
       return {
         success: false,
-        error: `Không thể tải data/store.json từ GitHub: ${err.message || getRes.statusText}`,
+        error: `Không thể tải dữ liệu sản phẩm từ máy chủ: ${err.message || getRes.statusText}`,
       };
     }
 
@@ -485,7 +487,7 @@ export async function commitPendingChangesToGitHub(): Promise<{
   } catch (err: any) {
     return {
       success: false,
-      error: err.message || "Lỗi xảy ra trong quá trình gộp commit lên GitHub",
+      error: err.message || "Lỗi xảy ra trong quá trình đồng bộ dữ liệu lên máy chủ",
     };
   }
 }

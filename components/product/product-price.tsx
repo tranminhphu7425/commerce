@@ -4,16 +4,25 @@ import Price from "components/price";
 import { Product, ProductVariant } from "lib/local/types";
 import { useSearchParams } from "next/navigation";
 
-export function ProductPrice({ product }: { product: Product }) {
+export function ProductPrice({
+  product,
+  selectedOptions,
+}: {
+  product: Product;
+  selectedOptions?: Record<string, string>;
+}) {
   const searchParams = useSearchParams();
   const { variants } = product;
-  
+
   const variant = variants.find((variant: ProductVariant) =>
-    variant.selectedOptions.every(
-      (option) => option.value === searchParams.get(option.name.toLowerCase()),
-    ),
+    variant.selectedOptions.every((option) => {
+      const val = selectedOptions
+        ? selectedOptions[option.name.toLowerCase()]
+        : searchParams.get(option.name.toLowerCase());
+      return option.value === val;
+    })
   );
-  
+
   const defaultVariant = variants.length === 1 ? variants[0] : undefined;
   const selectedVariant = variant || defaultVariant;
   

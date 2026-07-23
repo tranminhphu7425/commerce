@@ -11,22 +11,33 @@ import type { ProductVariant } from "lib/local/types";
 export function Gallery({
   images,
   variants,
+  selectedImageIndex,
+  onImageChange,
+  selectedOptions,
 }: {
   images: { src: string; altText: string }[];
   variants?: ProductVariant[];
+  selectedImageIndex?: number;
+  onImageChange?: (index: number) => void;
+  selectedOptions?: Record<string, string>;
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [fallbackSrc, setFallbackSrc] = useState<string | null>(null);
 
   let imageIndex = 0;
-  if (searchParams.has("image")) {
+  if (selectedImageIndex !== undefined) {
+    imageIndex = selectedImageIndex;
+  } else if (searchParams.has("image")) {
     imageIndex = parseInt(searchParams.get("image")!);
   } else if (variants && variants.length > 0) {
     const variant = variants.find((variant: ProductVariant) =>
-      variant.selectedOptions.every(
-        (option) => option.value === searchParams.get(option.name.toLowerCase()),
-      ),
+      variant.selectedOptions.every((option) => {
+        const val = selectedOptions
+          ? selectedOptions[option.name.toLowerCase()]
+          : searchParams.get(option.name.toLowerCase());
+        return option.value === val;
+      }),
     );
     if (variant?.images && variant.images.length > 0) {
       const variantImageIndex = images.findIndex((img) => img.src === variant.images?.[0]?.url);
@@ -46,10 +57,14 @@ export function Gallery({
   const mainImageSrc = fallbackSrc || cachedUrl || currentImageSrc;
 
   const updateImage = (index: string) => {
-    setFallbackSrc(null);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("image", index);
-    router.replace(`?${params.toString()}`, { scroll: false });
+    if (onImageChange) {
+      onImageChange(parseInt(index, 10));
+    } else {
+      setFallbackSrc(null);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("image", index);
+      router.replace(`?${params.toString()}`, { scroll: false });
+    }
   };
 
   const nextImageIndex = imageIndex + 1 < images.length ? imageIndex + 1 : 0;
@@ -83,7 +98,8 @@ export function Gallery({
           <div className="absolute bottom-[15%] flex w-full justify-center">
             <div className="mx-auto flex h-11 items-center rounded-full border border-white bg-neutral-50/80 text-neutral-700 backdrop-blur-sm dark:border-black dark:bg-neutral-900/80">
               <button
-                formAction={() => updateImage(previousImageIndex.toString())}
+                type="button"
+                onClick={() => updateImage(previousImageIndex.toString())}
                 aria-label="Previous product image"
                 className={buttonClassName}
               >
@@ -91,7 +107,8 @@ export function Gallery({
               </button>
               <div className="mx-1 h-6 w-px bg-neutral-500"></div>
               <button
-                formAction={() => updateImage(nextImageIndex.toString())}
+                type="button"
+                onClick={() => updateImage(nextImageIndex.toString())}
                 aria-label="Next product image"
                 className={buttonClassName}
               >
@@ -110,7 +127,8 @@ export function Gallery({
             return (
               <li key={image.src} className="h-20 w-20">
                 <button
-                  formAction={() => updateImage(index.toString())}
+                  type="button"
+                  onClick={() => updateImage(index.toString())}
                   aria-label="Select product image"
                   className="h-full w-full"
                 >

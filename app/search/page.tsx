@@ -1,4 +1,3 @@
-import Grid from "components/grid";
 import SortableProductList from "components/layout/sortable-product-list";
 import { getProducts } from "lib/local";
 
@@ -13,8 +12,6 @@ export default async function SearchPage() {
   const products = await getProducts({});
 
   return (
-    <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      <SortableProductList products={products} />
-    </Grid>
+    <SortableProductList products={products} />
   );
 }

@@ -220,13 +220,13 @@ export function GitHubConfigModal() {
       {isOpen && (
         <div className="mt-6 border-t border-neutral-100 dark:border-neutral-800 pt-6 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="mb-4">
-            <label className="text-xs font-bold block mb-1">Mã liên kết tài khoản *</label>
+            <label className="text-xs font-bold block mb-1">Mã kết nối hệ thống *</label>
             <input
               type="password"
               value={config.token}
               onChange={(e) => setConfig({ ...config, token: e.target.value })}
               className="w-full rounded-lg border border-neutral-200 bg-neutral-50 p-2.5 text-sm font-mono dark:border-neutral-700 dark:bg-neutral-800"
-              placeholder="Dán mã liên kết vào đây..."
+              placeholder="Dán mã kết nối vào đây..."
             />
           </div>
 

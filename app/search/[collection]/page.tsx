@@ -1,7 +1,6 @@
 import { getCollection, getCollectionProducts, getCollections } from "lib/local";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Grid from "components/grid";
 import SortableProductList from "components/layout/sortable-product-list";
 
 export async function generateStaticParams() {
@@ -41,9 +40,7 @@ export default async function CategoryPage(props: {
 
   return (
     <section>
-      <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        <SortableProductList products={products} />
-      </Grid>
+      <SortableProductList products={products} />
     </section>
   );
 }
