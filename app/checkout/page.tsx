@@ -22,6 +22,11 @@ interface ShippingProfile {
   note?: string;
 }
 
+// Cấu hình hình thức thanh toán nhanh:
+// - true: Bỏ qua việc chọn phương thức thanh toán. Đơn hàng sẽ xác nhận luôn sau khi điền địa chỉ giao hàng và mở Messenger.
+// - false: Yêu cầu khách hàng nhập đầy đủ địa chỉ giao hàng và phương thức thanh toán (COD / QR).
+const SKIP_PAYMENT = true;
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { cart } = useCart();
@@ -155,8 +160,10 @@ export default function CheckoutPage() {
       }
     }
 
-    const fbUrl = `https://facebook.com/${CONTACT_INFO.messenger}`;
-    window.open(fbUrl, '_blank');
+    const messengerUrl = `https://m.me/${CONTACT_INFO.messenger}`;
+    const pageUrl = `https://facebook.com/${CONTACT_INFO.messenger}`;
+    window.open(messengerUrl, '_blank');
+    window.open(pageUrl, '_blank');
     
     clearCart();
     setStep(3);
@@ -254,11 +261,13 @@ export default function CheckoutPage() {
       : '';
     const nameStr = activeProfile ? activeProfile.name : '';
     const phoneStr = activeProfile ? activeProfile.phone : '';
-    const noteStr = activeProfile ? (activeProfile.note || 'Không có') : '';
-    const paymentStr = paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : 'Chuyển khoản VietQR';
+    const noteStr = activeProfile ? (activeProfile.note || 'Không có') : 'Không có';
+    const paymentStr = SKIP_PAYMENT 
+      ? 'Thỏa thuận qua Chat' 
+      : (paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : 'Chuyển khoản VietQR');
 
-    const statusExtra = paymentMethod === 'qr' ? '\n⚠️ Trạng thái: Em đã chuyển khoản trước rồi ạ!' : '';
-    const statusExtraHtml = paymentMethod === 'qr' ? '\n⚠️ <b>Trạng thái:</b> Em đã chuyển khoản trước rồi ạ!' : '';
+    const statusExtra = !SKIP_PAYMENT && paymentMethod === 'qr' ? '\n⚠️ Trạng thái: Em đã chuyển khoản trước rồi ạ!' : '';
+    const statusExtraHtml = !SKIP_PAYMENT && paymentMethod === 'qr' ? '\n⚠️ <b>Trạng thái:</b> Em đã chuyển khoản trước rồi ạ!' : '';
 
     if (html) {
       return `📦 <b>ĐƠN HÀNG MỚI: ${orderId}</b>\n` +
@@ -454,19 +463,20 @@ export default function CheckoutPage() {
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Thanh Toán</h1>
 
         {/* Progress Indicator */}
-        <div className="flex items-center gap-2 text-sm font-medium">
-          <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 1 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-700'}`}>1</span>
-          <span className={`h-1 w-8 rounded ${step >= 2 ? 'bg-orange-600' : 'bg-neutral-200'}`}></span>
-          <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 2 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-700'}`}>2</span>
-        </div>
+        {!SKIP_PAYMENT && (
+          <div className="flex items-center gap-2 text-sm font-medium">
+            <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 1 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-700'}`}>1</span>
+            <span className={`h-1 w-8 rounded ${step >= 2 ? 'bg-orange-600' : 'bg-neutral-200'}`}></span>
+            <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 2 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-700'}`}>2</span>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Left Column: Form & QR */}
         <div className="lg:col-span-2 space-y-8">
-
           {/* Step 1: Customer Form */}
-          <div className={`rounded-2xl border ${step === 1 ? 'border-orange-500 ring-1 ring-orange-500' : 'border-neutral-200 opacity-60'} bg-white p-8 shadow-sm transition-all dark:bg-neutral-900 dark:border-neutral-800`}>
+          <div className={`rounded-2xl border ${!SKIP_PAYMENT && step === 2 ? 'border-neutral-200 opacity-60' : 'border-orange-500 ring-1 ring-orange-500'} bg-white p-8 shadow-sm transition-all dark:bg-neutral-900 dark:border-neutral-800`}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold flex items-center gap-2">
                 Thông tin giao hàng
@@ -512,41 +522,28 @@ export default function CheckoutPage() {
                         />
                       </div>
 
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Tỉnh / Thành phố *</label>
-                        <select
-                          required
-                          value={formValues.provinceCode || ''}
-                          onChange={(e) => {
-                            const code = parseInt(e.target.value, 10);
-                            setFormValues({ ...formValues, provinceCode: code, wardCode: 0 });
-                          }}
-                          className="w-full rounded-lg border border-neutral-200 bg-white p-2.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
-                        >
-                          <option value="">Chọn Tỉnh / Thành phố</option>
-                          {provinces.map((p) => (
-                            <option key={p.code} value={p.code}>{p.name}</option>
-                          ))}
-                        </select>
-                      </div>
+                      <SearchableSelect
+                        label="Tỉnh / Thành phố *"
+                        placeholder="Chọn Tỉnh / Thành phố"
+                        options={provinces}
+                        value={formValues.provinceCode}
+                        onChange={(code) => {
+                          setFormValues({ ...formValues, provinceCode: code, wardCode: 0 });
+                        }}
+                        loading={loadingProvinces}
+                      />
 
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Phường / Xã *</label>
-                        <select
-                          required
-                          disabled={!formValues.provinceCode || loadingWards}
-                          value={formValues.wardCode || ''}
-                          onChange={(e) => setFormValues({ ...formValues, wardCode: parseInt(e.target.value, 10) })}
-                          className="w-full rounded-lg border border-neutral-200 bg-white p-2.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 disabled:opacity-50"
-                        >
-                          <option value="">
-                            {loadingWards ? 'Đang tải danh sách...' : 'Chọn Phường / Xã'}
-                          </option>
-                          {wards.map((w) => (
-                            <option key={w.code} value={w.code}>{w.name}</option>
-                          ))}
-                        </select>
-                      </div>
+                      <SearchableSelect
+                        label="Phường / Xã *"
+                        placeholder="Chọn Phường / Xã"
+                        options={wards}
+                        value={formValues.wardCode}
+                        onChange={(code) => {
+                          setFormValues({ ...formValues, wardCode: code });
+                        }}
+                        disabled={!formValues.provinceCode}
+                        loading={loadingWards}
+                      />
 
                       <div className="md:col-span-2 space-y-1">
                         <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Số nhà, tên đường *</label>
@@ -756,85 +753,112 @@ export default function CheckoutPage() {
         <div className="space-y-6">
           <div className="sticky top-24 rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
             <h2 className="mb-6 text-xl font-bold">Tóm tắt đơn hàng</h2>
-            <div className="max-h-[40vh] overflow-auto pr-2 space-y-4 custom-scrollbar">
-              {cart.lines.map((line) => (
-                <div key={line.id} className="flex gap-4 border-b border-neutral-50 pb-4 last:border-0 dark:border-neutral-800">
-                  <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800">
-                    <Image
-                      src={line.merchandise.product.featuredImage.url}
-                      alt={line.merchandise.product.title}
-                      fill
-                      className="object-cover"
-                    />
+            
+            <div className="">
+              
+              {/* Product List */}
+              <div className="max-h-[40vh] overflow-auto pr-2 space-y-4 custom-scrollbar">
+                {cart.lines.map((line) => (
+                  <div key={line.id} className="flex gap-4 border-b border-neutral-50 pb-4 last:border-0 dark:border-neutral-800">
+                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-neutral-200 dark:border-neutral-800">
+                      <Image
+                        src={line.merchandise.product.featuredImage.url}
+                        alt={line.merchandise.product.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-medium leading-tight truncate">{line.merchandise.product.title}</h3>
+                      <p className="text-xs text-neutral-700 mt-1">
+                        {line.merchandise.title} x {line.quantity}
+                      </p>
+                      <Price
+                        amount={line.cost.totalAmount.amount}
+                        currencyCode={line.cost.totalAmount.currencyCode}
+                        className="text-sm font-bold text-orange-600 mt-1"
+                      />
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-medium leading-tight truncate">{line.merchandise.product.title}</h3>
-                    <p className="text-xs text-neutral-700 mt-1">
-                      {line.merchandise.title} x {line.quantity}
-                    </p>
-                    <Price
-                      amount={line.cost.totalAmount.amount}
-                      currencyCode={line.cost.totalAmount.currencyCode}
-                      className="text-sm font-bold text-orange-600 mt-1"
-                    />
+                ))}
+              </div>
+
+              {/* Pricing breakdown & Actions Column */}
+              <div>
+                <div className="mt-6 pt-6 border-t space-y-3 border-neutral-100 dark:border-neutral-800">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-neutral-700">Tạm tính</span>
+                    <Price amount={cart.cost.subtotalAmount.amount} currencyCode={cart.cost.subtotalAmount.currencyCode} />
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-neutral-700">Phí vận chuyển</span>
+                    <span className="text-green-500 font-medium">Miễn phí</span>
+                  </div>
+                  <div className="flex justify-between pt-2 text-xl font-bold text-neutral-900 dark:text-white border-t border-neutral-100 dark:border-neutral-800">
+                    <span>Tổng cộng</span>
+                    <Price amount={cart.cost.totalAmount.amount} currencyCode={cart.cost.totalAmount.currencyCode} />
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div className="mt-6 space-y-3 pt-6 border-t border-neutral-100 dark:border-neutral-800">
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-700">Tạm tính</span>
-                <Price amount={cart.cost.subtotalAmount.amount} currencyCode={cart.cost.subtotalAmount.currencyCode} />
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-neutral-700">Phí vận chuyển</span>
-                <span className="text-green-500 font-medium">Miễn phí</span>
-              </div>
-              <div className="flex justify-between pt-2 text-xl font-bold text-neutral-900 dark:text-white">
-                <span>Tổng cộng</span>
-                <Price amount={cart.cost.totalAmount.amount} currencyCode={cart.cost.totalAmount.currencyCode} />
-              </div>
-            </div>
-
-            <div className="mt-8 space-y-3">
-              {step === 1 ? (
-                <button
-                  onClick={handleNextStep}
-                  disabled={!isFormValid}
-                  className={`w-full rounded-full py-4 text-sm font-bold text-white shadow-md transition-all ${isFormValid
-                      ? 'bg-orange-600 hover:bg-orange-700 hover:shadow-lg active:scale-95'
-                      : 'bg-neutral-300 cursor-not-allowed dark:bg-neutral-700 dark:text-neutral-500'
-                    }`}
-                >
-                  Tiếp tục thanh toán
-                </button>
-              ) : (
-                <button
-                  onClick={handleCompletePayment}
-                  disabled={isSubmitting}
-                  className={`flex w-full items-center justify-center gap-2 rounded-full py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed ${paymentMethod === 'cod'
-                      ? 'bg-orange-600 hover:bg-orange-700'
-                      : 'bg-green-600 hover:bg-green-700'
-                    }`}
-                >
-                  {isSubmitting ? (
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                <div className="mt-8 space-y-3">
+                  {SKIP_PAYMENT ? (
+                    <button
+                      onClick={handleCompletePayment}
+                      disabled={!isFormValid || isSubmitting}
+                      className={`flex w-full items-center justify-center gap-2 rounded-full py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed ${isFormValid
+                          ? 'bg-orange-600 hover:bg-orange-700 hover:shadow-lg'
+                          : 'bg-neutral-300 cursor-not-allowed dark:bg-neutral-700 dark:text-neutral-500'
+                        }`}
+                    >
+                      {isSubmitting ? (
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      ) : (
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                      Xác nhận đặt hàng qua Facebook
+                    </button>
+                  ) : step === 1 ? (
+                    <button
+                      onClick={handleNextStep}
+                      disabled={!isFormValid}
+                      className={`w-full rounded-full py-4 text-sm font-bold text-white shadow-md transition-all ${isFormValid
+                          ? 'bg-orange-600 hover:bg-orange-700 hover:shadow-lg active:scale-95'
+                          : 'bg-neutral-300 cursor-not-allowed dark:bg-neutral-700 dark:text-neutral-500'
+                        }`}
+                    >
+                      Tiếp tục thanh toán
+                    </button>
                   ) : (
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
+                    <button
+                      onClick={handleCompletePayment}
+                      disabled={isSubmitting}
+                      className={`flex w-full items-center justify-center gap-2 rounded-full py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed ${paymentMethod === 'cod'
+                          ? 'bg-orange-600 hover:bg-orange-700'
+                          : 'bg-green-600 hover:bg-green-700'
+                        }`}
+                    >
+                      {isSubmitting ? (
+                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                      ) : (
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                      {paymentMethod === 'cod' ? 'Xác nhận đặt hàng (COD)' : 'Tôi đã chuyển khoản thành công'}
+                    </button>
                   )}
-                  {paymentMethod === 'cod' ? 'Xác nhận đặt hàng (COD)' : 'Tôi đã chuyển khoản thành công'}
-                </button>
-              )}
 
-              <button
-                onClick={handleCancel}
-                className="w-full py-2 text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
-              >
-                Hủy đơn và quay lại
-              </button>
+                  <button
+                    onClick={handleCancel}
+                    className="w-full py-2 text-xs text-neutral-400 hover:text-neutral-600 transition-colors"
+                  >
+                    Hủy đơn và quay lại
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
@@ -880,7 +904,7 @@ export default function CheckoutPage() {
                   📋 Đã tự động sao chép thông tin đơn hàng
                 </p>
                 <p className="text-[12px] text-neutral-700 dark:text-neutral-400 mt-1.5 leading-relaxed">
-                  Hệ thống sắp chuyển bạn sang Facebook. Vui lòng bấm vào phần <strong>Nhắn tin</strong> trên Fanpage và <strong>Dán (Ctrl+V)</strong> toàn bộ nội dung vừa sao chép để xác nhận đơn hàng với shop.
+                  Hệ thống sắp chuyển bạn sang Facebook. Vui lòng bấm vào phần <strong>Nhắn tin</strong> trên Fanpage và <strong>Dán</strong> toàn bộ nội dung vừa sao chép để xác nhận đơn hàng với shop.
                 </p>
               </div>
 
@@ -899,6 +923,116 @@ export default function CheckoutPage() {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface SearchableSelectProps {
+  label: string;
+  placeholder: string;
+  options: { code: number; name: string }[];
+  value: number;
+  onChange: (code: number) => void;
+  disabled?: boolean;
+  loading?: boolean;
+}
+
+function SearchableSelect({
+  label,
+  placeholder,
+  options,
+  value,
+  onChange,
+  disabled = false,
+  loading = false
+}: SearchableSelectProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  
+  const selectedOption = options.find(o => o.code === value);
+  
+  const removeAccents = (str: string) => {
+    return str
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D');
+  };
+
+  const filteredOptions = options.filter(o => 
+    removeAccents(o.name.toLowerCase()).includes(removeAccents(search.toLowerCase()))
+  );
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.searchable-select-container')) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('click', handleOutsideClick);
+    return () => document.removeEventListener('click', handleOutsideClick);
+  }, [isOpen]);
+
+  return (
+    <div className="relative searchable-select-container space-y-1">
+      <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">{label}</label>
+      
+      <button
+        type="button"
+        disabled={disabled || loading}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          setSearch('');
+        }}
+        className="w-full flex items-center justify-between rounded-lg border border-neutral-200 bg-white p-2.5 text-xs text-left focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800 disabled:opacity-50 transition-colors"
+      >
+        <span className={selectedOption ? "text-neutral-950 dark:text-neutral-100" : "text-neutral-400 dark:text-neutral-500"}>
+          {loading ? 'Đang tải...' : (selectedOption ? selectedOption.name : placeholder)}
+        </span>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`h-3.5 w-3.5 text-neutral-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 z-50 mt-1 w-full rounded-lg border border-neutral-200 bg-white p-2 shadow-lg dark:border-neutral-700 dark:bg-neutral-800 max-h-64 flex flex-col">
+          <input
+            type="text"
+            autoFocus
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Tìm nhanh..."
+            className="mb-2 w-full rounded-md border border-neutral-200 bg-white px-2.5 py-1.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 text-neutral-900 dark:text-white"
+          />
+          
+          <div className="overflow-y-auto max-h-48 space-y-0.5 custom-scrollbar">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((opt) => {
+                const isSelected = opt.code === value;
+                return (
+                  <button
+                    key={opt.code}
+                    type="button"
+                    onClick={() => {
+                      onChange(opt.code);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-700/50 ${isSelected ? 'bg-orange-50 text-orange-600 font-bold dark:bg-orange-950/20 dark:text-orange-400' : 'text-neutral-800 dark:text-neutral-200'}`}
+                  >
+                    {opt.name}
+                  </button>
+                );
+              })
+            ) : (
+              <div className="text-center py-3 text-xs text-neutral-400 dark:text-neutral-500">
+                Không tìm thấy kết quả
+              </div>
+            )}
           </div>
         </div>
       )}

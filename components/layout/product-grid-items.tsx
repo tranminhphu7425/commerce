@@ -1,6 +1,7 @@
 import Grid from "components/grid";
 import { GridTileImage } from "components/grid/tile";
 import { Product } from "lib/local/types";
+import { getCheapestVariantDiscount } from "lib/local/discount";
 import Link from "next/link";
 import React from "react";
 
@@ -63,6 +64,7 @@ export default function ProductGridItems({
     <>
       {products.map((product) => {
         const hasSnippet = query && product.description.toLowerCase().includes(query.toLowerCase());
+        const { discountPercent, minPrice, compareAtAmount } = getCheapestVariantDiscount(product);
 
         return (
           <Grid.Item key={product.handle} className="animate-fadeIn">
@@ -75,9 +77,11 @@ export default function ProductGridItems({
                 alt={product.title}
                 label={{
                   title: highlightText(product.title, query),
-                  amount: product.priceRange.maxVariantPrice.amount,
-                  currencyCode: product.priceRange.maxVariantPrice.currencyCode,
+                  amount: minPrice,
+                  currencyCode: product.priceRange.minVariantPrice.currencyCode,
+                  compareAtAmount: compareAtAmount,
                 }}
+                discountPercent={discountPercent}
                 src={product.featuredImage?.url}
                 fill
                 sizes="(min-width: 768px) 33vw, (min-width: 640px) 50vw, 100vw"

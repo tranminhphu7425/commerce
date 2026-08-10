@@ -72,24 +72,41 @@ export default function CartModal() {
             leaveFrom="translate-x-0"
             leaveTo="translate-x-full"
           >
-            <Dialog.Panel className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-neutral-200 bg-white/80 p-6 text-black backdrop-blur-xl md:w-[390px] dark:border-neutral-700 dark:bg-black/80 dark:text-white">
-              <div className="flex items-center justify-between">
-                <p className="text-lg font-semibold">Giỏ hàng của tôi</p>
+            <Dialog.Panel className="fixed bottom-0 right-0 top-0 flex h-full w-full flex-col border-l border-neutral-200 bg-white/90 p-6 text-black backdrop-blur-xl md:w-[390px] dark:border-neutral-800 dark:bg-black/90 dark:text-white shadow-2xl">
+              <div className="flex items-center justify-between pb-4 border-b border-neutral-100 dark:border-neutral-800">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                  </span>
+                  <p className="text-lg font-bold tracking-tight">Giỏ hàng của tôi</p>
+                </div>
                 <button aria-label="Close cart" onClick={closeCart}>
                   <CloseCart />
                 </button>
               </div>
 
               {!cart || cart.lines.length === 0 ? (
-                <div className="mt-20 flex w-full flex-col items-center justify-center overflow-hidden">
-                  <ShoppingCartIcon className="h-16" />
-                  <p className="mt-6 text-center text-2xl font-bold">
-                    Giỏ hàng của bạn đang trống.
+                <div className="flex h-full flex-col items-center justify-center p-6 text-center">
+                  <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-900 mb-5 shadow-inner">
+                    <ShoppingCartIcon className="h-9 w-9 text-neutral-400 dark:text-neutral-500" />
+                  </div>
+                  <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
+                    Giỏ hàng của bạn trống
+                  </h3>
+                  <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400 max-w-[220px] leading-relaxed">
+                    Hãy lấp đầy giỏ hàng bằng những mồi câu và phụ kiện chất lượng từ Chí Toàn Fishing nhé!
                   </p>
+                  <button
+                    onClick={closeCart}
+                    className="mt-6 rounded-full border border-neutral-200 dark:border-neutral-800 px-6 py-2 text-xs font-bold hover:bg-neutral-50 dark:hover:bg-neutral-900 active:scale-95 transition-all shadow-sm"
+                  >
+                    Tiếp tục mua sắm
+                  </button>
                 </div>
               ) : (
-                <div className="flex h-full flex-col justify-between overflow-hidden p-1">
-                  <ul className="grow overflow-auto py-4">
+                <div className="flex h-full flex-col justify-between overflow-hidden">
+                  <ul className="grow overflow-auto py-2 space-y-1 divide-y divide-neutral-100 dark:divide-neutral-800/80 pr-1">
                     {cart.lines
                       .sort((a, b) =>
                         a.merchandise.product.title.localeCompare(
@@ -117,19 +134,22 @@ export default function CartModal() {
                         return (
                           <li
                             key={i}
-                            className="flex w-full flex-col border-b border-neutral-300 dark:border-neutral-700"
+                            className="group flex w-full flex-col py-3 px-1 transition-all rounded-xl hover:bg-neutral-50/50 dark:hover:bg-neutral-900/10"
                           >
-                            <div className="relative flex w-full flex-row justify-between px-1 py-4">
-                              <div className="absolute z-40 -ml-1 -mt-2">
+                            <div className="relative flex w-full flex-row justify-between gap-2.5">
+                              {/* Delete Button */}
+                              <div className="absolute z-40 -left-1.5 -top-1.5 shadow-sm rounded-full">
                                 <DeleteItemButton
                                   item={item}
                                   optimisticUpdate={updateCartItem}
                                 />
                               </div>
-                              <div className="flex flex-row">
-                                <div className="relative h-16 w-16 overflow-hidden rounded-md border border-neutral-300 bg-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:bg-neutral-800">
+
+                              <div className="flex flex-row items-center gap-3">
+                                {/* Product Image */}
+                                <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 p-1 dark:border-neutral-800 dark:bg-neutral-950">
                                   <Image
-                                    className="h-full w-full object-cover"
+                                    className="h-full w-full object-contain"
                                     width={64}
                                     height={64}
                                     alt={
@@ -142,43 +162,42 @@ export default function CartModal() {
                                     }
                                   />
                                 </div>
-                                <Link
-                                  href={merchandiseUrl}
-                                  onClick={closeCart}
-                                  className="z-30 ml-2 flex flex-row space-x-4"
-                                >
-                                  <div className="flex flex-1 flex-col text-base">
-                                    <span className="leading-tight">
-                                      {item.merchandise.product.title}
+
+                                {/* Title & Option */}
+                                <div className="flex flex-col max-w-[150px] sm:max-w-[170px]">
+                                  <Link
+                                    href={merchandiseUrl}
+                                    onClick={closeCart}
+                                    className="text-xs font-bold text-neutral-800 leading-tight hover:text-orange-500 dark:text-neutral-200 dark:hover:text-orange-400 transition-colors line-clamp-2"
+                                  >
+                                    {item.merchandise.product.title}
+                                  </Link>
+                                  {item.merchandise.title !== DEFAULT_OPTION ? (
+                                    <span className="mt-1 text-[10px] font-semibold text-neutral-500 bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-400 rounded px-1.5 py-0.5 w-fit leading-none">
+                                      {item.merchandise.title}
                                     </span>
-                                    {item.merchandise.title !==
-                                    DEFAULT_OPTION ? (
-                                      <p className="text-sm text-neutral-700 dark:text-neutral-400">
-                                        {item.merchandise.title}
-                                      </p>
-                                    ) : null}
-                                  </div>
-                                </Link>
+                                  ) : null}
+                                </div>
                               </div>
-                              <div className="flex h-16 flex-col justify-between">
+
+                              {/* Price & Quantity Pill */}
+                              <div className="flex flex-col items-end justify-between h-16 flex-shrink-0">
                                 <Price
-                                  className="flex justify-end space-y-2 text-right text-sm"
+                                  className="text-xs sm:text-sm font-extrabold text-neutral-950 dark:text-neutral-50"
                                   amount={item.cost.totalAmount.amount}
                                   currencyCode={
                                     item.cost.totalAmount.currencyCode
                                   }
                                 />
-                                <div className="ml-auto flex h-9 flex-row items-center rounded-full border border-neutral-200 dark:border-neutral-700">
+                                <div className="flex h-8 flex-row items-center rounded-full border border-neutral-200 bg-white/30 backdrop-blur-sm dark:border-neutral-800 dark:bg-black/30 shadow-sm">
                                   <EditItemQuantityButton
                                     item={item}
                                     type="minus"
                                     optimisticUpdate={updateCartItem}
                                   />
-                                  <p className="w-6 text-center">
-                                    <span className="w-full text-sm">
-                                      {item.quantity}
-                                    </span>
-                                  </p>
+                                  <span className="w-5 text-center text-xs font-bold text-neutral-800 dark:text-neutral-200">
+                                    {item.quantity}
+                                  </span>
                                   <EditItemQuantityButton
                                     item={item}
                                     type="plus"
@@ -191,22 +210,24 @@ export default function CartModal() {
                         );
                       })}
                   </ul>
-                  <div className="py-4 text-sm text-neutral-700 dark:text-neutral-400">
-                    
-                    <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
-                      <p>Phí vận chuyển</p>
-                      <p className="text-right">Tính khi thanh toán</p>
+
+                  {/* Checkout Area */}
+                  <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4 pb-2 text-xs text-neutral-700 dark:text-neutral-400">
+                    <div className="mb-2.5 flex items-center justify-between">
+                      <p className="font-medium">Phí vận chuyển</p>
+                      <p className="text-right text-green-500 font-semibold">Miễn phí giao hàng</p>
                     </div>
-                    <div className="mb-3 flex items-center justify-between border-b border-neutral-200 pb-1 pt-1 dark:border-neutral-700">
-                      <p>Tổng cộng</p>
+                    <div className="mb-4 flex items-center justify-between">
+                      <p className="font-bold text-sm text-neutral-900 dark:text-neutral-100">Tổng cộng</p>
                       <Price
-                        className="text-right text-base text-black dark:text-white"
+                        className="text-right text-base font-extrabold text-orange-600 dark:text-orange-500"
                         amount={cart.cost.totalAmount.amount}
                         currencyCode={cart.cost.totalAmount.currencyCode}
                       />
                     </div>
                   </div>
-                  <div onClick={() => window.location.href = "/commerce/checkout"}>
+                  
+                  <div onClick={() => window.location.href = "/commerce/checkout"} className="pb-2">
                     <CheckoutButton />
                   </div>
                 </div>
@@ -237,11 +258,11 @@ function CheckoutButton() {
 
   return (
     <button
-      className="block w-full rounded-full bg-orange-600 p-3 text-center text-sm font-medium text-white opacity-90 hover:opacity-100"
+      className="block w-full rounded-full bg-gradient-to-r from-orange-500 to-red-600 p-3.5 text-center text-sm font-bold text-white shadow-md hover:shadow-lg hover:shadow-orange-500/20 active:scale-[0.98] transition-all disabled:opacity-50"
       type="submit"
       disabled={pending}
     >
-      {pending ? <LoadingDots className="bg-white" /> : "Tiến hành thanh toán"}
+      {pending ? <LoadingDots className="bg-white" /> : "TIẾN HÀNH THANH TOÁN"}
     </button>
   );
 }

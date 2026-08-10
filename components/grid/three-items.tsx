@@ -2,6 +2,7 @@
 
 import { GridTileImage } from "components/grid/tile";
 import type { Product } from "lib/local/types";
+import { getCheapestVariantDiscount } from "lib/local/discount";
 import { useDynamicProducts } from "lib/local/client-store";
 import Link from "next/link";
 
@@ -14,6 +15,8 @@ function ThreeItemGridItem({
   size: "full" | "half";
   priority?: boolean;
 }) {
+  const { discountPercent, minPrice, compareAtAmount } = getCheapestVariantDiscount(item);
+
   return (
     <div
       className={
@@ -30,6 +33,7 @@ function ThreeItemGridItem({
         <GridTileImage
           src={item.featuredImage.url}
           fill
+          size={size}
           sizes={
             size === "full"
               ? "(min-width: 768px) 66vw, 100vw"
@@ -40,9 +44,11 @@ function ThreeItemGridItem({
           label={{
             position: size === "full" ? "center" : "bottom",
             title: item.title as string,
-            amount: item.priceRange.maxVariantPrice.amount,
-            currencyCode: item.priceRange.maxVariantPrice.currencyCode,
+            amount: minPrice,
+            currencyCode: item.priceRange.minVariantPrice.currencyCode,
+            compareAtAmount: compareAtAmount,
           }}
+          discountPercent={discountPercent}
         />
       </Link>
     </div>
@@ -64,10 +70,15 @@ export function ThreeItemGrid({ initialProducts = [] }: { initialProducts?: Prod
   const [firstProduct, secondProduct, thirdProduct] = displayItems;
 
   return (
-    <section className="mx-auto grid max-w-(--breakpoint-2xl) gap-4 px-4 pb-4 md:grid-cols-6 md:grid-rows-2 lg:max-h-[calc(100vh-200px)]">
-      <ThreeItemGridItem size="full" item={firstProduct!} priority={true} />
-      <ThreeItemGridItem size="half" item={secondProduct!} priority={true} />
-      <ThreeItemGridItem size="half" item={thirdProduct!} />
+    <section className="mx-auto max-w-(--breakpoint-2xl) px-4 pb-4">
+      <h2 className="mb-6 text-2xl font-bold text-neutral-800 dark:text-white uppercase tracking-wider">
+        Các sản phẩm nổi bật
+      </h2>
+      <div className="grid gap-4 md:grid-cols-6 md:grid-rows-2 lg:max-h-[calc(100vh-200px)]">
+        <ThreeItemGridItem size="full" item={firstProduct!} priority={true} />
+        <ThreeItemGridItem size="half" item={secondProduct!} priority={true} />
+        <ThreeItemGridItem size="half" item={thirdProduct!} />
+      </div>
     </section>
   );
 }

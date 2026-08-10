@@ -190,56 +190,6 @@ export default function ContactPage() {
               )}
             </div>
           </div>
-
-          {/* Bank Transfer Card */}
-          <div className="rounded-2xl border border-neutral-200 bg-neutral-50/50 p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900/30">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-400 mb-3">
-              Thông tin chuyển khoản
-            </h2>
-            <div className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 p-4">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <div className="text-[10px] uppercase font-bold text-neutral-400">Ngân hàng</div>
-                  <div className="text-sm font-extrabold text-orange-600 dark:text-orange-500">{bankId}</div>
-                </div>
-                <button
-                  onClick={handleCopyAccount}
-                  className="flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold border rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-900 text-neutral-600 dark:text-neutral-400 transition-colors"
-                >
-                  {copied ? (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="h-3 w-3 text-green-600">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                      </svg>
-                      Đã sao chép
-                    </>
-                  ) : (
-                    <>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-3 w-3">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.25m9.9-3.375a9.06 9.06 0 00-1.5-.1h-5.4A3.375 3.375 0 005.25 6.75V18a3.375 3.375 0 003.375 3.375h5.4a3.375 3.375 0 003.375-3.375V7.5a2.25 2.25 0 00-.78-1.68L15.225 3.375z" />
-                      </svg>
-                      Sao chép STK
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <div className="space-y-2 text-xs">
-                <div>
-                  <span className="text-neutral-400">Số tài khoản: </span>
-                  <strong className="text-sm font-bold text-neutral-800 dark:text-neutral-200 tracking-wider">
-                    {accountNo}
-                  </strong>
-                </div>
-                <div>
-                  <span className="text-neutral-400">Chủ tài khoản: </span>
-                  <strong className="font-bold text-neutral-800 dark:text-neutral-200 uppercase">
-                    {accountName}
-                  </strong>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Right Column: Message Form */}

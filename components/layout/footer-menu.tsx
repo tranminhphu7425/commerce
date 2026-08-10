@@ -19,9 +19,9 @@ export function FooterMenuItem({ item }: { item: Menu }) {
       <Link
         href={item.path}
         className={clsx(
-          "block p-2 text-lg underline-offset-4 hover:text-black hover:underline md:inline-block md:text-sm dark:hover:text-neutral-300",
+          "block py-1 text-sm text-neutral-500 dark:text-neutral-400 hover:text-orange-600 dark:hover:text-orange-500 transition-colors duration-200",
           {
-            "text-black dark:text-neutral-300": active,
+            "text-orange-600 dark:text-orange-500 font-semibold": active,
           },
         )}
       >
@@ -36,7 +36,7 @@ export default function FooterMenu({ menu }: { menu: Menu[] }) {
 
   return (
     <nav>
-      <ul className="flex flex-col gap-2 md:flex-row md:gap-4">
+      <ul className="flex flex-col gap-1.5">
         {menu.map((item: Menu) => {
           return <FooterMenuItem key={item.title} item={item} />;
         })}

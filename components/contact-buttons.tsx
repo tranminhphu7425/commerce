@@ -14,8 +14,14 @@ const ContactButtons = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-4 animate-fadeIn items-end">
-      {/* Danh sách các nút liên hệ (luôn hiển thị trên desktop >= 768px, ẩn/hiện trên mobile) */}
-      <div className={`${isExpanded ? 'flex animate-in fade-in slide-in-from-bottom-5 duration-300' : 'hidden'} md:flex flex-col gap-4`}>
+      {/* Danh sách các nút liên hệ (Hiệu ứng mở rộng mượt mà bằng CSS transitions) */}
+      <div 
+        className={`flex flex-col gap-4 transition-all duration-300 ease-out origin-bottom ${
+          isExpanded 
+            ? 'opacity-100 translate-y-0 scale-100 pointer-events-auto' 
+            : 'opacity-0 translate-y-6 scale-90 pointer-events-none'
+        }`}
+      >
         {/* Nút Shopee */}
         {shopee && (
           <a
@@ -23,7 +29,7 @@ const ContactButtons = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="group relative flex h-14 w-14 items-center justify-center rounded-full overflow-hidden shadow-lg transition-all hover:scale-110 active:scale-95"
-            title="Ghé gian hàng Shopee"
+            title="Ghé cửa hàng Shopee"
           >
             <Image
               src={shopeeIcon}
@@ -45,7 +51,7 @@ const ContactButtons = () => {
             target="_blank"
             rel="noopener noreferrer"
             className="group relative flex h-14 w-14 items-center justify-center rounded-full overflow-hidden shadow-lg transition-all hover:scale-110 active:scale-95"
-            title="Ghé gian hàng TikTok Shop"
+            title="Ghé cửa hàng TikTok Shop"
           >
             <Image
               src={tiktokIcon}
@@ -107,7 +113,7 @@ const ContactButtons = () => {
 
         {/* Nút Messenger */}
         <a
-          href={`https://facebook.com/${messengerId}`}
+          href={`https://m.me/${messengerId}`}
           target="_blank"
           rel="noopener noreferrer"
           className="group relative flex h-14 w-14 items-center justify-center rounded-full overflow-hidden shadow-lg transition-all hover:scale-110 active:scale-95"
@@ -126,39 +132,41 @@ const ContactButtons = () => {
         </a>
       </div>
 
-      {/* Nút Trigger thu gọn/mở rộng (chỉ xuất hiện trên thiết bị di động < 768px) */}
+      {/* Nút Trigger thu gọn/mở rộng */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-600 text-white shadow-lg transition-all hover:scale-110 active:scale-95 md:hidden z-10"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-600 text-white shadow-lg transition-all hover:scale-110 active:scale-95 z-10 cursor-pointer"
         title="Liên hệ với chúng tôi"
       >
-        {isExpanded ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2.5}
-            stroke="currentColor"
-            className="h-6 w-6"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-            className="h-7 w-7"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
-            />
-          </svg>
-        )}
+        <div className={`transition-transform duration-300 ${isExpanded ? 'rotate-90' : 'rotate-0'}`}>
+          {isExpanded ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2.5}
+              stroke="currentColor"
+              className="h-6 w-6"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-7 w-7"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
+              />
+            </svg>
+          )}
+        </div>
       </button>
     </div>
   );
