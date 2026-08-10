@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { Product, ProductVariant, ProductOption } from "lib/local/types";
 import { createProductAction, updateProductAction } from "app/admin/actions";
-import { getGitHubConfig } from "lib/github";
-import { toast } from "sonner";
 import { saveLocalProductOverride, savePendingImage } from "lib/local/client-store";
-import { saveImageCache, useCachedImageUrl, getImageCache } from "lib/local/image-cache";
+import { getImageCache, useCachedImageUrl } from "lib/local/image-cache";
+import { Product, ProductOption, ProductVariant } from "lib/local/types";
+import { useRouter } from "next/navigation";
+import { useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 
 // Drag and Drop Upload Zone Component
 function DropZone({
@@ -66,13 +65,12 @@ function DropZone({
       onDragLeave={handleDrag}
       onDrop={handleDrop}
       onClick={() => !disabled && inputRef.current?.click()}
-      className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl transition-all cursor-pointer text-center ${
-        disabled
+      className={`relative flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl transition-all cursor-pointer text-center ${disabled
           ? "opacity-50 cursor-not-allowed border-neutral-300 dark:border-neutral-700 bg-neutral-100 dark:bg-neutral-800"
           : isDragOver
-          ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30 scale-[0.99]"
-          : "border-neutral-300 dark:border-neutral-700 hover:border-orange-400 bg-neutral-50/50 dark:bg-neutral-900/50 hover:bg-orange-50/30 dark:hover:bg-orange-950/10"
-      }`}
+            ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30 scale-[0.99]"
+            : "border-neutral-300 dark:border-neutral-700 hover:border-orange-400 bg-neutral-50/50 dark:bg-neutral-900/50 hover:bg-orange-50/30 dark:hover:bg-orange-950/10"
+        }`}
     >
       <input
         ref={inputRef}
@@ -252,6 +250,20 @@ const cartesian = (arrays: string[][]): string[][] => {
   }, [] as string[][]);
 };
 
+// Helper to format number string with dots as thousand separators
+const formatNumberString = (value: string | number | undefined | null): string => {
+  if (value === undefined || value === null) return "";
+  const str = typeof value === "number" ? value.toString() : value;
+  const clean = str.replace(/\D/g, "");
+  if (!clean) return "";
+  return new Intl.NumberFormat("vi-VN").format(Number(clean));
+};
+
+// Helper to clean price inputs and strip non-digits
+const cleanPriceInput = (value: string): string => {
+  return value.replace(/\D/g, "");
+};
+
 export function ProductForm({ initialData }: { initialData?: Product }) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -276,10 +288,10 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
   const [options, setOptions] = useState<{ id: string; name: string; valuesStr: string }[]>(
     initialData?.options && initialData.options.length > 0 && initialData.options[0]?.name !== "Title"
       ? initialData.options.map((o, i) => ({
-          id: o.id || `opt-${i}`,
-          name: o.name,
-          valuesStr: o.values.join(", "),
-        }))
+        id: o.id || `opt-${i}`,
+        name: o.name,
+        valuesStr: o.values.join(", "),
+      }))
       : []
   );
 
@@ -497,20 +509,20 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
       const finalOptions: ProductOption[] =
         validOptions.length > 0
           ? validOptions.map((o) => ({
-              id: o.id,
-              name: o.name.trim(),
-              values: o.valuesStr
-                .split(",")
-                .map((v) => v.trim())
-                .filter(Boolean),
-            }))
+            id: o.id,
+            name: o.name.trim(),
+            values: o.valuesStr
+              .split(",")
+              .map((v) => v.trim())
+              .filter(Boolean),
+          }))
           : [
-              {
-                id: `opt-default`,
-                name: "Title",
-                values: ["Default Title"],
-              },
-            ];
+            {
+              id: `opt-default`,
+              name: "Title",
+              values: ["Default Title"],
+            },
+          ];
 
       const variantsToSave: ProductVariant[] = [];
       let minPrice = Infinity;
@@ -673,11 +685,10 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
             <div className="w-10 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-empty after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600"></div>
           </div>
           <span
-            className={`text-xs font-bold w-16 ${
-              availableForSale
+            className={`text-xs font-bold w-16 ${availableForSale
                 ? "text-green-600 dark:text-green-400"
                 : "text-neutral-400"
-            }`}
+              }`}
           >
             {availableForSale ? "✓ Hiển thị" : "Đã ẩn"}
           </span>
@@ -774,7 +785,7 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
         {(imageUrl || galleryImages.length > 0) && (
           <div className="space-y-3 pt-2">
             <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-              Danh sách ảnh đã tải ({ (imageUrl ? 1 : 0) + galleryImages.length } ảnh)
+              Danh sách ảnh đã tải ({(imageUrl ? 1 : 0) + galleryImages.length} ảnh)
             </label>
             <div className="flex flex-wrap gap-4">
               {/* Featured Main Cover Image */}
@@ -939,11 +950,12 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
                       </td>
                       <td className="px-4 py-3.5">
                         <input
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           className="w-full p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-xs"
-                          value={vData.importPrice || ""}
+                          value={formatNumberString(vData.importPrice || "")}
                           onChange={(e) =>
-                            handleVariantChange(v.title, "importPrice", e.target.value)
+                            handleVariantChange(v.title, "importPrice", cleanPriceInput(e.target.value))
                           }
                           placeholder="Giá nhập"
                         />
@@ -951,25 +963,27 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
                       <td className="px-4 py-3.5">
                         <input
                           required
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           className="w-full p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-xs font-semibold focus:border-orange-500"
-                          value={vData.price || ""}
+                          value={formatNumberString(vData.price || "")}
                           onChange={(e) =>
-                            handleVariantChange(v.title, "price", e.target.value)
+                            handleVariantChange(v.title, "price", cleanPriceInput(e.target.value))
                           }
                           placeholder="Giá bán *"
                         />
                       </td>
                       <td className="px-4 py-3.5">
                         <input
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           className="w-full p-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-xs"
-                          value={vData.compareAtPrice || ""}
+                          value={formatNumberString(vData.compareAtPrice || "")}
                           onChange={(e) =>
                             handleVariantChange(
                               v.title,
                               "compareAtPrice",
-                              e.target.value
+                              cleanPriceInput(e.target.value)
                             )
                           }
                           placeholder="Giá gốc"
@@ -1026,11 +1040,12 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
                   Giá nhập hàng (VND)
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   className="w-full mt-1.5 p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm"
-                  value={variantsData["Default Title"]?.importPrice || ""}
+                  value={formatNumberString(variantsData["Default Title"]?.importPrice || "")}
                   onChange={(e) =>
-                    handleVariantChange("Default Title", "importPrice", e.target.value)
+                    handleVariantChange("Default Title", "importPrice", cleanPriceInput(e.target.value))
                   }
                   placeholder="0"
                 />
@@ -1041,11 +1056,12 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
                 </label>
                 <input
                   required
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   className="w-full mt-1.5 p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-bold text-orange-600 dark:text-orange-400 focus:border-orange-500"
-                  value={variantsData["Default Title"]?.price || ""}
+                  value={formatNumberString(variantsData["Default Title"]?.price || "")}
                   onChange={(e) =>
-                    handleVariantChange("Default Title", "price", e.target.value)
+                    handleVariantChange("Default Title", "price", cleanPriceInput(e.target.value))
                   }
                   placeholder="0"
                 />
@@ -1055,14 +1071,15 @@ export function ProductForm({ initialData }: { initialData?: Product }) {
                   Giá gốc niêm yết (VND)
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   className="w-full mt-1.5 p-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm"
-                  value={variantsData["Default Title"]?.compareAtPrice || ""}
+                  value={formatNumberString(variantsData["Default Title"]?.compareAtPrice || "")}
                   onChange={(e) =>
                     handleVariantChange(
                       "Default Title",
                       "compareAtPrice",
-                      e.target.value
+                      cleanPriceInput(e.target.value)
                     )
                   }
                   placeholder="0"

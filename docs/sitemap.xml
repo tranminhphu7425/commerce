@@ -2,11 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>http://localhost:3000</loc>
-<lastmod>2026-08-09T16:45:30.790Z</lastmod>
+<lastmod>2026-08-10T07:26:53.099Z</lastmod>
 </url>
 <url>
 <loc>http://localhost:3000/search</loc>
-<lastmod>2026-08-09T16:45:30.792Z</lastmod>
+<lastmod>2026-08-10T07:26:53.100Z</lastmod>
 </url>
 <url>
 <loc>http://localhost:3000/search/featured</loc>
@@ -39,14 +39,6 @@
 <url>
 <loc>http://localhost:3000/search/ao-khoac</loc>
 <lastmod>2026-05-13T00:00:00Z</lastmod>
-</url>
-<url>
-<loc>http://localhost:3000/product/moi-go-ctf-thu-cong</loc>
-<lastmod>2026-07-23T08:00:31.945Z</lastmod>
-</url>
-<url>
-<loc>http://localhost:3000/product/day-cau-pe-8x-ctf-premium</loc>
-<lastmod>2026-07-21T03:47:04.896Z</lastmod>
 </url>
 <url>
 <loc>http://localhost:3000/product/combo-4-mon-moi-mem-fish-candy</loc>

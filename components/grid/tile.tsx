@@ -15,7 +15,7 @@ export function GridTileImage({
   isInteractive?: boolean;
   active?: boolean;
   label?: {
-    title: string;
+    title: string | React.ReactNode;
     amount: string;
     currencyCode: string;
     position?: "bottom" | "center";

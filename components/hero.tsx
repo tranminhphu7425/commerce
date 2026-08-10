@@ -3,14 +3,14 @@ import Link from 'next/link';
 
 const Hero = () => {
   return (
-    <div className="relative h-[70vh] w-full overflow-hidden border-b border-neutral-200 dark:border-neutral-800">
+    <div className="relative h-[55vh] sm:h-[65vh] md:h-[80vh] lg:h-[90vh] w-full overflow-hidden border-b border-neutral-200 dark:border-neutral-800">
       {/* Background Image with Overlay */}
       <Image
         src="/commerce/images/banner/hero.png"
         alt="Chí Toàn Fishing Hero"
         fill
         priority
-        className="object-cover object-center scale-105 animate-slow-zoom"
+        className="object-cover object-center"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
       
@@ -19,27 +19,27 @@ const Hero = () => {
         <div className="max-w-2xl text-white">
           
 
-          <span className="mb-4 inline-block rounded-full bg-orange-600 px-4 py-1 text-sm font-bold tracking-wider uppercase">
+          <span className="mb-3 inline-block rounded-full bg-orange-600 px-4 py-1 text-xs sm:text-sm font-bold tracking-wider uppercase">
             Chính Hãng & Uy Tín
           </span>
-          <h1 className="mb-6 text-4xl font-extrabold leading-tight md:text-6xl lg:text-7xl">
+          <h1 className="mb-4 text-3xl font-extrabold leading-tight sm:text-4xl md:text-6xl lg:text-7xl">
             Nâng Tầm Trải Nghiệm <br />
             <span className="text-orange-500">Câu Cá Của Bạn</span>
           </h1>
-          <p className="mb-10 text-lg text-neutral-300 md:text-xl">
+          <p className="mb-6 md:mb-10 text-sm sm:text-lg text-neutral-300 md:text-xl">
             Khám phá bộ sưu tập đồ câu chuyên nghiệp từ các thương hiệu hàng đầu thế giới. 
             Đồng hành cùng bạn trong mọi chuyến săn hàng.
           </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3">
             <Link
               href="/search"
-              className="rounded-full bg-white px-8 py-4 text-sm font-bold text-black transition-all hover:bg-orange-500 hover:text-white"
+              className="rounded-full bg-white px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-bold text-black transition-all hover:bg-orange-500 hover:text-white"
             >
               Mua Ngay
             </Link>
             <Link
               href="/search/moi-cau"
-              className="rounded-full border border-white/50 bg-white/10 px-8 py-4 text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-white/20"
+              className="rounded-full border border-white/50 bg-white/10 px-6 py-3 sm:px-8 sm:py-4 text-xs sm:text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-white/20"
             >
               Xem Mồi Câu
             </Link>

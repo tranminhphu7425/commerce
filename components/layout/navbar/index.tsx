@@ -7,7 +7,7 @@ import { Menu } from "lib/local/types";
 import Link from "next/link";
 import { Suspense } from "react";
 import MobileMenu from "./mobile-menu";
-import CategoryDropdown from "./category-dropdown";
+import NavbarLinks from "./navbar-links";
 import Search, { SearchSkeleton } from "./search";
 
 const { SITE_NAME } = process.env;
@@ -28,28 +28,14 @@ export async function Navbar() {
             <Link
               href="/"
               prefetch={true}
-              className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6"
+              className="mr-2 flex w-full items-center justify-center md:w-auto lg:mr-6 transition-transform hover:scale-102"
             >
               <LogoSquare />
-              <div className="ml-2 flex-none text-sm font-medium uppercase md:hidden lg:block">
+              <div className="ml-2.5 flex-none text-sm font-bold uppercase tracking-wider text-black dark:text-white md:hidden lg:block">
                 {SITE_NAME}
               </div>
             </Link>
-            {menu.length ? (
-              <ul className="hidden gap-6 text-sm md:flex md:items-center whitespace-nowrap">
-                <li>
-                  <Link
-                    href="/search"
-                    className="text-neutral-700 underline-offset-4 hover:text-black hover:underline dark:text-neutral-400 dark:hover:text-neutral-300"
-                  >
-                    Tất cả
-                  </Link>
-                </li>
-                <li>
-                  <CategoryDropdown menu={menu.filter(item => item.path !== '/search')} />
-                </li>
-              </ul>
-            ) : null}
+            {menu.length ? <NavbarLinks menu={menu} /> : null}
           </div>
           <div className="hidden justify-center md:flex md:w-1/3">
             <Suspense fallback={<SearchSkeleton />}>

@@ -127,13 +127,6 @@ const removeEdgesAndNodes = <T>(array: Connection<T>): T[] => {
 };
 
 const reshapeCart = (cart: ShopifyCart): Cart => {
-  if (!cart.cost?.totalTaxAmount) {
-    cart.cost.totalTaxAmount = {
-      amount: "0.0",
-      currencyCode: cart.cost.totalAmount.currencyCode,
-    };
-  }
-
   return {
     ...cart,
     lines: removeEdgesAndNodes(cart.lines),

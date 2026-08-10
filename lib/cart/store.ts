@@ -16,7 +16,7 @@ const createEmptyCart = (): Cart => ({
   cost: {
     subtotalAmount: { amount: '0', currencyCode: 'VND' },
     totalAmount: { amount: '0', currencyCode: 'VND' },
-    totalTaxAmount: { amount: '0', currencyCode: 'VND' }
+   
   },
   lines: [],
   totalQuantity: 0

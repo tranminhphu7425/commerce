@@ -20,7 +20,7 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
-      <ShopInfo />
+      <ShopInfo totalProducts={products.length} />
       <Features />
       <ThreeItemGrid initialProducts={products} />
       <Carousel initialProducts={products} />

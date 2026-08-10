@@ -13,10 +13,6 @@ const cartFragment = /* GraphQL */ `
         amount
         currencyCode
       }
-      totalTaxAmount {
-        amount
-        currencyCode
-      }
     }
     lines(first: 100) {
       edges {

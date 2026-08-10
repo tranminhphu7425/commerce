@@ -26,10 +26,12 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { cart } = useCart();
   const { clearCart } = useCartStore();
-  
+
   const [mounted, setMounted] = useState(false);
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showFacebookModal, setShowFacebookModal] = useState(false);
+  const [countdown, setCountdown] = useState(8);
 
   // Address profiles state
   const [profiles, setProfiles] = useState<ShippingProfile[]>([]);
@@ -52,7 +54,7 @@ export default function CheckoutPage() {
   const [loadingWards, setLoadingWards] = useState(false);
 
   // Payment method state
-  const [paymentMethod, setPaymentMethod] = useState<'qr' | 'cod'>('qr');
+  const [paymentMethod, setPaymentMethod] = useState<'qr' | 'cod'>('cod');
 
   const { bankId: BANK_ID, accountNo: ACCOUNT_NO, accountName: ACCOUNT_NAME } = CONTACT_INFO;
   const TEMPLATE = "compact";
@@ -127,6 +129,65 @@ export default function CheckoutPage() {
     fetchWards();
   }, [formValues.provinceCode]);
 
+  const handleRedirectToFacebook = async () => {
+    const telegramToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
+    const telegramChatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
+
+    // Send to Telegram only when checkout is confirmed and redirecting
+    if (telegramToken && telegramChatId) {
+      try {
+        const messageHtml = generateOrderMessage(true);
+        const url = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
+
+        await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            chat_id: telegramChatId,
+            text: messageHtml,
+            parse_mode: 'HTML',
+          }),
+        });
+      } catch (tgError) {
+        console.error('Failed to send Telegram notification:', tgError);
+      }
+    }
+
+    const fbUrl = `https://facebook.com/${CONTACT_INFO.messenger}`;
+    window.open(fbUrl, '_blank');
+    
+    clearCart();
+    setStep(3);
+    setShowFacebookModal(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCloseModal = () => {
+    setShowFacebookModal(false);
+  };
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showFacebookModal) {
+      setCountdown(8);
+      timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            handleRedirectToFacebook();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (timer) clearInterval(timer);
+    };
+  }, [showFacebookModal]);
+
   if (!mounted) return null;
 
   if (!cart || cart.lines.length === 0) {
@@ -188,7 +249,7 @@ export default function CheckoutPage() {
       })
       .join('\n');
 
-    const addressStr = activeProfile 
+    const addressStr = activeProfile
       ? `${activeProfile.street}, ${activeProfile.wardName}, ${activeProfile.provinceName}`
       : '';
     const nameStr = activeProfile ? activeProfile.name : '';
@@ -196,21 +257,24 @@ export default function CheckoutPage() {
     const noteStr = activeProfile ? (activeProfile.note || 'Không có') : '';
     const paymentStr = paymentMethod === 'cod' ? 'Thanh toán khi nhận hàng (COD)' : 'Chuyển khoản VietQR';
 
+    const statusExtra = paymentMethod === 'qr' ? '\n⚠️ Trạng thái: Em đã chuyển khoản trước rồi ạ!' : '';
+    const statusExtraHtml = paymentMethod === 'qr' ? '\n⚠️ <b>Trạng thái:</b> Em đã chuyển khoản trước rồi ạ!' : '';
+
     if (html) {
       return `📦 <b>ĐƠN HÀNG MỚI: ${orderId}</b>\n` +
-             `---------------------------\n` +
-             `👤 <b>Khách hàng:</b> ${nameStr}\n` +
-             `📞 <b>Điện thoại:</b> ${phoneStr}\n` +
-             `🏠 <b>Địa chỉ:</b> ${addressStr}\n` +
-             `💵 <b>Thanh toán:</b> ${paymentStr}\n` +
-             `📝 <b>Ghi chú:</b> ${noteStr}\n` +
-             `---------------------------\n` +
-             `🛒 <b>Chi tiết mặt hàng:</b>\n${itemsText}\n` +
-             `---------------------------\n` +
-             `💰 <b>Tổng cộng: ${formatCurrency(cart.cost.totalAmount.amount)}</b>`;
+        `---------------------------\n` +
+        `👤 <b>Khách hàng:</b> ${nameStr}\n` +
+        `📞 <b>Điện thoại:</b> ${phoneStr}\n` +
+        `🏠 <b>Địa chỉ:</b> ${addressStr}\n` +
+        `💵 <b>Thanh toán:</b> ${paymentStr}\n` +
+        `📝 <b>Ghi chú:</b> ${noteStr}\n` +
+        `---------------------------\n` +
+        `🛒 <b>Chi tiết mặt hàng:</b>\n${itemsText}\n` +
+        `---------------------------\n` +
+        `💰 <b>Tổng cộng: ${formatCurrency(cart.cost.totalAmount.amount)}</b>${statusExtraHtml}`;
     }
 
-    return `📦 ĐƠN HÀNG MỚI: ${orderId}\n---------------------------\n👤 Khách hàng: ${nameStr}\n📞 Điện thoại: ${phoneStr}\n🏠 Địa chỉ: ${addressStr}\n💵 Thanh toán: ${paymentStr}\n📝 Ghi chú: ${noteStr}\n---------------------------\n🛒 Chi tiết mặt hàng:\n${itemsText}\n---------------------------\n💰 Tổng cộng: ${formatCurrency(cart.cost.totalAmount.amount)}\n---------------------------\nVui lòng xác nhận đơn hàng giúp em nhé!`;
+    return `📦 ĐƠN HÀNG MỚI: ${orderId}\n---------------------------\n👤 Khách hàng: ${nameStr}\n📞 Điện thoại: ${phoneStr}\n🏠 Địa chỉ: ${addressStr}\n💵 Thanh toán: ${paymentStr}\n📝 Ghi chú: ${noteStr}\n---------------------------\n🛒 Chi tiết mặt hàng:\n${itemsText}\n---------------------------\n💰 Tổng cộng: ${formatCurrency(cart.cost.totalAmount.amount)}${statusExtra}\n---------------------------\nVui lòng xác nhận đơn hàng giúp em nhé!`;
   };
 
   const handleNextStep = () => {
@@ -222,36 +286,42 @@ export default function CheckoutPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success('Đã tự động sao chép thông tin đơn hàng!');
+    } catch (err) {
+      console.error('Clipboard API error, trying fallback', err);
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        toast.success('Đã sao chép thông tin đơn hàng!');
+      } catch (e) {
+        toast.error('Không thể sao chép tự động. Vui lòng chọn và sao chép thủ công.');
+      }
+      document.body.removeChild(textarea);
+    }
+  };
+
   const handleCompletePayment = async () => {
     setIsSubmitting(true);
-    
-    try {
-      const telegramToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-      const telegramChatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID;
 
-      // Send to Telegram if chat details are configured
-      if (telegramToken && telegramChatId) {
-        const message = generateOrderMessage(true);
-        const url = `https://api.telegram.org/bot${telegramToken}/sendMessage`;
-        
-        await fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            chat_id: telegramChatId,
-            text: message,
-            parse_mode: 'HTML',
-          }),
-        });
+    try {
+      // Copy order details to clipboard
+      const messageText = generateOrderMessage(false);
+      try {
+        await copyToClipboard(messageText);
+      } catch (clipErr) {
+        console.error('Error in copyToClipboard:', clipErr);
       }
 
-      toast.success('Thanh toán thành công!');
-      clearCart();
-      setStep(3);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      
+      toast.success('Thông tin đơn hàng đã sẵn sàng!');
+      setShowFacebookModal(true);
+
     } catch (error) {
       console.error('Error completing payment:', error);
       toast.error('Có lỗi xảy ra khi hoàn tất đơn hàng. Vui lòng thử lại.');
@@ -343,12 +413,12 @@ export default function CheckoutPage() {
       const updated = profiles.filter((p) => p.id !== id);
       setProfiles(updated);
       localStorage.setItem("commerce_shipping_profiles", JSON.stringify(updated));
-      
+
       if (activeProfileId === id) {
         const nextActive = updated[0]?.id || '';
         setActiveProfileId(nextActive);
         localStorage.setItem("commerce_active_profile_id", nextActive);
-        
+
         if (updated.length === 0) {
           setIsEditingOrAdding(true);
           setFormMode('add');
@@ -382,7 +452,7 @@ export default function CheckoutPage() {
     <div className="mx-auto max-w-6xl px-4 py-12">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-neutral-900 dark:text-white">Thanh Toán</h1>
-        
+
         {/* Progress Indicator */}
         <div className="flex items-center gap-2 text-sm font-medium">
           <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 1 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-700'}`}>1</span>
@@ -390,11 +460,11 @@ export default function CheckoutPage() {
           <span className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 2 ? 'bg-orange-600 text-white' : 'bg-neutral-200 text-neutral-700'}`}>2</span>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Left Column: Form & QR */}
         <div className="lg:col-span-2 space-y-8">
-          
+
           {/* Step 1: Customer Form */}
           <div className={`rounded-2xl border ${step === 1 ? 'border-orange-500 ring-1 ring-orange-500' : 'border-neutral-200 opacity-60'} bg-white p-8 shadow-sm transition-all dark:bg-neutral-900 dark:border-neutral-800`}>
             <div className="flex items-center justify-between mb-6">
@@ -405,10 +475,10 @@ export default function CheckoutPage() {
                 <button onClick={() => setStep(1)} className="text-sm font-medium text-orange-600 hover:underline">Sửa</button>
               )}
             </div>
-            
+
             {step === 1 ? (
               <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                
+
                 {/* Form Editor */}
                 {isEditingOrAdding ? (
                   <form onSubmit={handleSaveProfile} className="space-y-4 border border-neutral-200 dark:border-neutral-800 p-6 rounded-xl bg-neutral-50/50 dark:bg-neutral-800/10">
@@ -441,7 +511,7 @@ export default function CheckoutPage() {
                           className="w-full rounded-lg border border-neutral-200 bg-white p-2.5 text-xs focus:border-orange-500 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
                         />
                       </div>
-                      
+
                       <div className="space-y-1">
                         <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">Tỉnh / Thành phố *</label>
                         <select
@@ -529,11 +599,10 @@ export default function CheckoutPage() {
                         <div
                           key={p.id}
                           onClick={() => handleSelectProfile(p.id)}
-                          className={`relative rounded-xl border p-4 cursor-pointer transition-all ${
-                            isActive
+                          className={`relative rounded-xl border p-4 cursor-pointer transition-all ${isActive
                               ? 'border-orange-500 bg-orange-50/5 ring-1 ring-orange-500'
                               : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-800'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex items-start gap-3">
@@ -609,29 +678,28 @@ export default function CheckoutPage() {
 
               {/* Payment Toggler */}
               <div className="mb-8 flex flex-col sm:flex-row gap-4">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod('qr')}
-                  className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border text-center transition-all ${
-                    paymentMethod === 'qr'
-                      ? 'border-orange-500 bg-orange-50/10 ring-1 ring-orange-500 font-bold'
-                      : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-800'
-                  }`}
-                >
-                  <span className="text-2xl mb-1.5">💳</span>
-                  <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Chuyển khoản VietQR</span>
-                </button>
+                
                 <button
                   type="button"
                   onClick={() => setPaymentMethod('cod')}
-                  className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border text-center transition-all ${
-                    paymentMethod === 'cod'
+                  className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border text-center transition-all ${paymentMethod === 'cod'
                       ? 'border-orange-500 bg-orange-50/10 ring-1 ring-orange-500 font-bold'
                       : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-800'
-                  }`}
+                    }`}
                 >
                   <span className="text-2xl mb-1.5">💵</span>
                   <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Thanh toán khi nhận hàng (COD)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod('qr')}
+                  className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border text-center transition-all ${paymentMethod === 'qr'
+                      ? 'border-orange-500 bg-orange-50/10 ring-1 ring-orange-500 font-bold'
+                      : 'border-neutral-200 hover:border-neutral-300 dark:border-neutral-800'
+                    }`}
+                >
+                  <span className="text-2xl mb-1.5">💳</span>
+                  <span className="text-xs font-semibold text-neutral-800 dark:text-neutral-200">Chuyển khoản VietQR</span>
                 </button>
               </div>
 
@@ -734,11 +802,10 @@ export default function CheckoutPage() {
                 <button
                   onClick={handleNextStep}
                   disabled={!isFormValid}
-                  className={`w-full rounded-full py-4 text-sm font-bold text-white shadow-md transition-all ${
-                    isFormValid 
-                      ? 'bg-orange-600 hover:bg-orange-700 hover:shadow-lg active:scale-95' 
+                  className={`w-full rounded-full py-4 text-sm font-bold text-white shadow-md transition-all ${isFormValid
+                      ? 'bg-orange-600 hover:bg-orange-700 hover:shadow-lg active:scale-95'
                       : 'bg-neutral-300 cursor-not-allowed dark:bg-neutral-700 dark:text-neutral-500'
-                  }`}
+                    }`}
                 >
                   Tiếp tục thanh toán
                 </button>
@@ -746,11 +813,10 @@ export default function CheckoutPage() {
                 <button
                   onClick={handleCompletePayment}
                   disabled={isSubmitting}
-                  className={`flex w-full items-center justify-center gap-2 rounded-full py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed ${
-                    paymentMethod === 'cod'
+                  className={`flex w-full items-center justify-center gap-2 rounded-full py-4 text-sm font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed ${paymentMethod === 'cod'
                       ? 'bg-orange-600 hover:bg-orange-700'
                       : 'bg-green-600 hover:bg-green-700'
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -773,6 +839,69 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Facebook Redirect Modal */}
+      {showFacebookModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/60 backdrop-blur-md p-4 animate-in fade-in duration-300">
+          <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl border border-neutral-100 dark:bg-neutral-900 dark:border-neutral-800 animate-in zoom-in-95 duration-300">
+            {/* Close Button */}
+            <button
+              onClick={handleCloseModal}
+              style={{ position: 'absolute', right: '20px', top: '20px' }}
+              className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:rotate-90 transition-all duration-300 rounded-full p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
+              title="Đóng"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="flex flex-col items-center text-center space-y-4">
+              {/* Header Icon */}
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#1877F2]/10 text-[#1877F2] dark:bg-[#1877F2]/20 animate-pulse">
+                <svg className="h-8 w-8 fill-current" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                </svg>
+              </div>
+
+              {/* Title & Success Msg */}
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-neutral-900 dark:text-white">
+                  Chuyển sang Facebook nhắn tin
+                </h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Đơn hàng của bạn đã được ghi nhận thành công trên hệ thống!
+                </p>
+              </div>
+
+              {/* Instruction Card */}
+              <div className="w-full rounded-2xl bg-orange-50/70 p-4 border border-orange-100 dark:bg-orange-950/20 dark:border-orange-900/30 text-left">
+                <p className="text-xs font-bold text-orange-800 dark:text-orange-300">
+                  📋 Đã tự động sao chép thông tin đơn hàng
+                </p>
+                <p className="text-[12px] text-neutral-700 dark:text-neutral-400 mt-1.5 leading-relaxed">
+                  Hệ thống sắp chuyển bạn sang Facebook. Vui lòng bấm vào phần <strong>Nhắn tin</strong> trên Fanpage và <strong>Dán (Ctrl+V)</strong> toàn bộ nội dung vừa sao chép để xác nhận đơn hàng với shop.
+                </p>
+              </div>
+
+           
+
+              {/* Action Buttons */}
+              <div className="w-full rounded-md bg-orange-500">
+                <button
+                  onClick={handleRedirectToFacebook}
+                  className="w-full rounded-xl bg-[#1877F2] hover:bg-[#166FE5] py-3 text-sm font-bold !text-white shadow-lg transition-all hover:scale-[1.02] active:scale-98 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span className="!text-white">Đã hiểu, chuyển sang Facebook</span>
+                  <span className="bg-[#0c5eb9] px-2 py-0.5 rounded-md text-xs font-semibold !text-white">
+                    {countdown}s
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

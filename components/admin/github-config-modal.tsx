@@ -294,7 +294,7 @@ export function ReturnToAdminButton() {
     <Link
       href="/admin"
       title="Về trang quản trị"
-      className="flex h-11 items-center justify-center gap-2 rounded-md border border-neutral-200 px-3 text-sm font-semibold text-neutral-800 transition-all hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800 hover:scale-105 active:scale-95 shadow-sm bg-white dark:bg-black"
+      className="flex p-3 justify-center items-center gap-2 text-center text-sm font-semibold rounded-md border border-neutral-200 text-black transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

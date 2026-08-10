@@ -1,13 +1,13 @@
 import Image from 'next/image';
 
-const ShopInfo = () => {
+const ShopInfo = ({ totalProducts = 47 }: { totalProducts?: number }) => {
   const shopData = {
     shop_name: "Chí Toàn Fishing Shop",
     shop_url: "/shopdocauchitoanfishing",
     avatar: "https://down-bs-vn.img.susercontent.com/vn-11134216-81ztc-mnh0zou8j09466_tn.webp",
     cover_image: "https://deo.shopeemobile.com/shopee/shopee-pcmall-live-sg/shopmicrofe/dc2a8ae5803b2531c9a5.jpg",
     status: "Online 28 phút trước",
-    total_products: 47,
+    total_products: totalProducts,
     followers: 299,
     following: 15,
     rating: 4.7,

@@ -51,9 +51,11 @@ export const DEFAULT_OPTION = "Default Title";
 export const SHOPIFY_GRAPHQL_API_ENDPOINT = "/api/2023-01/graphql.json";
 
 export const CONTACT_INFO = {
-  phone: "0818768940",
-  zalo: "0818768940",
-  messenger: "minhtran.phu.984",
+  phone: "0348667831",
+  zalo: "0348667831",
+  messenger: "chiToan434",
+  tiktok: "https://www.tiktok.com/@chi_toan_fishing_",
+  shopee: "https://shopee.vn/shopdocauchitoanfishing",
   bankId: "VCB",
   accountNo: "9911550054",
   accountName: "TRẦN MINH PHÚ",

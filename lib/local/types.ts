@@ -113,7 +113,7 @@ export type Cart = {
   cost: {
     subtotalAmount: Money;
     totalAmount: Money;
-    totalTaxAmount: Money;
+   
   };
   lines: CartItem[];
   totalQuantity: number;

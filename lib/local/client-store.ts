@@ -208,7 +208,8 @@ export function savePendingImage(filenameOrPath: string, base64Content: string):
       .replace(/^(public|docs)\/images\/products\//, "")
       .replace(/^\/commerce\/images\/products\//, "");
 
-    const relativeUrl = `/commerce/images/products/${cleanFilename}`;
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/commerce";
+    const relativeUrl = `${basePath}/images/products/${cleanFilename}`;
     saveImageCache(relativeUrl, base64Content);
 
     const map = getPendingImagesMap();
@@ -275,6 +276,38 @@ export function getPendingChangesCount(): {
   };
 }
 
+function cleanProductImageUrls(products: any[], basePath: string): any[] {
+  if (basePath === "") {
+    products.forEach((p: any) => {
+      if (p.featuredImage?.url?.startsWith("/commerce/")) {
+        p.featuredImage.url = p.featuredImage.url.replace(/^\/commerce/, "");
+      }
+      if (Array.isArray(p.images)) {
+        p.images.forEach((img: any) => {
+          if (img?.url?.startsWith("/commerce/")) {
+            img.url = img.url.replace(/^\/commerce/, "");
+          }
+        });
+      }
+      if (Array.isArray(p.variants)) {
+        p.variants.forEach((v: any) => {
+          if (v.image?.url?.startsWith("/commerce/")) {
+            v.image.url = v.image.url.replace(/^\/commerce/, "");
+          }
+          if (Array.isArray(v.images)) {
+            v.images.forEach((img: any) => {
+              if (img?.url?.startsWith("/commerce/")) {
+                img.url = img.url.replace(/^\/commerce/, "");
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+  return products;
+}
+
 /**
  * Fetch latest store.json dynamically from public/data/store.json over HTTP
  */
@@ -288,13 +321,15 @@ export async function fetchRemoteStoreData(): Promise<(Product & { collections?:
       `./data/store.json?t=${timestamp}`,
     ];
 
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/commerce";
+
     for (const p of paths) {
       try {
         const res = await fetch(p, { cache: "no-store" });
         if (res.ok) {
           const json = await res.json();
           if (json && Array.isArray(json.products)) {
-            return json.products;
+            return cleanProductImageUrls(json.products, basePath);
           }
         }
       } catch {

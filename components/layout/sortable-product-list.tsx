@@ -205,7 +205,7 @@ export default function SortableProductList({ products }: { products: Product[] 
       {paginatedProducts.length > 0 ? (
         <>
           <Grid className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            <ProductGridItems products={paginatedProducts} />
+            <ProductGridItems products={paginatedProducts} query={query} />
           </Grid>
 
           {/* Pagination UI */}

@@ -153,7 +153,8 @@ export async function uploadImageToGitHub(file: File): Promise<{ success: boolea
     }).catch(() => { });
 
     // Relative image path for Next.js app
-    const imageUrl = `/commerce/images/products/${filename}`;
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/commerce";
+    const imageUrl = `${basePath}/images/products/${filename}`;
     return { success: true, url: imageUrl };
   } catch (err: any) {
     return { success: false, error: err.message || "Lỗi khi gửi request upload ảnh" };

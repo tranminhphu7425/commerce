@@ -39,9 +39,46 @@ type StoreData = {
   };
 };
 
+function cleanProductImageUrls(products: any[], basePath: string): any[] {
+  if (basePath === "") {
+    products.forEach((p: any) => {
+      if (p.featuredImage?.url?.startsWith("/commerce/")) {
+        p.featuredImage.url = p.featuredImage.url.replace(/^\/commerce/, "");
+      }
+      if (Array.isArray(p.images)) {
+        p.images.forEach((img: any) => {
+          if (img?.url?.startsWith("/commerce/")) {
+            img.url = img.url.replace(/^\/commerce/, "");
+          }
+        });
+      }
+      if (Array.isArray(p.variants)) {
+        p.variants.forEach((v: any) => {
+          if (v.image?.url?.startsWith("/commerce/")) {
+            v.image.url = v.image.url.replace(/^\/commerce/, "");
+          }
+          if (Array.isArray(v.images)) {
+            v.images.forEach((img: any) => {
+              if (img?.url?.startsWith("/commerce/")) {
+                img.url = img.url.replace(/^\/commerce/, "");
+              }
+            });
+          }
+        });
+      }
+    });
+  }
+  return products;
+}
+
 function readStore(): StoreData {
   const raw = fs.readFileSync(DATA_FILE, "utf-8");
-  return JSON.parse(raw);
+  const data = JSON.parse(raw);
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "/commerce";
+  if (data && Array.isArray(data.products)) {
+    data.products = cleanProductImageUrls(data.products, basePath);
+  }
+  return data;
 }
 
 function writeStore(data: StoreData): void {
@@ -250,7 +287,7 @@ export async function createCart(): Promise<Cart> {
     cost: {
       subtotalAmount: { amount: "0", currencyCode: "VND" },
       totalAmount: { amount: "0", currencyCode: "VND" },
-      totalTaxAmount: { amount: "0", currencyCode: "VND" },
+     
     },
   };
 }
