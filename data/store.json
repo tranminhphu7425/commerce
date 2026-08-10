@@ -6,67 +6,163 @@
       "availableForSale": true,
       "title": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
       "description": "Combo mồi mềm Fish Candy kèm lưỡi độ và dây leader chuyên lure lóc chẽm.",
-      "descriptionHtml": "<p>Combo 4 món tiện lợi.</p><ul><li>Mồi mềm Fish Candy</li><li>Lưỡi độ</li><li>Dây leader</li></ul>",
+      "descriptionHtml": "<p>Combo mồi mềm Fish Candy kèm lưỡi độ và dây leader chuyên lure lóc chẽm.</p>",
       "options": [
         {
           "id": "opt-3",
-          "name": "Màu sắc",
+          "name": "Kích Cỡ",
           "values": [
-            "Ngẫu nhiên"
+            "Lưỡi 4cm + Mồi 7cm",
+            "Lưỡi 5cm + mồi 9cm"
           ]
         }
       ],
       "priceRange": {
-        "maxVariantPrice": {
-          "amount": "79000",
+        "minVariantPrice": {
+          "amount": "200000",
           "currencyCode": "VND"
         },
-        "minVariantPrice": {
-          "amount": "79000",
+        "maxVariantPrice": {
+          "amount": "500000",
           "currencyCode": "VND"
         }
       },
       "variants": [
         {
-          "id": "var-3",
-          "title": "Ngẫu nhiên",
+          "id": "var-1786294418314-0",
+          "title": "Lưỡi 4cm + Mồi 7cm",
           "availableForSale": true,
           "selectedOptions": [
             {
-              "name": "Màu sắc",
-              "value": "Ngẫu nhiên"
+              "name": "Kích Cỡ",
+              "value": "Lưỡi 4cm + Mồi 7cm"
             }
           ],
           "price": {
-            "amount": "79000",
+            "amount": "500000",
             "currencyCode": "VND"
-          }
+          },
+          "compareAtPrice": {
+            "amount": "700000",
+            "currencyCode": "VND"
+          },
+          "importPrice": {
+            "amount": "100000",
+            "currencyCode": "VND"
+          },
+          "image": {
+            "url": "/commerce/images/products/1786294414121-vn-11134207-7ra0g-m9e3b4ljucuf90.webp",
+            "altText": "Lưỡi 4cm + Mồi 7cm",
+            "width": 800,
+            "height": 800
+          },
+          "images": [
+            {
+              "url": "/commerce/images/products/1786294414121-vn-11134207-7ra0g-m9e3b4ljucuf90.webp",
+              "altText": "Lưỡi 4cm + Mồi 7cm",
+              "width": 800,
+              "height": 800
+            }
+          ]
+        },
+        {
+          "id": "var-1786294418314-1",
+          "title": "Lưỡi 5cm + mồi 9cm",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Kích Cỡ",
+              "value": "Lưỡi 5cm + mồi 9cm"
+            }
+          ],
+          "price": {
+            "amount": "200000",
+            "currencyCode": "VND"
+          },
+          "compareAtPrice": {
+            "amount": "500000",
+            "currencyCode": "VND"
+          },
+          "importPrice": {
+            "amount": "100000",
+            "currencyCode": "VND"
+          },
+          "image": {
+            "url": "/commerce/images/products/1786294417082-vn-11134207-7ra0g-m9e3bb2wcvpj5d.webp",
+            "altText": "Lưỡi 5cm + mồi 9cm",
+            "width": 800,
+            "height": 800
+          },
+          "images": [
+            {
+              "url": "/commerce/images/products/1786294417082-vn-11134207-7ra0g-m9e3bb2wcvpj5d.webp",
+              "altText": "Lưỡi 5cm + mồi 9cm",
+              "width": 800,
+              "height": 800
+            }
+          ]
         }
       ],
       "featuredImage": {
         "url": "/commerce/images/products/combo-4-mon-moi-mem-fish-candy.webp",
-        "altText": "Combo mồi mềm",
+        "altText": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
         "width": 800,
         "height": 800
       },
       "images": [
         {
           "url": "/commerce/images/products/combo-4-mon-moi-mem-fish-candy.webp",
-          "altText": "Combo mồi mềm",
+          "altText": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294286500-vn-11134207-7ra0g-m9e3an0nkivbaa.webp",
+          "altText": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294289678-vn-11134207-7ra0g-m9e3b4ljucuf90.webp",
+          "altText": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294291871-vn-11134207-7ra0g-m9e3b7xeyy5q4c.webp",
+          "altText": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294306021-vn-11134207-7ra0g-m9e3bb2wcvpj5d.webp",
+          "altText": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294414121-vn-11134207-7ra0g-m9e3b4ljucuf90.webp",
+          "altText": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294417082-vn-11134207-7ra0g-m9e3bb2wcvpj5d.webp",
+          "altText": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
           "width": 800,
           "height": 800
         }
       ],
       "seo": {
-        "title": "Combo mồi mềm Fish Candy",
-        "description": "Combo câu cá lóc chẽm giá rẻ."
+        "title": "Combo 4 món mồi mềm Fish Candy + lưỡi độ và leader",
+        "description": "Combo mồi mềm Fish Candy kèm lưỡi độ và dây leader chuyên lure lóc chẽm."
       },
       "tags": [
         "combo",
         "moi-mem",
         "fish-candy"
       ],
-      "updatedAt": "2026-05-13T00:00:00Z",
+      "updatedAt": "2026-08-09T16:53:38.314Z",
       "collections": [
         "moi-cau"
       ]
@@ -77,7 +173,7 @@
       "availableForSale": true,
       "title": "Máy câu cá SH.X Limited Megabarra chính hãng",
       "description": "Máy câu cá SH.X Limited phiên bản giới hạn từ Megabarra.",
-      "descriptionHtml": "<p>Máy câu cá SH.X Limited cao cấp.</p><ul><li>Chính hãng Megabarra</li><li>Đã bán: 104</li></ul>",
+      "descriptionHtml": "<p>Máy câu cá SH.X Limited phiên bản giới hạn từ Megabarra.</p>",
       "options": [
         {
           "id": "opt-4",
@@ -89,18 +185,18 @@
         }
       ],
       "priceRange": {
-        "maxVariantPrice": {
+        "minVariantPrice": {
           "amount": "670000",
           "currencyCode": "VND"
         },
-        "minVariantPrice": {
-          "amount": "670000",
+        "maxVariantPrice": {
+          "amount": "1231923",
           "currencyCode": "VND"
         }
       },
       "variants": [
         {
-          "id": "var-4",
+          "id": "var-1786294472304-0",
           "title": "Ngang",
           "availableForSale": true,
           "selectedOptions": [
@@ -112,32 +208,115 @@
           "price": {
             "amount": "670000",
             "currencyCode": "VND"
-          }
+          },
+          "compareAtPrice": {
+            "amount": "1211231231",
+            "currencyCode": "VND"
+          },
+          "importPrice": {
+            "amount": "122132",
+            "currencyCode": "VND"
+          },
+          "image": {
+            "url": "/commerce/images/products/1786294457767-vn-11134207-820l4-mifc6jz4hds06e.webp",
+            "altText": "Ngang",
+            "width": 800,
+            "height": 800
+          },
+          "images": [
+            {
+              "url": "/commerce/images/products/1786294457767-vn-11134207-820l4-mifc6jz4hds06e.webp",
+              "altText": "Ngang",
+              "width": 800,
+              "height": 800
+            }
+          ]
+        },
+        {
+          "id": "var-1786294472304-1",
+          "title": "Đứng",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Kiểu máy",
+              "value": "Đứng"
+            }
+          ],
+          "price": {
+            "amount": "1231923",
+            "currencyCode": "VND"
+          },
+          "compareAtPrice": {
+            "amount": "1321313213",
+            "currencyCode": "VND"
+          },
+          "importPrice": {
+            "amount": "1231231",
+            "currencyCode": "VND"
+          },
+          "image": {
+            "url": "/commerce/images/products/1786294467150-vn-11134207-820l4-mifc6jyugdtsee.webp",
+            "altText": "Đứng",
+            "width": 800,
+            "height": 800
+          },
+          "images": [
+            {
+              "url": "/commerce/images/products/1786294467150-vn-11134207-820l4-mifc6jyugdtsee.webp",
+              "altText": "Đứng",
+              "width": 800,
+              "height": 800
+            }
+          ]
         }
       ],
       "featuredImage": {
         "url": "/commerce/images/products/may-cau-ca-sh-x-limited.webp",
-        "altText": "Máy câu SH.X",
+        "altText": "Máy câu cá SH.X Limited Megabarra chính hãng",
         "width": 800,
         "height": 800
       },
       "images": [
         {
           "url": "/commerce/images/products/may-cau-ca-sh-x-limited.webp",
-          "altText": "Máy câu SH.X",
+          "altText": "Máy câu cá SH.X Limited Megabarra chính hãng",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294437883-vn-11134207-820l4-mifc6jyxhy4oaa.webp",
+          "altText": "Máy câu cá SH.X Limited Megabarra chính hãng",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294443538-vn-11134207-820l4-mifc6jyyzbpg71.webp",
+          "altText": "Máy câu cá SH.X Limited Megabarra chính hãng",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294457767-vn-11134207-820l4-mifc6jz4hds06e.webp",
+          "altText": "Máy câu cá SH.X Limited Megabarra chính hãng",
+          "width": 800,
+          "height": 800
+        },
+        {
+          "url": "/commerce/images/products/1786294467150-vn-11134207-820l4-mifc6jyugdtsee.webp",
+          "altText": "Máy câu cá SH.X Limited Megabarra chính hãng",
           "width": 800,
           "height": 800
         }
       ],
       "seo": {
-        "title": "Máy câu cá SH.X Limited Megabarra",
-        "description": "Máy câu cá chính hãng Megabarra."
+        "title": "Máy câu cá SH.X Limited Megabarra chính hãng",
+        "description": "Máy câu cá SH.X Limited phiên bản giới hạn từ Megabarra."
       },
       "tags": [
         "may-cau",
         "megabarra"
       ],
-      "updatedAt": "2026-05-13T00:00:00Z",
+      "updatedAt": "2026-08-09T16:54:32.305Z",
       "collections": [
         "featured",
         "may-cau"
@@ -146,10 +325,10 @@
     {
       "id": "prod-005",
       "handle": "combo-10-luoi-bkk-6066-4x",
-      "availableForSale": true,
+      "availableForSale": false,
       "title": "(Combo 10 lưỡi BKK) Lưỡi BKK 6066 4X ba tiêu câu cá số 4,6,8",
       "description": "Lưỡi ba tiêu BKK 6066 4X chính hãng cực bén và cứng cáp.",
-      "descriptionHtml": "<p>Lưỡi BKK 6066 4X chính hãng.</p><ul><li>Size: 4, 6, 8</li><li>Số lượng: 10 lưỡi</li></ul>",
+      "descriptionHtml": "<p>Lưỡi ba tiêu BKK 6066 4X chính hãng cực bén và cứng cáp.</p>",
       "options": [
         {
           "id": "opt-5",
@@ -162,19 +341,19 @@
         }
       ],
       "priceRange": {
-        "maxVariantPrice": {
-          "amount": "100000",
+        "minVariantPrice": {
+          "amount": "23243",
           "currencyCode": "VND"
         },
-        "minVariantPrice": {
-          "amount": "100000",
+        "maxVariantPrice": {
+          "amount": "234243",
           "currencyCode": "VND"
         }
       },
       "variants": [
         {
-          "id": "var-5",
-          "title": "Size 4",
+          "id": "var-1786294485764-0",
+          "title": "4",
           "availableForSale": true,
           "selectedOptions": [
             {
@@ -183,35 +362,65 @@
             }
           ],
           "price": {
-            "amount": "100000",
+            "amount": "23423",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786294485764-1",
+          "title": "6",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Size",
+              "value": "6"
+            }
+          ],
+          "price": {
+            "amount": "23243",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786294485764-2",
+          "title": "8",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Size",
+              "value": "8"
+            }
+          ],
+          "price": {
+            "amount": "234243",
             "currencyCode": "VND"
           }
         }
       ],
       "featuredImage": {
         "url": "/commerce/images/products/combo-10-luoi-bkk-6066-4x.webp",
-        "altText": "Lưỡi BKK",
+        "altText": "(Combo 10 lưỡi BKK) Lưỡi BKK 6066 4X ba tiêu câu cá số 4,6,8",
         "width": 800,
         "height": 800
       },
       "images": [
         {
           "url": "/commerce/images/products/combo-10-luoi-bkk-6066-4x.webp",
-          "altText": "Lưỡi BKK",
+          "altText": "(Combo 10 lưỡi BKK) Lưỡi BKK 6066 4X ba tiêu câu cá số 4,6,8",
           "width": 800,
           "height": 800
         }
       ],
       "seo": {
-        "title": "Lưỡi BKK 6066 4X ba tiêu",
-        "description": "Lưỡi câu cá chính hãng BKK."
+        "title": "(Combo 10 lưỡi BKK) Lưỡi BKK 6066 4X ba tiêu câu cá số 4,6,8",
+        "description": "Lưỡi ba tiêu BKK 6066 4X chính hãng cực bén và cứng cáp."
       },
       "tags": [
         "phu-kien",
         "luoi-cau",
         "bkk"
       ],
-      "updatedAt": "2026-05-13T00:00:00Z",
+      "updatedAt": "2026-08-09T16:54:45.764Z",
       "collections": [
         "phu-kien"
       ]
