@@ -1526,59 +1526,726 @@
       "options": [
         {
           "id": "opt-45614849268",
-          "name": "Phân Loại",
+          "name": "Màu sắc",
           "values": [
-            "Mặc định"
+            "Màu 001",
+            "Màu 002",
+            "Màu 003",
+            "Màu 004",
+            "Màu 005",
+            "Màu 006",
+            "Màu 007",
+            "Màu 008",
+            "Màu 009",
+            "Màu 010",
+            "Màu 011",
+            "Màu 012"
+          ]
+        },
+        {
+          "id": "opt-1786608090411",
+          "name": "Size",
+          "values": [
+            "Doom 75 Shad 8.8g",
+            "Doom 75 Slim 7g",
+            "Doom 95 8g"
           ]
         }
       ],
       "priceRange": {
         "minVariantPrice": {
-          "amount": "120000",
+          "amount": "0",
           "currencyCode": "VND"
         },
         "maxVariantPrice": {
-          "amount": "120000",
+          "amount": "0",
           "currencyCode": "VND"
         }
       },
       "variants": [
         {
-          "id": "var-45614849268-0",
-          "title": "Mặc định",
+          "id": "var-1786608248852-0",
+          "title": "Màu 001 / Doom 75 Shad 8.8g",
           "availableForSale": true,
           "selectedOptions": [
             {
-              "name": "Phân Loại",
-              "value": "Mặc định"
+              "name": "Màu sắc",
+              "value": "Màu 001"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
             }
           ],
           "price": {
-            "amount": "120000",
+            "amount": "0",
             "currencyCode": "VND"
-          },
-          "compareAtPrice": {
-            "amount": "156000",
-            "currencyCode": "VND"
-          },
-          "importPrice": {
-            "amount": "72000",
-            "currencyCode": "VND"
-          },
-          "image": {
-            "url": "/commerce/images/products/45614849268.jpg",
-            "altText": "Mặc định",
-            "width": 800,
-            "height": 800
-          },
-          "images": [
+          }
+        },
+        {
+          "id": "var-1786608248852-1",
+          "title": "Màu 001 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
             {
-              "url": "/commerce/images/products/45614849268.jpg",
-              "altText": "Mặc định",
-              "width": 800,
-              "height": 800
+              "name": "Màu sắc",
+              "value": "Màu 001"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
             }
-          ]
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-2",
+          "title": "Màu 001 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 001"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-3",
+          "title": "Màu 002 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 002"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-4",
+          "title": "Màu 002 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 002"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-5",
+          "title": "Màu 002 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 002"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-6",
+          "title": "Màu 003 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 003"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-7",
+          "title": "Màu 003 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 003"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-8",
+          "title": "Màu 003 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 003"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-9",
+          "title": "Màu 004 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 004"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-10",
+          "title": "Màu 004 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 004"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-11",
+          "title": "Màu 004 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 004"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-12",
+          "title": "Màu 005 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 005"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-13",
+          "title": "Màu 005 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 005"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-14",
+          "title": "Màu 005 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 005"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-15",
+          "title": "Màu 006 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 006"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-16",
+          "title": "Màu 006 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 006"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-17",
+          "title": "Màu 006 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 006"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-18",
+          "title": "Màu 007 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 007"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-19",
+          "title": "Màu 007 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 007"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-20",
+          "title": "Màu 007 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 007"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-21",
+          "title": "Màu 008 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 008"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-22",
+          "title": "Màu 008 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 008"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-23",
+          "title": "Màu 008 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 008"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-24",
+          "title": "Màu 009 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 009"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-25",
+          "title": "Màu 009 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 009"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-26",
+          "title": "Màu 009 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 009"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-27",
+          "title": "Màu 010 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 010"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-28",
+          "title": "Màu 010 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 010"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-29",
+          "title": "Màu 010 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 010"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-30",
+          "title": "Màu 011 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 011"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-31",
+          "title": "Màu 011 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 011"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-32",
+          "title": "Màu 011 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 011"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-33",
+          "title": "Màu 012 / Doom 75 Shad 8.8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 012"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Shad 8.8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-34",
+          "title": "Màu 012 / Doom 75 Slim 7g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 012"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 75 Slim 7g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
+        },
+        {
+          "id": "var-1786608248852-35",
+          "title": "Màu 012 / Doom 95 8g",
+          "availableForSale": true,
+          "selectedOptions": [
+            {
+              "name": "Màu sắc",
+              "value": "Màu 012"
+            },
+            {
+              "name": "Size",
+              "value": "Doom 95 8g"
+            }
+          ],
+          "price": {
+            "amount": "0",
+            "currencyCode": "VND"
+          }
         }
       ],
       "featuredImage": {
@@ -1597,13 +2264,13 @@
       ],
       "seo": {
         "title": "[ CTF ] MỒI CÂU CÁ DOOM 75 VÀ DOOM 95 CHÍNH HÃNG MEGABARRA fishing lure",
-        "description": "[ CTF ] MỒI CÂU CÁ DOOM 75 VÀ DOOM 95 CHÍNH HÃNG MEGABARRA fishing lure chất lượng cao, nhạy cá."
+        "description": "[ CTF ] MỒI CÂU CÁ DOOM 75 VÀ DOOM 95 CHÍNH HÃNG MEGABARRA fishing lure cao cấp, chính hãng, giá tốt, giao hàng toàn quốc nhanh chóng."
       },
       "tags": [
         "moi-cau",
         "shopee-import"
       ],
-      "updatedAt": "2026-08-10T09:16:27.899Z",
+      "updatedAt": "2026-08-13T08:04:08.852Z",
       "collections": [
         "moi-cau"
       ]
